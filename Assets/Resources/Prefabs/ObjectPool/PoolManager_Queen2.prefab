@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1680842602118976}
+  m_IsPrefabParent: 1
+--- !u!1 &1680842602118976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4192556477193678}
+  - component: {fileID: 114744909046012736}
+  m_Layer: 0
+  m_Name: PoolManager_Queen2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4192556477193678
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1680842602118976}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114744909046012736
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1680842602118976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 764ce1f380ca7ba42b0b7512679cd1ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - pool_Name: 3
+    pool_Prefab: {fileID: 1146771872175086, guid: 10c50970d4474d640a8e4a5dd2d1136a,
+      type: 2}
+    pool_amount: 18
+    filePath: Prefabs/SoldierIcon/enemy_01
+  - pool_Name: 1
+    pool_Prefab: {fileID: 1299396737225026, guid: 492eb2a95030c7846a75a95ad60008e6,
+      type: 2}
+    pool_amount: 1
+    filePath: Prefabs/Soldier/sword_mini/Mini
+  - pool_Name: 12
+    pool_Prefab: {fileID: 1298045806864356, guid: 56bb140dbaaaeec439657a67dbd670e4,
+      type: 2}
+    pool_amount: 2
+    filePath: Prefabs/Tower/Tower_Cannon/build_show_Cannon
+  - pool_Name: 5
+    pool_Prefab: {fileID: 1317275583877884, guid: fa11024fc72b6554f87faa7c5f3769f4,
+      type: 2}
+    pool_amount: 1
+    filePath: Prefabs/Tower/Tower_Cannon/Tower1_Cannon
+  - pool_Name: 9
+    pool_Prefab: {fileID: 1180311297308650, guid: b9685648a1864e94c8570d0d05cca3e0,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/Tower/Tower_Cannon/bullet_normal
+  - pool_Name: 10
+    pool_Prefab: {fileID: 1052605580901530, guid: cba5836409989974482bdaf30ae0d0cf,
+      type: 2}
+    pool_amount: 5
+    filePath: Prefabs/Tower/Tower_Wind/tornado_3
+  - pool_Name: 11
+    pool_Prefab: {fileID: 1148332203989184, guid: 8a4bc483e0b699146adf33a1e31eb44f,
+      type: 2}
+    pool_amount: 20
+    filePath: PopupTextParent
+  - pool_Name: 6
+    pool_Prefab: {fileID: 1831844485551636, guid: 07c6b6fcba37c634dbbe78076e1f9c7d,
+      type: 2}
+    pool_amount: 20
+    filePath: Prefabs/Tower/Tower_Wind/Tower2_Wind
+  - pool_Name: 7
+    pool_Prefab: {fileID: 1792735170444186, guid: 931977abf3e75c1429f90eb1516bb4de,
+      type: 2}
+    pool_amount: 2
+    filePath: Prefabs/Tower/Tower_Wind/build_show_Wind
+  - pool_Name: 8
+    pool_Prefab: {fileID: 1918653129599544, guid: e36706b4db0872941a6e914794ef11b4,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/UI/Pormpt/Hint_Text
+  - pool_Name: 4
+    pool_Prefab: {fileID: 1146771872175086, guid: 4390d23db9d5834409fb383e7903269c,
+      type: 2}
+    pool_amount: 6
+    filePath: Prefabs/SoldierIcon/enemy_02
