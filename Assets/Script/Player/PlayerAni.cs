@@ -48,21 +48,37 @@ public class PlayerAni : Photon.MonoBehaviour
         }*/
     }
 
+    #region 改變正確玩家
     void checkCurrentPlay()
     {
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
         {
-            GetComponent<PhotonView>().RPC("changeLayer", PhotonTargets.All, 30);
+            player.Net.RPC("changeLayer", PhotonTargets.All, 30);
             canAtkMask = GameManager.instance.getPlayer1_Mask;
             farDistance += GameManager.instance.getPlayer1_Mask;
+            player.Net.RPC("changeMask_1", PhotonTargets.Others);
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
-            GetComponent<PhotonView>().RPC("changeLayer", PhotonTargets.All, 31);
+            player.Net.RPC("changeLayer", PhotonTargets.All, 31);
             canAtkMask = GameManager.instance.getPlayer2_Mask;
             farDistance += GameManager.instance.getPlayer2_Mask;
+            player.Net.RPC("changeMask_2", PhotonTargets.Others);
         }
     }
+    [PunRPC]
+    public void changeMask_1()
+    {
+        canAtkMask = GameManager.instance.getPlayer1_Mask;
+        farDistance += GameManager.instance.getPlayer1_Mask;
+    }
+    [PunRPC]
+    public void changeMask_2()
+    {
+        canAtkMask = GameManager.instance.getPlayer2_Mask;
+        farDistance += GameManager.instance.getPlayer2_Mask;
+    }
+    #endregion
 
     #region 武器切換
     public void switchWeapon_Pattren(bool _change)

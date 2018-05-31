@@ -22,7 +22,7 @@ public class Player : Photon.MonoBehaviour
     [SerializeField] LayerMask currentDir_Layer;
     private bool isRunning;
     private Quaternion CharacterRot;
-
+    public PhotonView Net;
     //方向
     private Vector3 mousePosition;    
 
@@ -30,6 +30,8 @@ public class Player : Photon.MonoBehaviour
     {
         Chara = GetComponent<CharacterController>();
         MoveDir = transform.forward;
+
+        Net = GetComponent<PhotonView>();
     }
 
     private void Start()
@@ -81,17 +83,33 @@ public class Player : Photon.MonoBehaviour
             if (Input.GetKeyDown("q") && AniControll.canClick && !buildManager.nowBuilding && photonView.isMine)
             {
                 //CharacterAtk_Q();
-                GetComponent<PhotonView>().RPC("CharacterAtk_Q", PhotonTargets.All);
+                Vector3 tmpDir = Vector3.zero;
+                isRunning = false;
+                nav.ResetPath();
+                if (!nowCombo)
+                {
+                    tmpDir = mousePosition - transform.position;
+                    tmpDir.y = 0;
+                    CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
+                    transform.rotation = CharacterRot;
+                }
+                AniControll.TypeCombo(tmpDir);
+
+                GetComponent<PhotonView>().RPC("CharacterAtk_Q", PhotonTargets.Others, tmpDir, CharacterRot);
 
             }
 
-            if (nowCombo)
+            if (nowCombo && photonView.isMine)
             {
                 AniControll.DetectAtkRanage();
             }
             else
             {
-                ClickPoint();
+                if (photonView.isMine)
+                {
+                    ClickPoint();
+                }
+                
                 CharacterRun();
                 // CharacterJump();
             }
@@ -113,13 +131,20 @@ public class Player : Photon.MonoBehaviour
         {
             case GameManager.meIs.Allen:
                 AniControll = GetComponent<Allen_Ani>();
-                buildManager.builder = this.gameObject;
-                buildManager.playerScript = this;
+                if (photonView.isMine)
+                {
+                    buildManager.builder = this.gameObject;
+                    buildManager.playerScript = this;
+                }
+                
                 return;
             case GameManager.meIs.Queen:
                 AniControll = GetComponent<Queen_Ani>();
-                buildManager.builder = this.gameObject;
-                buildManager.playerScript = this;
+                if (photonView.isMine)
+                {
+                    buildManager.builder = this.gameObject;
+                    buildManager.playerScript = this;
+                }
                 return;
             default:
                 return;
@@ -218,19 +243,13 @@ public class Player : Photon.MonoBehaviour
     }
 
     [PunRPC]
-    public void CharacterAtk_Q()
+    public void CharacterAtk_Q(Vector3 MyDir, Quaternion MyRot)
     {
-        Vector3 tmpDir = Vector3.zero;
         isRunning = false;
         nav.ResetPath();
-        if (!nowCombo)
-        {
-            tmpDir = mousePosition- transform.position;
-            tmpDir.y = 0;
-            CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
-            transform.rotation = CharacterRot;
-        }
-        AniControll.TypeCombo(tmpDir);
+
+        transform.rotation = MyRot;
+        AniControll.TypeCombo(MyDir);
     }
 
     void CharacterAtk_W()
