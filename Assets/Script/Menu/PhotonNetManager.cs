@@ -306,6 +306,7 @@ public class PhotonNetManager : Photon.PunBehaviour
             PhotonNetwork.LoadLevel(0);
         }
         Destroy(GameManager.instance.gameObject);
+        Destroy(PhotonNetManager.instance.gameObject);
     }
     #endregion
 }

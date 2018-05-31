@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Building : Photon.MonoBehaviour
+public class Building : MonoBehaviour
 {
     private BuildManager buildManager;
     private TurretData.TowerDataBase tmpTurretBlueprint;
@@ -96,12 +96,9 @@ public class Building : Photon.MonoBehaviour
             if (buildManager.payment(false))
             {
                 // Vector3 canBuildPos = _buildPos + (builder.transform.position - _buildPos).normalized * (_distance - 1.5f);
-                if (photonView.isMine)
-                {
-                    //buildManager.playerScript.getTatgetPoint(_buildPos);
-                    GetComponent<PhotonView>().RPC("getTatgetPoint", PhotonTargets.All, _buildPos);
-                    _start = true;
-                }
+                //buildManager.playerScript.getTatgetPoint(_buildPos);
+                buildManager.playerScript.Net.RPC("getTatgetPoint", PhotonTargets.All, _buildPos);
+                _start = true;
             }
             Debug.Log("距離過遠");
             return false;

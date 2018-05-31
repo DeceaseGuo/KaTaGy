@@ -24,8 +24,7 @@ public class Player : Photon.MonoBehaviour
     private Quaternion CharacterRot;
     public PhotonView Net;
     //方向
-    private Vector3 mousePosition;    
-
+    private Vector3 mousePosition;
     private void Awake()
     {
         Chara = GetComponent<CharacterController>();
@@ -83,19 +82,9 @@ public class Player : Photon.MonoBehaviour
             if (Input.GetKeyDown("q") && AniControll.canClick && !buildManager.nowBuilding && photonView.isMine)
             {
                 //CharacterAtk_Q();
-                Vector3 tmpDir = Vector3.zero;
-                isRunning = false;
-                nav.ResetPath();
-                if (!nowCombo)
-                {
-                    tmpDir = mousePosition - transform.position;
-                    tmpDir.y = 0;
-                    CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
-                    transform.rotation = CharacterRot;
-                }
-                AniControll.TypeCombo(tmpDir);
+                CharacterAtk_Q();
+                //GetComponent<PhotonView>().RPC("CharacterAtk_Q", PhotonTargets.All);
 
-                GetComponent<PhotonView>().RPC("CharacterAtk_Q", PhotonTargets.Others, tmpDir, CharacterRot);
 
             }
 
@@ -106,10 +95,8 @@ public class Player : Photon.MonoBehaviour
             else
             {
                 if (photonView.isMine)
-                {
                     ClickPoint();
-                }
-                
+
                 CharacterRun();
                 // CharacterJump();
             }
@@ -169,8 +156,10 @@ public class Player : Photon.MonoBehaviour
                 if (Input.GetMouseButtonDown(1) && photonView.isMine)
                 {
                     clickPointPos.transform.position = hit.point;
-                    //getTatgetPoint(clickPointPos.transform.position);
-                    GetComponent<PhotonView>().RPC("getTatgetPoint", PhotonTargets.All, clickPointPos.transform.position);
+                    getTatgetPoint(clickPointPos.transform.position);
+                    //Net.RPC("getTatgetPoint", PhotonTargets.All, clickPointPos.transform.position);
+                    Net.RPC("getTatgetPoint", PhotonTargets.Others, clickPointPos.transform.position);
+
                 }
             }
         }
@@ -242,14 +231,31 @@ public class Player : Photon.MonoBehaviour
         }
     }
 
-    [PunRPC]
-    public void CharacterAtk_Q(Vector3 MyDir, Quaternion MyRot)
+
+    public void CharacterAtk_Q()
     {
         isRunning = false;
         nav.ResetPath();
+        Vector3 tmpDir = Vector3.zero;
+        if (!nowCombo)
+        {
+            tmpDir = mousePosition - transform.position;
+            tmpDir.y = 0;
+            CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
+            transform.rotation = CharacterRot;
+        }
 
-        transform.rotation = MyRot;
-        AniControll.TypeCombo(MyDir);
+        AniControll.TypeCombo(tmpDir);
+        Net.RPC("getATk_Ani", PhotonTargets.Others, tmpDir, CharacterRot);     
+    }
+
+    [PunRPC]
+    public void getATk_Ani(Vector3 _pos,Quaternion _rot)
+    {
+        isRunning = false;
+        nav.ResetPath();
+        transform.rotation = _rot;
+        AniControll.TypeCombo(_pos);
     }
 
     void CharacterAtk_W()
@@ -282,7 +288,7 @@ public class Player : Photon.MonoBehaviour
     #region 切換目前模式(攻擊 , 建造)
     public void switchWeapon(bool _can)
     {
-        if (!deadManager.checkDead)
+        if (photonView.isMine && !deadManager.checkDead)
             AniControll.switchWeapon_Pattren(_can);
     }
     #endregion

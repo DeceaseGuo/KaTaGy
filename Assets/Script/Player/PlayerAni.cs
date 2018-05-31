@@ -83,7 +83,9 @@ public class PlayerAni : Photon.MonoBehaviour
     #region 武器切換
     public void switchWeapon_Pattren(bool _change)
     {
-        GetComponent<PhotonView>().RPC("weaponOC", PhotonTargets.All, _change);
+        anim.SetBool("NowBuild", _change);
+        anim.SetTrigger("Switch");
+        player.Net.RPC("weaponOC", PhotonTargets.Others, _change);
     }
 
     [PunRPC]

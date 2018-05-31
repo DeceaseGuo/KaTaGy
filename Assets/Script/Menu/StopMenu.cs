@@ -17,7 +17,5 @@ public class StopMenu : MonoBehaviour
     public void SurrenderClick()
     {
         PhotonNetManager.instance.GetComponent<PhotonView>().RPC("OutGame", PhotonTargets.All);
-        Destroy(GameManager.instance.gameObject);
-        Destroy(PhotonNetManager.instance.gameObject);
     }
 }

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
   VoiceAppID: 
-  ChatAppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
+  ChatAppID: 
   HostType: 1
-  PreferredRegion: 2
+  PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
   ServerAddress: 
@@ -29,10 +29,15 @@ MonoBehaviour:
   RpcList:
   - changeColor
   - changeLayer
+  - changeMask_1
+  - changeMask_2
+  - changePos
   - Chat
   - DestroyRpc
+  - getATk_Ani
   - getAtkAnimator
   - getFirestPlayer
+  - getTatgetPoint
   - InstantiateRpc
   - NowDeath
   - OutGame
@@ -43,26 +48,13 @@ MonoBehaviour:
   - pushOtherTarget
   - RequestForPickupItems
   - RequestForPickupTimes
+  - returnBulletPool
   - SetActiveRPC
   - SetPoolparent
   - show_HPBar
   - showHeatBar
   - switch_HPObj
   - takeDamage
-  - weaponOC
-  - returnBulletPool
-  - displayHpBar
-  - Tower_shoot
   - TP_Data
-  - changePos
-  - getTatgetPoint
-  - CharacterAtk_Q
-<<<<<<< Updated upstream
-=======
-  - TypeCombo
-  - getCorrectDir
-  - getATk_Ani
->>>>>>> Stashed changes
-  - changeMask_1
-  - changeMask_2
+  - weaponOC
   DisableAutoOpenWizard: 1

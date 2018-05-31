@@ -4049,6 +4049,7 @@ MonoBehaviour:
   currentDir_Layer:
     serializedVersion: 2
     m_Bits: 32768
+  Net: {fileID: 0}
 --- !u!114 &114934294667107802
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4069,7 +4070,6 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 0}
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
