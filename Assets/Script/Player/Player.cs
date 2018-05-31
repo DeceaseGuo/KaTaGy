@@ -255,7 +255,7 @@ public class Player : Photon.MonoBehaviour
         isRunning = false;
         nav.ResetPath();
         transform.rotation = _rot;
-        AniControll.TypeCombo(_pos);
+        //AniControll.TypeCombo(_pos);
     }
 
     void CharacterAtk_W()

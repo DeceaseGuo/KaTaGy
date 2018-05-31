@@ -136,6 +136,26 @@ public class PlayerAni : Photon.MonoBehaviour
     {
 
     }
+
+    [PunRPC]
+    protected void combo0(int Index, Vector3 Dir)
+    {
+        player.stopExceptCombo(true);
+        comboIndex = Index;
+        anim.SetInteger("comboIndex", Index);
+        anim.SetTrigger("Combo");
+        anim.SetBool("isEnd", false);
+        currentAtkDir = Dir.normalized;
+    }
+
+    [PunRPC]
+    protected void Nextcombo(int Index)
+    {
+        comboIndex = Index;
+        anim.SetInteger("comboIndex", Index);
+        anim.SetBool("isEnd", false);
+        nextComboBool = true;
+    }
     #endregion
 
     #region 偵測攻擊最遠範圍

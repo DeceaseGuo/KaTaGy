@@ -42,7 +42,7 @@ public class Creatplayer : Photon.MonoBehaviour
          else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
          {
             //第二區
-            born_P(player_Queen, pos_2.position, pool_Queen1);
+            born_P(player_Queen, /*pos_2.position*/pos_1.position, pool_Queen1);
          }
     }
 
@@ -54,7 +54,7 @@ public class Creatplayer : Photon.MonoBehaviour
             {
                 //第二區
                 GameManager.instance.WhoMe = GameManager.MyNowPlayer.player_2;
-                born_P(player_Allen,pos_2.position, pool_Allen2);
+                born_P(player_Allen,/*pos_2.position*/pos_1.position, pool_Allen2);
             }
             else
             {

@@ -12,54 +12,25 @@ public class Allen_Ani : PlayerAni
     {
         if (canClick)
         {
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") && comboIndex == 0)
+            if ((anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk")) && comboIndex == 0)
             {
-                player.stopExceptCombo(true);
-                comboIndex = 1;
-                anim.SetInteger("comboIndex", comboIndex);
-                anim.SetTrigger("Combo");
                 canClick = false;
-                anim.SetBool("isEnd", false);
-                currentAtkDir = atkDir.normalized;
-                Debug.Log("COMBO0");
-            }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") && comboIndex == 0)
-            {
-                player.stopExceptCombo(true);
-                comboIndex = 1;
-                anim.SetInteger("comboIndex", comboIndex);
-                anim.SetTrigger("Combo");
-                canClick = false;
-                anim.SetBool("isEnd", false);
-                currentAtkDir = atkDir.normalized;
-                Debug.Log("COMBO0");
+                player.Net.RPC("combo0", PhotonTargets.All, 1, atkDir);
             }
             if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo1") && comboIndex == 1)
             {
-                comboIndex = 2;
-                anim.SetInteger("comboIndex", comboIndex);
                 canClick = false;
-                anim.SetBool("isEnd", false);
-                Debug.Log("COMBO1");
-                nextComboBool = true;
+                GetComponent<PhotonView>().RPC("Nextcombo", PhotonTargets.All, 2);
             }
             if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo2") && comboIndex == 2)
             {
-                comboIndex = 3;
-                anim.SetInteger("comboIndex", comboIndex);
                 canClick = false;
-                anim.SetBool("isEnd", false);
-                Debug.Log("COMBO2");
-                nextComboBool = true;
+                GetComponent<PhotonView>().RPC("Nextcombo", PhotonTargets.All, 3);
             }
             if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo3") && comboIndex == 3)
             {
-                comboIndex = 4;
-                anim.SetInteger("comboIndex", comboIndex);
                 canClick = false;
-                anim.SetBool("isEnd", false);
-                Debug.Log("COMBO3");
-                nextComboBool = true;
+                GetComponent<PhotonView>().RPC("Nextcombo", PhotonTargets.All, 4);
             }
         }
     }
