@@ -49,8 +49,6 @@ public class FloatingText : MonoBehaviour
 
         damageText.text = text;
         StartCoroutine("returnPoolObject");
-        //offset = _offset;
-        //enemyControl = _enemy;
     }
     #endregion
 }

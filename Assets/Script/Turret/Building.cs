@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using AtkTower;
 
 public class Building : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class Building : MonoBehaviour
     {
         if (buildManager.nowBuilding)
         {
-            if (buildManager.CheckDetectTurret())
+            if (buildManager.HaveTower)
             {
                 if (buildManager.nowSelect)
                 {
@@ -96,8 +97,8 @@ public class Building : MonoBehaviour
             if (buildManager.payment(false))
             {
                 // Vector3 canBuildPos = _buildPos + (builder.transform.position - _buildPos).normalized * (_distance - 1.5f);
-                //buildManager.playerScript.getTatgetPoint(_buildPos);
-                buildManager.playerScript.Net.RPC("getTatgetPoint", PhotonTargets.All, _buildPos);
+                buildManager.playerScript.getTatgetPoint(_buildPos);
+                //buildManager.playerScript.Net.RPC("getTatgetPoint", PhotonTargets.All, _buildPos);
                 _start = true;
             }
             Debug.Log("距離過遠");
@@ -111,7 +112,7 @@ public class Building : MonoBehaviour
     {
         if (_start)
         {
-            if(CheckStopPos())
+            if (CheckStopPos())
             {
                 if (buildManager.payment(true))
                 {
@@ -142,7 +143,12 @@ public class Building : MonoBehaviour
             buildManager.playerScript.isStop();
             return true;
         }
-        return false;
+        else
+        {
+            if (!buildManager.playerScript.getNavPath())
+                buildManager.playerScript.getTatgetPoint(NodePos);
+            return false;
+        }
     }
     #endregion
 
@@ -158,12 +164,13 @@ public class Building : MonoBehaviour
         bool suspend = false;
         for (CD = 0; CD < tmpTurretBlueprint.turret_delayTime; CD += Time.deltaTime)
         {
-            Debug.Log("cd");
             buildManager.build_countDown(CD);
-
+            buildManager.playerScript.switchScaffolding(true);
+                
             #region 按下esc 中斷建造
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                buildManager.playerScript.switchScaffolding(false);
                 suspend = true;
                 CD = tmpTurretBlueprint.turret_delayTime;
                 buildManager.cancelPunish(0.8f);
@@ -179,7 +186,8 @@ public class Building : MonoBehaviour
         }
         if (CD >= tmpTurretBlueprint.turret_delayTime && !suspend)
         {
-            Debug.Log("蓋");            
+            //Debug.Log("蓋");
+            buildManager.playerScript.switchScaffolding(false);
             BuildTurret(NodePos);
             buildManager.playerScript.stopAnything_Switch(false);
         }
@@ -191,8 +199,25 @@ public class Building : MonoBehaviour
     {
         buildManager.closeScaffolding();
         buildManager.nowNotSelectSwitch(true);
+
+        GameObject obj = buildManager.creatTower(tmpTurretBlueprint.TurretName, _pos, Quaternion.identity);
+        //obj.name += buildManager.electricityTurrets.Count;
+        if (tmpTurretBlueprint.TurretName != GameManager.whichObject.Tower_Electricity)
+        {
+            Debug.Log("蓋塔防YA");
+            Turret_Manager tur_manager = obj.GetComponent<Turret_Manager>();
+            buildManager.consumeElectricity(buildManager.electricityTurrets, tur_manager);
+            buildManager.Turrets.Add(tur_manager);
+        }
+        else
+        {
+            Electricity e = obj.GetComponent<Electricity>();
+            buildManager.FindfirstE(buildManager.electricityTurrets, e);
+            buildManager.electricityTurrets.Add(e);
+        }
+
+        obj.GetComponent<PhotonView>().RPC("AddInList", PhotonTargets.Others);
         buildManager.closeTurretToBuild();
-        buildManager.creatTower(tmpTurretBlueprint.TurretName, _pos, Quaternion.identity);
     }
     #endregion
 }

@@ -1,0 +1,1373 @@
+fileFormatVersion: 2
+guid: a3c5c89346d2a5f45ae6d27220ff8e16
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: belt
+    100004: belt J
+    100006: Body
+    100008: body
+    100010: Box002
+    100012: Box003
+    100014: Box005
+    100016: cape
+    100018: Circle003
+    100020: Circle004
+    100022: Circle005
+    100024: Circle006
+    100026: Circle013
+    100028: Circle018
+    100030: Circle019
+    100032: Circle020
+    100034: Circle021
+    100036: Circle022
+    100038: Circle023
+    100040: Circle024
+    100042: Circle025
+    100044: Circle026
+    100046: Circle027
+    100048: Circle028
+    100050: Circle029
+    100052: Circle030
+    100054: Circle031
+    100056: Circle032
+    100058: Circle033
+    100060: Circle034
+    100062: Circle035
+    100064: Circle036
+    100066: Circle037
+    100068: Circle038
+    100070: Circle039
+    100072: Circle040
+    100074: Circle041
+    100076: Circle042
+    100078: Circle043
+    100080: Circle044
+    100082: Circle045
+    100084: Circle046
+    100086: Circle047
+    100088: Circle048
+    100090: Circle049
+    100092: Circle050
+    100094: Circle051
+    100096: Circle052
+    100098: Circle053
+    100100: Circle054
+    100102: Circle055
+    100104: Circle056
+    100106: Circle057
+    100108: Circle058
+    100110: Circle059
+    100112: Circle060
+    100114: Circle061
+    100116: Circle062
+    100118: Circle063
+    100120: Circle064
+    100122: Circle065
+    100124: Circle066
+    100126: Circle067
+    100128: Circle068
+    100130: Circle069
+    100132: Circle070
+    100134: Circle071
+    100136: Circle072
+    100138: crown1
+    100140: crown2
+    100142: crown3
+    100144: Dummy001
+    100146: Dummy002
+    100148: ear
+    100150: Elf_hair1_bone
+    100152: Elf_hair2_bone
+    100154: Elf_hair3_bone
+    100156: Elf_hair_nub
+    100158: Elf_head_bone
+    100160: Elf_head_nub
+    100162: Elf_L_ankle_bone
+    100164: Elf_L_cape1_bone
+    100166: Elf_L_cape1_nub
+    100168: Elf_L_cape2_bone
+    100170: Elf_L_cape3_bone
+    100172: Elf_L_cape4_bone
+    100174: Elf_L_clav_bone
+    100176: Elf_L_forearm_bone
+    100178: Elf_L_hair_bone
+    100180: Elf_L_hair_nub
+    100182: Elf_L_hand_bone
+    100184: Elf_L_hand_nub
+    100186: Elf_L_index1_bone
+    100188: Elf_L_index2_bone
+    100190: Elf_L_index3_bone
+    100192: Elf_L_index_nub
+    100194: Elf_L_knee_bone
+    100196: Elf_L_middle1_bone
+    100198: Elf_L_middle2_bone
+    100200: Elf_L_middle3_bone
+    100202: Elf_L_middle_nub
+    100204: Elf_L_pinky1_bone
+    100206: Elf_L_pinky2_bone
+    100208: Elf_L_pinky3_bone
+    100210: Elf_L_pinky_nub
+    100212: Elf_L_ring1_bone
+    100214: Elf_L_ring2_bone
+    100216: Elf_L_ring3_bone
+    100218: Elf_L_ring_nub
+    100220: Elf_L_shoulder_bone
+    100222: Elf_L_thigh_bone
+    100224: Elf_L_thumb1_bone
+    100226: Elf_L_thumb2_bone
+    100228: Elf_L_thumb3_bone
+    100230: Elf_L_thumb_nub
+    100232: Elf_L_toe_bone
+    100234: Elf_L_toe_nub
+    100236: Elf_L_wrist_bone
+    100238: Elf_neck_bone
+    100240: Elf_pelvis_bone
+    100242: Elf_pelvis_nub
+    100244: Elf_R_ankle_bone
+    100246: Elf_R_cape1_bone
+    100248: Elf_R_cape2_bone
+    100250: Elf_R_cape3_bone
+    100252: Elf_R_cape4_bone
+    100254: Elf_R_cape_nub
+    100256: Elf_R_clav_bone
+    100258: Elf_R_forearm_bone
+    100260: Elf_R_hair_bone
+    100262: Elf_R_hair_nub
+    100264: Elf_R_hand_bone
+    100266: Elf_R_hand_nub
+    100268: Elf_R_index1_bone
+    100270: Elf_R_index2_bone
+    100272: Elf_R_index3_bone
+    100274: Elf_R_index_nub
+    100276: Elf_R_knee_bone
+    100278: Elf_R_middle1_bone
+    100280: Elf_R_middle2_bone
+    100282: Elf_R_middle3_bone
+    100284: Elf_R_middle_nub
+    100286: Elf_R_pinky1_bone
+    100288: Elf_R_pinky2_bone
+    100290: Elf_R_pinky3_bone
+    100292: Elf_R_pinky_nub
+    100294: Elf_R_ring1_bone
+    100296: Elf_R_ring2_bone
+    100298: Elf_R_ring3_bone
+    100300: Elf_R_ring_nub
+    100302: Elf_R_shoulder_bone
+    100304: Elf_R_thigh_bone
+    100306: Elf_R_thumb1_bone
+    100308: Elf_R_thumb2_bone
+    100310: Elf_R_thumb3_bone
+    100312: Elf_R_thumb_nub
+    100314: Elf_R_toe_bone
+    100316: Elf_R_toe_nub
+    100318: Elf_R_wrist_bone
+    100320: Elf_spin1_bone
+    100322: Elf_spin2_bone
+    100324: Elf_spin3_bone
+    100326: hair
+    100328: hair2
+    100330: head
+    100332: IK Chain001
+    100334: IK Chain002
+    100336: IK Chain003
+    100338: IK Chain004
+    100340: IK Chain005
+    100342: IK Chain006
+    100344: Line001
+    100346: Line002
+    100348: neck
+    100350: neckJ
+    100352: Object002
+    100354: Object003
+    100356: Object004
+    100358: Object009
+    100360: Object010
+    100362: Object012
+    100364: Plane003
+    100366: Plane004
+    100368: ring
+    100370: shoe
+    100372: skirt
+    100374: wapon
+    100376: wapon_nub
+    400000: //RootNode
+    400002: belt
+    400004: belt J
+    400006: Body
+    400008: body
+    400010: Box002
+    400012: Box003
+    400014: Box005
+    400016: cape
+    400018: Circle003
+    400020: Circle004
+    400022: Circle005
+    400024: Circle006
+    400026: Circle013
+    400028: Circle018
+    400030: Circle019
+    400032: Circle020
+    400034: Circle021
+    400036: Circle022
+    400038: Circle023
+    400040: Circle024
+    400042: Circle025
+    400044: Circle026
+    400046: Circle027
+    400048: Circle028
+    400050: Circle029
+    400052: Circle030
+    400054: Circle031
+    400056: Circle032
+    400058: Circle033
+    400060: Circle034
+    400062: Circle035
+    400064: Circle036
+    400066: Circle037
+    400068: Circle038
+    400070: Circle039
+    400072: Circle040
+    400074: Circle041
+    400076: Circle042
+    400078: Circle043
+    400080: Circle044
+    400082: Circle045
+    400084: Circle046
+    400086: Circle047
+    400088: Circle048
+    400090: Circle049
+    400092: Circle050
+    400094: Circle051
+    400096: Circle052
+    400098: Circle053
+    400100: Circle054
+    400102: Circle055
+    400104: Circle056
+    400106: Circle057
+    400108: Circle058
+    400110: Circle059
+    400112: Circle060
+    400114: Circle061
+    400116: Circle062
+    400118: Circle063
+    400120: Circle064
+    400122: Circle065
+    400124: Circle066
+    400126: Circle067
+    400128: Circle068
+    400130: Circle069
+    400132: Circle070
+    400134: Circle071
+    400136: Circle072
+    400138: crown1
+    400140: crown2
+    400142: crown3
+    400144: Dummy001
+    400146: Dummy002
+    400148: ear
+    400150: Elf_hair1_bone
+    400152: Elf_hair2_bone
+    400154: Elf_hair3_bone
+    400156: Elf_hair_nub
+    400158: Elf_head_bone
+    400160: Elf_head_nub
+    400162: Elf_L_ankle_bone
+    400164: Elf_L_cape1_bone
+    400166: Elf_L_cape1_nub
+    400168: Elf_L_cape2_bone
+    400170: Elf_L_cape3_bone
+    400172: Elf_L_cape4_bone
+    400174: Elf_L_clav_bone
+    400176: Elf_L_forearm_bone
+    400178: Elf_L_hair_bone
+    400180: Elf_L_hair_nub
+    400182: Elf_L_hand_bone
+    400184: Elf_L_hand_nub
+    400186: Elf_L_index1_bone
+    400188: Elf_L_index2_bone
+    400190: Elf_L_index3_bone
+    400192: Elf_L_index_nub
+    400194: Elf_L_knee_bone
+    400196: Elf_L_middle1_bone
+    400198: Elf_L_middle2_bone
+    400200: Elf_L_middle3_bone
+    400202: Elf_L_middle_nub
+    400204: Elf_L_pinky1_bone
+    400206: Elf_L_pinky2_bone
+    400208: Elf_L_pinky3_bone
+    400210: Elf_L_pinky_nub
+    400212: Elf_L_ring1_bone
+    400214: Elf_L_ring2_bone
+    400216: Elf_L_ring3_bone
+    400218: Elf_L_ring_nub
+    400220: Elf_L_shoulder_bone
+    400222: Elf_L_thigh_bone
+    400224: Elf_L_thumb1_bone
+    400226: Elf_L_thumb2_bone
+    400228: Elf_L_thumb3_bone
+    400230: Elf_L_thumb_nub
+    400232: Elf_L_toe_bone
+    400234: Elf_L_toe_nub
+    400236: Elf_L_wrist_bone
+    400238: Elf_neck_bone
+    400240: Elf_pelvis_bone
+    400242: Elf_pelvis_nub
+    400244: Elf_R_ankle_bone
+    400246: Elf_R_cape1_bone
+    400248: Elf_R_cape2_bone
+    400250: Elf_R_cape3_bone
+    400252: Elf_R_cape4_bone
+    400254: Elf_R_cape_nub
+    400256: Elf_R_clav_bone
+    400258: Elf_R_forearm_bone
+    400260: Elf_R_hair_bone
+    400262: Elf_R_hair_nub
+    400264: Elf_R_hand_bone
+    400266: Elf_R_hand_nub
+    400268: Elf_R_index1_bone
+    400270: Elf_R_index2_bone
+    400272: Elf_R_index3_bone
+    400274: Elf_R_index_nub
+    400276: Elf_R_knee_bone
+    400278: Elf_R_middle1_bone
+    400280: Elf_R_middle2_bone
+    400282: Elf_R_middle3_bone
+    400284: Elf_R_middle_nub
+    400286: Elf_R_pinky1_bone
+    400288: Elf_R_pinky2_bone
+    400290: Elf_R_pinky3_bone
+    400292: Elf_R_pinky_nub
+    400294: Elf_R_ring1_bone
+    400296: Elf_R_ring2_bone
+    400298: Elf_R_ring3_bone
+    400300: Elf_R_ring_nub
+    400302: Elf_R_shoulder_bone
+    400304: Elf_R_thigh_bone
+    400306: Elf_R_thumb1_bone
+    400308: Elf_R_thumb2_bone
+    400310: Elf_R_thumb3_bone
+    400312: Elf_R_thumb_nub
+    400314: Elf_R_toe_bone
+    400316: Elf_R_toe_nub
+    400318: Elf_R_wrist_bone
+    400320: Elf_spin1_bone
+    400322: Elf_spin2_bone
+    400324: Elf_spin3_bone
+    400326: hair
+    400328: hair2
+    400330: head
+    400332: IK Chain001
+    400334: IK Chain002
+    400336: IK Chain003
+    400338: IK Chain004
+    400340: IK Chain005
+    400342: IK Chain006
+    400344: Line001
+    400346: Line002
+    400348: neck
+    400350: neckJ
+    400352: Object002
+    400354: Object003
+    400356: Object004
+    400358: Object009
+    400360: Object010
+    400362: Object012
+    400364: Plane003
+    400366: Plane004
+    400368: ring
+    400370: shoe
+    400372: skirt
+    400374: wapon
+    400376: wapon_nub
+    2100000: No Name
+    4300000: body
+    4300002: Object002
+    4300004: Object003
+    4300006: Object004
+    4300008: ring
+    4300010: belt
+    4300012: belt J
+    4300014: Box002
+    4300016: Box003
+    4300018: Plane003
+    4300020: Plane004
+    4300022: head
+    4300024: shoe
+    4300026: neck
+    4300028: Box005
+    4300030: Object009
+    4300032: Object010
+    4300034: Object012
+    4300036: skirt
+    4300038: hair
+    4300040: hair2
+    4300042: neckJ
+    4300044: ear
+    4300046: crown1
+    4300048: crown2
+    4300050: crown3
+    4300052: cape
+    7400000: T-pose
+    7400002: Idle
+    7400004: run
+    7400006: 'switch to biuld '
+    7400008: biuld Idle
+    7400010: biuld run
+    7400012: switch to attack
+    7400014: biulding
+    7400016: biulding loop
+    7400018: hit
+    7400020: dead
+    7400022: dodge
+    7400024: combo1 to Idle
+    7400026: combo2 to Idle
+    7400028: combo3 to Idle
+    7400030: combo4 to Idle
+    7400032: combo5 to Idle
+    9500000: //RootNode
+    13700000: belt
+    13700002: belt J
+    13700004: body
+    13700006: Box002
+    13700008: Box003
+    13700010: Box005
+    13700012: cape
+    13700014: crown1
+    13700016: crown2
+    13700018: crown3
+    13700020: ear
+    13700022: hair
+    13700024: hair2
+    13700026: head
+    13700028: neck
+    13700030: neckJ
+    13700032: Object002
+    13700034: Object003
+    13700036: Object004
+    13700038: Object009
+    13700040: Object010
+    13700042: Object012
+    13700044: Plane003
+    13700046: Plane004
+    13700048: ring
+    13700050: shoe
+    13700052: skirt
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: T-pose
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 0
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 3
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 1
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: run
+      takeName: Take 001
+      firstFrame: 61
+      lastFrame: 82
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: 'switch to biuld '
+      takeName: Take 001
+      firstFrame: 616
+      lastFrame: 686
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.01056338
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.7426298
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.9847336
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: biuld Idle
+      takeName: Take 001
+      firstFrame: 154
+      lastFrame: 214
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: biuld run
+      takeName: Take 001
+      firstFrame: 215
+      lastFrame: 236
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: switch to attack
+      takeName: Take 001
+      firstFrame: 237
+      lastFrame: 284
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.014469172
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.090142034
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.98513544
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: biulding
+      takeName: Take 001
+      firstFrame: 686
+      lastFrame: 738
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: biulding loop
+      takeName: Take 001
+      firstFrame: 703
+      lastFrame: 738
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: hit
+      takeName: Take 001
+      firstFrame: 285
+      lastFrame: 300
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.7458782
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 5
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: dead
+      takeName: Take 001
+      firstFrame: 301
+      lastFrame: 370
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.49697876
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: dodge
+      takeName: Take 001
+      firstFrame: 371
+      lastFrame: 397
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: combo1 to Idle
+      takeName: Take 001
+      firstFrame: 516
+      lastFrame: 545
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.09220982
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.2079138
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.695603
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
+        messageOptions: 0
+      - time: 0.9628086
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.4092788
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.58239657
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.23303165
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: combo2 to Idle
+      takeName: Take 001
+      firstFrame: 546
+      lastFrame: 564
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.11327341
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.1747401
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.2078535
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.2376491
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.39220908
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.6840472
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
+        messageOptions: 0
+      - time: 0.9227204
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: combo3 to Idle
+      takeName: Take 001
+      firstFrame: 565
+      lastFrame: 587
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.11409649
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.17422323
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.24206327
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.31362003
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.50062424
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.66677755
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
+        messageOptions: 0
+      - time: 0.9826061
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: combo4 to Idle
+      takeName: Take 001
+      firstFrame: 588
+      lastFrame: 615
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.03429829
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.060596492
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.07591887
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.19218455
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.33106288
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.49204105
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.6526081
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.6697045
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
+        messageOptions: 0
+      - time: 0.9561791
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: combo5 to Idle
+      takeName: Take 001
+      firstFrame: 466
+      lastFrame: 515
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.087043606
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.16812725
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.25330335
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
+      - time: 0.37127286
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.46524078
+        functionName: GoMovePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.72655725
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      - time: 0.9200863
+        functionName: comboCheck
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

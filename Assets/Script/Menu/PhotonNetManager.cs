@@ -1,11 +1,13 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class PhotonNetManager : Photon.PunBehaviour
 {
+    public bool singlePeople = false;
+    private ExitGames.Client.Photon.Hashtable ddd;
+
     [PunRPC]
     public void getFirestPlayer(GameManager.MyNowPlayer _player)
     {
@@ -33,7 +35,9 @@ public class PhotonNetManager : Photon.PunBehaviour
     #region Photon.PunBehaviour CallBacks
     public override void OnConnectedToPhoton()
     {
-        SignIn.SetActive(true);
+        PhotonNetwork.AuthValues = new AuthenticationValues(Guid.NewGuid().ToString());
+        Debug.Log("給我看看" + Guid.NewGuid());
+        //SignIn.SetActive(true);
     }
 
     //換房主
@@ -47,12 +51,12 @@ public class PhotonNetManager : Photon.PunBehaviour
     public override void OnConnectedToMaster()
     {
         Debug.Log("已連線");
-
         //match按鈕初始
         _matchTxt.text = "隨機配對";
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.Null)
         {
             _matchBtn.interactable = false;
+            rock.SetActive(true);
         }
         else
         {
@@ -93,26 +97,27 @@ public class PhotonNetManager : Photon.PunBehaviour
         }
 
         //////////////////////////////////////////////////////
-        /* if (PhotonNetwork.playerList.Length >= GoGameNumber)
-         {
-             Debug.Log("玩家數量到達");
-             _matchTxt.text = "遊戲倒數";
+        if (singlePeople)
+        {
+            Debug.Log("玩家數量到達");
+            _matchTxt.text = "遊戲倒數";
 
-             if (PhotonNetwork.isMasterClient)
-             {
-                 GetComponent<PhotonView>().RPC("getFirestPlayer", PhotonTargets.All, GameManager.instance.getMyFirst());
+            if (PhotonNetwork.isMasterClient)
+            {
+                GetComponent<PhotonView>().RPC("getFirestPlayer", PhotonTargets.All, GameManager.instance.getMyFirst());
 
-                 if (StartGametimer == null)
-                 {
-                     StartGametimer = PhotonNetwork.Instantiate("StartGametimer", Vector3.zero, Quaternion.identity, 0, null);
-                 }
-                 else
-                 {
-                     StartGametimer.GetComponent<PhotonView>().RPC("SetactiveRPC", PhotonTargets.All, true);
-                 }
-                 timer = StartCoroutine(ReciprocalTimer());
-             }
-         }*/
+                if (StartGametimer == null)
+                {
+                    StartGametimer = PhotonNetwork.Instantiate("StartGametimer", Vector3.zero, Quaternion.identity, 0, null);
+                }
+                else
+                {
+                    StartGametimer.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All);
+                }
+                //    PhotonNetwork.automaticallySyncScene = true;
+                timer = StartCoroutine(ReciprocalTimer());
+            }
+        }
         ///////////////////////////////////////////////////
     }
 
@@ -141,9 +146,10 @@ public class PhotonNetManager : Photon.PunBehaviour
                 }
                 else
                 {
-                    StartGametimer.GetComponent<PhotonView>().RPC("SetActiveRPC", PhotonTargets.All, true);
+                    StartGametimer.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All);
                 }
 
+                PhotonNetwork.automaticallySyncScene = true;
                 timer = StartCoroutine(ReciprocalTimer());
             }
         }
@@ -182,12 +188,46 @@ public class PhotonNetManager : Photon.PunBehaviour
     #endregion
 
     #region Public Method
+    [Header("按鈕變色")]
+    [SerializeField] Button P1;
+    [SerializeField] Button P2;
+    [SerializeField] GameObject rock;
+    public ColorBlock nowBtn = new ColorBlock();
+    public ColorBlock orBtn = new ColorBlock();
+    public void changeSelectColor(GameManager.MyNowPlayer _player)
+    {
+        rock.SetActive(false);
+        if (_player == GameManager.MyNowPlayer.player_1)
+        {
+            P1.colors = nowBtn;
+            P2.colors = orBtn;
+        }
+        else if (_player == GameManager.MyNowPlayer.player_2)
+        {
+            P1.colors = orBtn;
+            P2.colors = nowBtn;
+        }
+    }
+
     public void Match()
     {
         if (!PhotonNetwork.inRoom)
         {
-            PhotonNetwork.JoinRandomRoom();
+             PhotonNetwork.JoinRandomRoom();
+
             _matchBtn.interactable = false;
+            if (GameManager.instance.getMyFirst() == GameManager.MyNowPlayer.player_1)
+            {
+                P1.colors = nowBtn;
+                P2.colors = orBtn;
+            }
+            else
+            {
+                P1.colors = orBtn;
+                P2.colors = nowBtn;
+            }
+            P1.interactable = false;
+            P2.interactable = false;
         }
     }
 
@@ -197,6 +237,9 @@ public class PhotonNetManager : Photon.PunBehaviour
         {
             ReciprocalTimeEnd();
             PhotonNetwork.LeaveRoom();
+            
+            P1.interactable = true;
+            P2.interactable = true;
         }
     }
 
@@ -265,23 +308,27 @@ public class PhotonNetManager : Photon.PunBehaviour
         while (true)
         {
             yield return new WaitForEndOfFrame();
-            time -= Time.deltaTime;
+            time -= Time.fixedDeltaTime;
             StartGametimer.GetComponent<Text>().text = time.ToString("0");
 
             if (time <= 0)
             {
                 ReciprocalTimeEnd();
-                if (PhotonNetwork.playerList.Length >= GoGameNumber)
+                if (singlePeople)
                 {
-                    PhotonNetwork.LoadLevel(1);
+                    PhotonNetwork.LoadLevelAsync(1);
                 }
-
+                else if (PhotonNetwork.playerList.Length >= GoGameNumber)
+                {
+                   // PhotonNetwork.LoadLevel(1);
+                    PhotonNetwork.LoadLevelAsync(1);
+                }
                 yield break;
             }
         }
     }
 
-    void ReciprocalTimeEnd()//結束遊戲計時
+void ReciprocalTimeEnd()//結束遊戲計時
     {
         if (timer != null)
         {
@@ -292,7 +339,7 @@ public class PhotonNetManager : Photon.PunBehaviour
         if (StartGametimer != null)
         {
             StartGametimer.GetComponent<Text>().text = reciprocalTime.ToString("0");
-            StartGametimer.GetComponent<PhotonView>().RPC("SetActiveRPC", PhotonTargets.All, false);
+            StartGametimer.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
         }
     }
     #endregion

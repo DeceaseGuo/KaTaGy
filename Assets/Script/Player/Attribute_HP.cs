@@ -7,55 +7,114 @@ public class Attribute_HP : Photon.MonoBehaviour
 {
     private Player player;
     private GameObject displayHpBarPos;
-    [Header("左上螢幕角色UI")]
-    [SerializeField] Image leftTopHpBar;
-    [SerializeField] Image leftTopPowerBar;
+    [Header("左上螢幕血量UI")]
+    private Image leftTopHpBar;
     [Header("角色頭上UI")]
     public GameObject UI_HpObj;
     public Image UI_HpBar;
+    private Animator ani;
+    [Header("改變顏色")]
+    private float maxValue;
+    [SerializeField] Renderer myRender;  
+
+    private void OnEnable()
+    {
+        Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 7.5f, 0));
+        UI_HpObj.transform.position = screenPos;
+        GetComponent<PhotonTransformView>().enabled = true;
+        UI_HpBar.fillAmount = 1;
+        if (photonView.isMine)
+        {
+            if (leftTopHpBar == null)            
+                leftTopHpBar = GameObject.Find("hpBar_0022").GetComponent<Image>();
+
+            leftTopHpBar.fillAmount = 1;
+        }
+        UI_HpObj.SetActive(true);
+    }
 
     private void Start()
     {
         player = GetComponent<Player>();
         displayHpBarPos = GameObject.Find("Display_HpBarPos");
         UI_HpObj.transform.SetParent(displayHpBarPos.transform, false);
-        if (photonView.isMine)
-        {
-            leftTopHpBar = GameObject.Find("hpBar_0022").GetComponent<Image>();
-        }
+        ani = GetComponent<Animator>();
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         displayHpBar();
     }
 
+    #region 打中效果
+    void BeHitChangeColor()
+    {
+        if (maxValue == 0)
+        {
+            maxValue = 10;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+            myRender.material.EnableKeyword("_EMISSION");            
+            StartCoroutine(OriginalColor());
+        }
+        else
+        {
+            maxValue = 10;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+        }
+    }
+
+    IEnumerator OriginalColor()
+    {
+        while (maxValue > 0)
+        {
+            maxValue -= Time.deltaTime * 70;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+            if (maxValue <= 0)
+            {
+                maxValue = 0;
+                myRender.material.DisableKeyword("_EMISSION");                
+                yield break;
+            }
+            yield return null;
+        }
+    }
+    #endregion
+
     #region 顯示血條
     void displayHpBar()
     {
-        Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 7.5f, 0));
-        UI_HpObj.transform.position = screenPos;
+        if (UI_HpObj.activeInHierarchy)
+        {
+            Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 7.5f, 0));
+            UI_HpObj.transform.position = screenPos;
+        }
     }
     #endregion
 
     #region 受到傷害
     [PunRPC]
-    public void takeDamage(float _damage)
+    public void takeDamage(float _damage, Vector3 _dir, bool ifHit)
     {
         if (player.deadManager.checkDead)
             return;
 
         float tureDamage = CalculatorDamage(_damage);
-        if (photonView.isMine)
+
+        if (player.playerData.Hp_original > 0 && !ani.GetCurrentAnimatorStateInfo(0).IsName("dodoge"))
         {
-            if (player.playerData.Hp_original > 0)
+            player.playerData.Hp_original -= tureDamage;
+            BeHitChangeColor();
+            if (ifHit)
             {
-                player.playerData.Hp_original -= tureDamage;
+                ani.SetTrigger("Hit");
+                player.beHit(_dir);
             }
-            if (player.playerData.Hp_original <= 0)
-            {
-                GetComponent<PhotonView>().RPC("NowDeath", PhotonTargets.All);
-            }
+        }
+        if (player.playerData.Hp_original <= 0)
+        {
+            player.deadManager.ifDead(true);
+            StartCoroutine(player.Death());
+            UI_HpObj.SetActive(false);
         }
         openPopupObject(tureDamage);
     }
@@ -64,11 +123,9 @@ public class Attribute_HP : Photon.MonoBehaviour
     void openPopupObject(float _damage)
     {
         FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
-        if (!photonView.isMine)
-            return;
-        float _value = player.playerData.Hp_original / player.playerData.Hp_Max;
-        GetComponent<PhotonView>().RPC("show_HPBar", PhotonTargets.All, _value);
-        leftTopHpBar.fillAmount = _value;
+        UI_HpBar.fillAmount = player.playerData.Hp_original / player.playerData.Hp_Max;
+        if (photonView.isMine)
+            leftTopHpBar.fillAmount = player.playerData.Hp_original / player.playerData.Hp_Max;        
     }
 
     #region 計算傷害
@@ -77,23 +134,4 @@ public class Attribute_HP : Photon.MonoBehaviour
         return _damage;
     }
     #endregion
-
-    //同步血量
-    [PunRPC]
-    public void show_HPBar(float _value)
-    {
-        UI_HpBar.fillAmount = _value;       
-    }
-
-    //同步死亡
-    [PunRPC]
-    public void NowDeath()
-    {
-        StartCoroutine(Death());
-    }
-
-    IEnumerator Death()
-    {
-        yield return new WaitForSeconds(1.5f);
-    }
 }

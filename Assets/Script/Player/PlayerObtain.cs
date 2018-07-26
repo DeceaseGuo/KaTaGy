@@ -10,7 +10,6 @@ public class PlayerObtain : MonoBehaviour
     [Header("資源")]
     [SerializeField] int resource_Ore;
     [SerializeField] int resource_Money;
-    [SerializeField] int resource_Electricity;
 
     [Header("資源text")]
     [SerializeField] Text text_Ore;
@@ -83,8 +82,10 @@ public class PlayerObtain : MonoBehaviour
     #endregion
 
     #region 檢查電力夠不夠
-    public bool Check_ElectricityAmount(int _electricity)
+    public bool Check_ElectricityAmount(int resource_Electricity, int _electricity)
     {
+        if (resource_Electricity <= 0)
+            return false;
         if (resource_Electricity >= _electricity)
             return true;
         else

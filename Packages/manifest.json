@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "com.unity.shadergraph": "1.1.4-preview",
-    "com.unity.render-pipelines.lightweight": "1.1.5-preview",
-    "com.unity.probuilder": "3.0.6",
-    "com.unity.render-pipelines.high-definition": "1.1.5-preview",
-    "com.unity.render-pipelines.core": "1.1.5-preview"
+    "com.unity.render-pipelines.high-definition": "1.1.11-preview"
   }
 }

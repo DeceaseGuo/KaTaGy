@@ -71,7 +71,6 @@ public class CreatPoints : MonoBehaviour
     }
     #endregion
 
-
     public Transform GoComparing(float _range, Transform _soldierPos, Transform _firstPoint ,bool _obsDet)
     {
 
@@ -144,8 +143,8 @@ public class CreatPoints : MonoBehaviour
         if (alreadyFull.Contains(_node))
             alreadyFull.Remove(_node);      
     }
-
-    private void FixedUpdate()
+    
+    private void LateUpdate()
     {
         foreach (var item in atkPoints.Keys)
         {
@@ -169,11 +168,11 @@ public class CreatPoints : MonoBehaviour
         float angle = (width * 180) / (Mathf.PI * _range);
         int count = (int)(360 / angle);
         List<pointData> _tmpLlist = new List<pointData>();
-        Transform aaa = GameObject.Find("PointData").transform;
+       Transform aaa = GameObject.Find("PointData").transform;
         for (int i = 0; i < count; i++)
         {            
             Transform _tmpPpoint = new GameObject(i+"Point").transform;
-            _tmpPpoint.SetParent(aaa);
+            _tmpPpoint.SetParent(/*transform*/aaa);
             _tmpPpoint.position = Vector3.forward * (_range + extraRange);
             Quaternion q = Quaternion.AngleAxis(angle * i, Vector3.up);
             _tmpPpoint.position = q * _tmpPpoint.position + this.transform.position;
@@ -184,13 +183,12 @@ public class CreatPoints : MonoBehaviour
         atkPoints.Add(_range, _tmpLlist);
     }
 
-   // [SerializeField] LayerMask mask = 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8;
     bool CheckObstacle(Transform _pos ,bool _obsDet)
     {
         if (!_obsDet)
             return true;
 
-        bool walkable = (Physics.CheckBox(new Vector3(_pos.position.x, 0, _pos.position.z), new Vector3(.7f, 1f, .73f), Quaternion.identity, 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 ));
+        bool walkable = (Physics.CheckBox(new Vector3(_pos.position.x, 0, _pos.position.z), new Vector3(.7f, 1f, .73f), Quaternion.identity, 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11));
         if (!walkable)
         {
             bool walkableTwo = (Physics.CheckBox(new Vector3(_pos.position.x, 0, _pos.position.z), new Vector3(.7f, 1f, .7f), Quaternion.identity, 1 << 9));
@@ -200,7 +198,7 @@ public class CreatPoints : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmos()
+   /* private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         if (atkPoints.ContainsKey(2.7f))
@@ -231,5 +229,5 @@ public class CreatPoints : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 }

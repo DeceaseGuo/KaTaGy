@@ -58,20 +58,20 @@ MonoBehaviour:
     pool_amount: 18
     filePath: Prefabs/SoldierIcon/enemy_01
   - pool_Name: 1
-    pool_Prefab: {fileID: 1299396737225026, guid: 492eb2a95030c7846a75a95ad60008e6,
+    pool_Prefab: {fileID: 1299396737225026, guid: 90eed5d074b49af4eb81b5af8f738ef2,
       type: 2}
-    pool_amount: 1
-    filePath: Prefabs/Soldier/sword_mini/Mini
+    pool_amount: 10
+    filePath: Prefabs/Soldier/sword_mini/test22
   - pool_Name: 12
     pool_Prefab: {fileID: 1298045806864356, guid: 56bb140dbaaaeec439657a67dbd670e4,
       type: 2}
     pool_amount: 2
     filePath: Prefabs/Tower/Tower_Cannon/build_show_Cannon
   - pool_Name: 5
-    pool_Prefab: {fileID: 1317275583877884, guid: fa11024fc72b6554f87faa7c5f3769f4,
+    pool_Prefab: {fileID: 1317275583877884, guid: e27ac9ee7e42e774a9c2038efd89f722,
       type: 2}
-    pool_amount: 1
-    filePath: Prefabs/Tower/Tower_Cannon/Tower1_Cannon
+    pool_amount: 10
+    filePath: Prefabs/Tower/Tower_Cannon/Tower1_CannonTest
   - pool_Name: 9
     pool_Prefab: {fileID: 1180311297308650, guid: b9685648a1864e94c8570d0d05cca3e0,
       type: 2}
@@ -88,10 +88,10 @@ MonoBehaviour:
     pool_amount: 20
     filePath: PopupTextParent
   - pool_Name: 6
-    pool_Prefab: {fileID: 1831844485551636, guid: 07c6b6fcba37c634dbbe78076e1f9c7d,
+    pool_Prefab: {fileID: 1831844485551636, guid: 20d4b94a223910d45a499faff270d172,
       type: 2}
     pool_amount: 20
-    filePath: Prefabs/Tower/Tower_Wind/Tower2_Wind
+    filePath: Prefabs/Tower/Tower_Wind/Tower2_WindTest
   - pool_Name: 7
     pool_Prefab: {fileID: 1792735170444186, guid: 931977abf3e75c1429f90eb1516bb4de,
       type: 2}

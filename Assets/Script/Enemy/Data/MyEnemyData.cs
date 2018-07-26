@@ -32,13 +32,14 @@ public class MyEnemyData : MonoBehaviour
         public float def_base;
         public int DEF_Level;
         [Header("生產所需")]
+        public int population_need;
         public float soldier_CountDown;
         public GameManager.whichObject UI_Name;
         [Header("花費")]
         public int cost_Ore;
         public int cost_Money;
     }
-
+    [SerializeField]
     public Dictionary<GameManager.whichObject, Enemies> DataBase = new Dictionary<GameManager.whichObject, Enemies>();
     public List<Enemies> Soldiers;
 
@@ -51,6 +52,16 @@ public class MyEnemyData : MonoBehaviour
         addToDictionary();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown("z"))
+        {
+            Enemies aaa= getEnemyData(GameManager.whichObject.Soldier_1);
+            aaa.atk_Damage += 5;
+            changeData(GameManager.whichObject.Soldier_1, aaa);         
+        }
+    }
+
     void addToDictionary()
     {
         for (int i = 0; i < Soldiers.Count; i++)
@@ -59,14 +70,15 @@ public class MyEnemyData : MonoBehaviour
         }
     }
 
+    public void changeData(GameManager.whichObject _name, Enemies _data)
+    {
+        DataBase[_name] = _data;
+    }  
+
     public Enemies getEnemyData(GameManager.whichObject _name)
     {
-        if (!DataBase.ContainsKey(_name))
-        {
-            Debug.Log("沒有此士兵數據");
-            return new Enemies();
-        }
-
-        return DataBase[_name];
+        Enemies tmpData = new Enemies();
+        DataBase.TryGetValue(_name, out tmpData);
+        return tmpData;
     }
 }

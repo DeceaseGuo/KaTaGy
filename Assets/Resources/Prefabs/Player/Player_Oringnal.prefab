@@ -3347,7 +3347,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1681941832065458}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.088728, y: -0.10627556, z: 4.925913}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4110038056754314}
@@ -4183,9 +4183,6 @@ MonoBehaviour:
   extraRange: 2
   TestNext: []
   alreadyFull: []
-  mask:
-    serializedVersion: 2
-    m_Bits: 4026548480
 --- !u!114 &114283360011199930
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4210,6 +4207,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftTopHpBar: {fileID: 0}
   leftTopPowerBar: {fileID: 0}
+  UI_HpObj: {fileID: 0}
+  UI_HpBar: {fileID: 0}
 --- !u!114 &114366654007480252
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4231,7 +4230,6 @@ MonoBehaviour:
     m_Bits: 2048
   canClick: 1
   nextComboBool: 0
-  effectPos: {fileID: 4505033269989022}
   swordLight:
   - {fileID: 1047516405014152}
   - {fileID: 1705682303569538}
@@ -4324,14 +4322,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerData:
+    objectName: 
+    headImage: {fileID: 0}
     moveSpeed: 22
     rotSpeed: 0.25
     stoppingDst: 2
     GV: 20
+    Dodget_Delay: 0
+    Atk_Damage: 0
+    Atk_maxDamage: 0
+    ATK_Level: 0
+    def_maxDEF: 0
+    def_base: 0
+    DEF_Level: 0
     Hp_Max: 300
     Hp_original: 300
-    UI_HpObj: {fileID: 1973880361605962}
-    UI_HpBar: {fileID: 114036816940071710}
+    Ap_Max: 0
+    Ap_original: 0
+  originalData:
+    objectName: 
+    headImage: {fileID: 0}
+    moveSpeed: 0
+    rotSpeed: 0
+    stoppingDst: 0
+    GV: 0
+    Dodget_Delay: 0
+    Atk_Damage: 0
+    Atk_maxDamage: 0
+    ATK_Level: 0
+    def_maxDEF: 0
+    def_base: 0
+    DEF_Level: 0
+    Hp_Max: 0
+    Hp_original: 0
+    Ap_Max: 0
+    Ap_original: 0
+  deadManager: {fileID: 0}
+  nowDodge: 0
   nextTargetRot: {fileID: 4350442849945384}
   clickPointPos: {fileID: 1990818977533794}
   canClickToMove_Layer:
@@ -4340,6 +4367,7 @@ MonoBehaviour:
   currentDir_Layer:
     serializedVersion: 2
     m_Bits: 32768
+  Net: {fileID: 0}
 --- !u!124 &124406502873170368
 Behaviour:
   m_ObjectHideFlags: 1

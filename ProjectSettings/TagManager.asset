@@ -19,7 +19,7 @@ TagManager:
   - obstacle
   - CanClickMove
   - grid
-  - Enemy
+  - NotHere
   - Simulator
   - 
   - NoGrid
@@ -33,9 +33,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - CanBuildGrid
+  - Camera
+  - ownSelf
   - Soldier1
   - Soldier2
   - Player_1

@@ -1,29 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Photon.MonoBehaviour
 {
     public static GameManager instance;
-    private bool StopClick;
+    //
+    public bool TTTEEESSSTTT;
+    public Toggle toggle;
+    public void ToggleIsOn()
+    {
+        if (toggle.isOn)
+            TTTEEESSSTTT = true;
+        else
+            TTTEEESSSTTT = false;
+    }
+    //
+    private bool gameOver = false;
+    public bool GameOver { get { return gameOver; } set { gameOver = value; } }
+
 
     public enum whichObject
     {
-        None,
-        Soldier_1,
-        Soldier_2,
-        SoldierIcon_1,
-        SoldierIcon_2,
-        Tower1_Cannon,
-        Tower2_Wind,
+        None=0,
+        Soldier_1=1,
+        Soldier_2=2,
+        //SoldierIcon_1=3,
+        //SoldierIcon_2=4,
+        soldier_Test = 13,
 
-        TowerDetect_Wind,
+        Tower1_Cannon =5,
+        Tower2_Wind=6,
 
-        HintText,
-        Bullet_Normal,
-        Bullet_Wind,
-        popupText,
-        TowerDetect_Cannon,
+        TowerDetect_Wind=7,
+
+        HintText=8,
+        Bullet_Normal=9,
+        Bullet_Wind=10,
+        popupText=11,
+        TowerDetect_Cannon=12,
+        Tower_Electricity=14,
+        TowerDetect_Electricity=15
     }
 
     public enum NowTarget
@@ -31,6 +49,7 @@ public class GameManager : MonoBehaviour
         Null,
         Player,
         Soldier,
+        Electricity,
         Tower,
         Core,
         NoChange
@@ -49,15 +68,27 @@ public class GameManager : MonoBehaviour
         Queen
     }
     public meIs Meis;
-
+    public MyNowPlayer firstPlayer;
     public MyNowPlayer WhoMe = MyNowPlayer.Null;
     public MyNowPlayer getMyPlayer() { return WhoMe; }
     public MyNowPlayer getMyFirst() { return firstPlayer; }
 
+    #region Mask
     private LayerMask targetMask_Player1 = 1 << 29 | 1 << 31;
     private LayerMask targetMask_Player2 = 1 << 28 | 1 << 30;
     public LayerMask getPlayer1_Mask { get { return targetMask_Player1; } }
     public LayerMask getPlayer2_Mask { get { return targetMask_Player2; } }
+
+    public LayerMask correctMask;
+
+    public void changeNowMask()
+    {
+        if (WhoMe == MyNowPlayer.player_1)
+            correctMask = targetMask_Player1;
+        else if (WhoMe == MyNowPlayer.player_2)
+            correctMask = targetMask_Player2;
+    }
+    #endregion
     //投降選單
     private GameObject surrenderMessage;
 
@@ -65,25 +96,14 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null)
             instance = this;
+        else
+            Destroy(this);
         
        DontDestroyOnLoad(this.gameObject);
-      //  changeCurrentPlayer(GameManager.MyNowPlayer.player_1);
     }
 
     private void Update()
     {
-        if (BuildManager.instance != null && BuildManager.instance.nowSelect)
-        {
-            if (!StopClick)
-            {
-                if (Input.GetKeyDown(KeyCode.Tab))
-                {
-                    BuildManager.instance.BuildSwitch();
-                    StopClick = true;
-                }
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.F1))
         {
             if (StopMenu.instance == null)
@@ -100,11 +120,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void NowStop(bool _stop)
-    {
-        StopClick = _stop;
-    }
-
+    [SerializeField]
     public void changeCurrentPlayer(string _Player)
     {
         switch (_Player)
@@ -113,15 +129,14 @@ public class GameManager : MonoBehaviour
                 WhoMe = MyNowPlayer.player_1;
                 firstPlayer = MyNowPlayer.player_1;
                 Meis = meIs.Allen;
-                Debug.Log("p1");
+                PhotonNetManager.instance.changeSelectColor(firstPlayer);
                 break;
             case ("Player2"):
                 WhoMe = MyNowPlayer.player_2;
                 firstPlayer = MyNowPlayer.player_2;
                 Meis = meIs.Queen;
-                Debug.Log("p2");
+                PhotonNetManager.instance.changeSelectColor(firstPlayer);
                 break;
         }
     }
-    public MyNowPlayer firstPlayer;
 }

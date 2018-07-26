@@ -48,7 +48,7 @@ public class ObjectPooler : MonoBehaviour
                 if (pool.pool_Prefab.GetComponent<PhotonView>() != null)
                 {
                     obj = PhotonNetwork.Instantiate(pool.filePath, Vector3.zero, Quaternion.identity, 0);
-                    obj.GetComponent<PhotonView>().RPC("SetActiveRPC", PhotonTargets.All, false);
+                    obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
                     obj.GetComponent<PhotonView>().RPC("SetPoolparent", PhotonTargets.All);
                 }
                 else
@@ -81,8 +81,7 @@ public class ObjectPooler : MonoBehaviour
             GameObject newObjToSpawn = PoolAddNewObj(_name);
             Repool(_name, newObjToSpawn);
         }
-        //objectToSpawn.transform.position = _pos;
-        //objectToSpawn.GetComponent<PhotonView>().RPC("changePos", PhotonTargets.All, _pos);
+
         objectToSpawn.transform.rotation = _rot;
 
         if (objectToSpawn.GetComponent<PhotonView>() == null)
@@ -92,24 +91,21 @@ public class ObjectPooler : MonoBehaviour
         }
         else
         {
-            objectToSpawn.GetComponent<PhotonView>().RPC("changePos", PhotonTargets.All, _pos);
-            objectToSpawn.GetComponent<PhotonView>().RPC("SetActiveRPC", PhotonTargets.All, true);
+            objectToSpawn.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All, _pos);
         }
         return objectToSpawn;
     }
     #endregion
 
     #region 返回物件池
-    public void Repool(GameManager.whichObject _name ,GameObject _obj)
+    public void Repool(GameManager.whichObject _name, GameObject _obj)
     {
         PhotonView photon_Script = _obj.GetComponent<PhotonView>();
-
         if (photon_Script == null)
             _obj.SetActive(false);
         else
-            photon_Script.RPC("SetActiveRPC", PhotonTargets.All, false);
+            photon_Script.RPC("SetActiveF", PhotonTargets.All);
 
-        _obj.transform.SetParent(transform);
         poolDictionary[_name].Enqueue(_obj);
     }
     #endregion
@@ -118,8 +114,20 @@ public class ObjectPooler : MonoBehaviour
     GameObject PoolAddNewObj(GameManager.whichObject _name)
     {
         pool _pool = pools.Find(x => x.pool_Name == _name);
-        GameObject obj = PhotonNetwork.Instantiate(_pool.filePath, Vector3.zero, Quaternion.identity, 0);
-        obj.GetComponent<PhotonView>().RPC("SetActiveRPC", PhotonTargets.All, false);
+        GameObject obj = null;
+
+        if (_pool.pool_Prefab.GetComponent<PhotonView>() == null)
+        {
+            obj = Instantiate(_pool.pool_Prefab);
+            obj.SetActive(false);
+            obj.transform.SetParent(this.transform);
+        }
+        else
+        {
+            obj = PhotonNetwork.Instantiate(_pool.filePath, Vector3.zero, Quaternion.identity, 0);
+            obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
+            obj.GetComponent<PhotonView>().RPC("SetPoolparent", PhotonTargets.All);
+        }
 
         obj.transform.SetParent(transform);
         return obj;

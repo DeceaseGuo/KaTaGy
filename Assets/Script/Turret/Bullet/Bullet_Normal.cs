@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Bullet_Normal : Photon.MonoBehaviour
 {
+    [SerializeField] GameManager.whichObject DataName;
     private Transform target;
     private TurretData.TowerDataBase Data;
-    private float bulletSpeed;
+    bool hit;
 
     private void OnEnable()
     {
-       // if (!photonView.isMine)
-          //  this.enabled = false;
+        if (Data.objectName == null)
+            Data = TurretData.instance.getTowerData(DataName);
     }
 
     private void Update()
@@ -19,43 +20,45 @@ public class Bullet_Normal : Photon.MonoBehaviour
         if (target != null)
         {
             Vector3 dir = target.position - transform.position;
-            float distanceThisFrame = bulletSpeed * Time.deltaTime;
+            float distanceThisFrame = Data.bullet_Speed * Time.deltaTime;
 
-            if (dir.magnitude <= distanceThisFrame && photonView.isMine)
+
+            if (photonView.isMine && dir.magnitude <= distanceThisFrame && !hit)
             {
                 HitTarget();
                 return;
             }
 
+
             transform.Translate(dir.normalized * distanceThisFrame, Space.World);
             transform.LookAt(target);
         }
         else
-            returnBulletPool();
+        {
+            if (photonView.isMine)
+                GetComponent<PhotonView>().RPC("returnBulletPool", PhotonTargets.All);
+        }
     }
 
     #region 取得目標
-    public void getTarget(Transform _target, TurretData.TowerDataBase _turretData)
+    public void getTarget(Transform _target)
     {
-        //target = _target;
+        hit = false;
         int viewID = _target.GetComponent<PhotonView>().viewID;
-        Data = _turretData;
-        GetComponent<PhotonView>().RPC("TP_Data", PhotonTargets.All, viewID, Data.bullet_Speed);
-        //bulletSpeed = Data.bullet_Speed;
+        GetComponent<PhotonView>().RPC("TP_Data", PhotonTargets.All, viewID);
     }
     #endregion
 
     [PunRPC]
-    public void TP_Data(int _id, float _speed)
+    public void TP_Data(int _id)
     {
         PhotonView _Photon = PhotonView.Find(_id);
-
         target = _Photon.gameObject.transform;
-        bulletSpeed = _speed;
     }
 
     void HitTarget()
     {
+        hit = true;
         if (target != null)
             GiveDamage(target.GetComponent<isDead>().myAttributes);
     }
@@ -78,8 +81,8 @@ public class Bullet_Normal : Photon.MonoBehaviour
             default:
                 return;
         }
-        GetComponent<PhotonView>().RPC("returnBulletPool", PhotonTargets.All);
-        //returnBulletPool();
+        if (photonView.isMine)
+            GetComponent<PhotonView>().RPC("returnBulletPool", PhotonTargets.All);
     }
     //計算傷害
     float CalculatorDamage()
@@ -92,5 +95,7 @@ public class Bullet_Normal : Photon.MonoBehaviour
     {
         if (photonView.isMine)
             ObjectPooler.instance.Repool(Data.bullet_Name, this.gameObject);
+        else
+            GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
     }
 }

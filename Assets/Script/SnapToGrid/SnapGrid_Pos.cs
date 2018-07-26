@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SnapGrid_Pos : MonoBehaviour
 {
-    private Grid_Snap grid2;
+    [SerializeField] Grid_Snap grid2;
     private BuildManager buildManager;
     [Header("Restrictions")]
     public bool considerScale = true;
@@ -20,6 +20,9 @@ public class SnapGrid_Pos : MonoBehaviour
     private Vector3 offsetPos;
     [SerializeField] Transform testPos;
 
+    Vector3 mousePos;
+    [SerializeField]float tmpY;
+
     public Vector3 nodePos()
     {
         Vector3 nowNodePos = /*transform.parent.position + offsetPos*/testPos.position;
@@ -28,6 +31,7 @@ public class SnapGrid_Pos : MonoBehaviour
 
     private void Start()
     {
+        UpdateGridData();
         buildManager = BuildManager.instance;
     }
     private void Update()
@@ -35,7 +39,11 @@ public class SnapGrid_Pos : MonoBehaviour
         if (!buildManager.nowBuilding)
             return;
 
-        DetectPos();
+        if (mousePos != Input.mousePosition)
+        {
+            mousePos = Input.mousePosition;
+            DetectPos();
+        }
     }
 
     #region 歸零並改變此網格中心
@@ -59,10 +67,9 @@ public class SnapGrid_Pos : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 500, gridMask))
         {
-            grid2 = hit.transform.GetComponentInParent<Grid_Snap>();
-            UpdateGridData();
             Vector3 tmpPos = hit.transform.position;
-            transform.parent.position = SnapToGrid(tmpPos);
+            tmpPos.y += tmpY;
+            transform.parent.position = tmpPos;
         }
     }
     #endregion

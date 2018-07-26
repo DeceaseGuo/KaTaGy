@@ -60,7 +60,7 @@ MonoBehaviour:
   - pool_Name: 1
     pool_Prefab: {fileID: 1299396737225026, guid: 492eb2a95030c7846a75a95ad60008e6,
       type: 2}
-    pool_amount: 1
+    pool_amount: 10
     filePath: Prefabs/Soldier/sword_mini/Mini
   - pool_Name: 12
     pool_Prefab: {fileID: 1298045806864356, guid: 56bb140dbaaaeec439657a67dbd670e4,
@@ -70,7 +70,7 @@ MonoBehaviour:
   - pool_Name: 5
     pool_Prefab: {fileID: 1317275583877884, guid: fa11024fc72b6554f87faa7c5f3769f4,
       type: 2}
-    pool_amount: 1
+    pool_amount: 10
     filePath: Prefabs/Tower/Tower_Cannon/Tower1_Cannon
   - pool_Name: 9
     pool_Prefab: {fileID: 1180311297308650, guid: b9685648a1864e94c8570d0d05cca3e0,
@@ -107,3 +107,13 @@ MonoBehaviour:
       type: 2}
     pool_amount: 6
     filePath: Prefabs/SoldierIcon/enemy_02
+  - pool_Name: 15
+    pool_Prefab: {fileID: 1298045806864356, guid: 56bb140dbaaaeec439657a67dbd670e4,
+      type: 2}
+    pool_amount: 2
+    filePath: Prefabs/Tower/Tower_Cannon/build_show_Cannon
+  - pool_Name: 14
+    pool_Prefab: {fileID: 1410073726703040, guid: 35cbfd929a374da4c9849a84fdad9de8,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/Tower/Tower1_E

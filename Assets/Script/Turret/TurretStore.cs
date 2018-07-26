@@ -38,15 +38,8 @@ public class TurretStore : MonoBehaviour
         {
             if (playerObtain.Check_OreAmount(tmpTurret.cost_Ore) && playerObtain.Check_MoneyAmount(tmpTurret.cost_Money))
             {
-                if (playerObtain.Check_ElectricityAmount(tmpTurret.cost_Electricity))
-                {
-
-                    buildManager.SelectToBuild(tmpTurret, tmpTurret.detectObjPrefab);
-                }
-                else
-                {
-                    hintManager.CreatHint("電力不足");
-                }
+                buildManager.SelectToBuild(tmpTurret, tmpTurret.detectObjPrefab);
+                Debug.Log("SelectNowTurret" + tmpTurret.TurretName);
             }
             else
             {

@@ -43,11 +43,11 @@ public class Node : MonoBehaviour
     /// When agent enters the node area, get the next node
     /// </summary>
     public virtual void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("撞到了");
+    {        
         var agent = other.gameObject.GetComponent<EnemyControl>();
-        if (agent != null)
+        if (agent != null && agent.NowPoint == Num)
         {
+           // Debug.Log("撞到了");
             if (gameManager.getMyPlayer() == GameManager.MyNowPlayer.player_1)
             {
                 agent.touchPoint(Num + 1, true);

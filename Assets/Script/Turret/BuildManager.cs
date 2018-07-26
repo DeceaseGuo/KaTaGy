@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using AtkTower;
 
 public class BuildManager : MonoBehaviour
 {
@@ -9,7 +10,10 @@ public class BuildManager : MonoBehaviour
     private PlayerObtain playerObtain;
     private UIManager uiManager;
 
-    [SerializeField] List<Grid_Snap> grid_snap;
+    [SerializeField] Grid_Snap grid_snap;
+
+    public List<Electricity> electricityTurrets;
+    public List<Turret_Manager> Turrets;
 
     [Header("鷹架")]
     [SerializeField] GameObject build_Scaffolding;
@@ -28,8 +32,12 @@ public class BuildManager : MonoBehaviour
     private GameObject lastDetectObj;
     private GameObject TmpObj;
 
-    public bool nowBuilding = false;
-    public bool nowSelect = true;
+    public bool nowBuilding = false;  //是否在建造模式
+    public bool nowSelect = true;   //是否可以按下按鈕
+    private bool haveTower;
+    public bool HaveTower { get { return haveTower; } private set { haveTower = value; } }
+
+    TurretData turretData;
 
     private void Awake()
     {
@@ -47,34 +55,34 @@ public class BuildManager : MonoBehaviour
     {
         playerObtain = PlayerObtain.instance;
         uiManager = UIManager.instance;
+        builder = Creatplayer.instance.MyNowPlayer;
+        playerScript = Creatplayer.instance.Player_Script;
+        turretData = TurretData.instance;
+    }
+
+    [SerializeField] GameObject oobject;
+    private void Update()
+    {
+        if (Input.GetKeyDown("a"))
+        {
+            oobject.GetComponent<Electricity>().takeDamage(50);
+        }
+        if (Input.GetKeyDown("s"))
+        {
+            Turret_Manager tur_manager = oobject.GetComponent<Turret_Manager>();
+            tur_manager.takeDamage(50);
+            Debug.Log("tur_manager name : " + tur_manager.name);
+        }
     }
 
     #region 付款
     public bool payment(bool _paid)
     {
-        if (playerObtain.Check_OreAmount(turretToBuild.cost_Ore) && playerObtain.Check_MoneyAmount(turretToBuild.cost_Money))
+        if (_paid)
         {
-            if (playerObtain.Check_ElectricityAmount(turretToBuild.cost_Electricity))
-            {
-                if (_paid)
-                {
-                    playerObtain.consumeResource(turretToBuild.cost_Ore, turretToBuild.cost_Money);
-                }
-                return true;
-            }
-            else
-            {
-                HintManager.instance.CreatHint("電力不足");
-                closeTmpObj();
-                return false;
-            }
+            playerObtain.consumeResource(turretToBuild.cost_Ore, turretToBuild.cost_Money);
         }
-        else
-        {
-            HintManager.instance.CreatHint("資源不足");
-            closeTmpObj();
-            return false;
-        }
+        return true;
     }
     #endregion
 
@@ -83,6 +91,7 @@ public class BuildManager : MonoBehaviour
     {
         if (nowSelect)
         {
+            HaveTower = true;
             turretToBuild = turret;
             lastDetectObj = detectObjectPrefab;
             detectObjectPrefab = detect;
@@ -91,6 +100,11 @@ public class BuildManager : MonoBehaviour
             Vector3 tmpMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             detectObjectPrefab.transform.position = tmpMousePos;
             detectObjectPrefab.SetActive(true);
+
+            foreach (var item in electricityTurrets)
+            {
+                item.changeGridColor(turretToBuild.cost_Electricity);
+            }
         }
     }
     #endregion
@@ -115,23 +129,17 @@ public class BuildManager : MonoBehaviour
     {
         if (nowSelect)
         {
-            if (nowBuilding)
-            {                
+            if (nowBuilding)//關閉建築模式
+            {
                 nowBuilding = false;
                 uiManager.CloseTowerMenu();
-                for (int i = 0; i < grid_snap.Count; i++)
-                {
-                    grid_snap[i].closGrid();
-                }
+                grid_snap.closGrid();
                 cancelSelect();
                 playerScript.switchWeapon(false);
             }
             else
-            {                
-                for (int i = 0; i < grid_snap.Count; i++)
-                {
-                    grid_snap[i].openGrid();
-                }
+            {
+                grid_snap.openGrid();
                 uiManager.OpenTowerMenu();
                 nowBuilding = true;
                 playerScript.switchWeapon(true);
@@ -143,6 +151,11 @@ public class BuildManager : MonoBehaviour
     #region 取消目前的選擇
     public void cancelSelect()
     {
+        foreach (var item in electricityTurrets)
+        {
+            item.changeGridColor(0);
+        }
+
         closeTurretToBuild();
         closeNowDetectObj();
     }
@@ -188,17 +201,23 @@ public class BuildManager : MonoBehaviour
     #endregion
 
     #region 鷹架的開啟 和 關閉
+    PhotonView Scaff_Net;
     public void openScaffolding(Vector3 _pos)
     {
+        if (build_Scaffolding == null)
+            build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0);
+
         build_Scaffolding.transform.position = _pos;
-        build_CD_Obj.transform.position = _pos +new Vector3(0,7.5f,0);
         build_Scaffolding.SetActive(true);
+        build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.Others, _pos);
+        build_CD_Obj.transform.position = _pos + new Vector3(0, 7.5f, 0);
         build_CD_Obj.SetActive(true);
     }
 
     public void closeScaffolding()
     {
-        build_Scaffolding.SetActive(false);
+         build_Scaffolding.SetActive(false);
+        build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.Others);
         build_CD_Obj.SetActive(false);
     }
     #endregion
@@ -221,22 +240,10 @@ public class BuildManager : MonoBehaviour
     }
     #endregion
 
-    #region 檢查是否有選擇塔防
-    public bool CheckDetectTurret()
-    {
-        if (turretToBuild.TurretName == GameManager.whichObject.None)
-        {
-            Debug.Log("沒有選擇塔防");
-            return false;
-        }
-        else
-            return true;
-    }
-    #endregion
-
     #region 關閉選擇塔防
     public void closeTurretToBuild()
     {
+        HaveTower = false;
         turretToBuild = new TurretData.TowerDataBase();
     }
     #endregion
@@ -245,6 +252,127 @@ public class BuildManager : MonoBehaviour
     public TurretData.TowerDataBase GetTurretToBuild()
     {
         return turretToBuild;
+    }
+    #endregion
+
+    #region 扣電
+    public void consumeElectricity(List<Electricity> e, Turret_Manager tur_manager)
+    {
+        foreach (var item in e)
+        {
+            if (Vector3.Distance(tur_manager.transform.position, item.transform.position) <= item.tetst)
+            {
+                tur_manager.power = item;
+                item.firstE.connectTowers.Add(tur_manager);
+                int t = findCost_Electricity(tur_manager.DataName);
+                item.firstE.Use_Electricit(-t);
+                Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
+                return;
+            }
+            else
+            {
+                tur_manager.power = null;
+            }
+        }
+    }
+    #endregion
+
+    #region 退回電量
+    public void obtaniElectricity(Turret_Manager tur_manager)
+    {
+        int t = findCost_Electricity(tur_manager.DataName);
+        tur_manager.power.firstE.Use_Electricit(t);
+        Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
+    }
+    #endregion
+
+    #region 找物件消耗電力
+    public int findCost_Electricity(GameManager.whichObject _name)
+    {
+        return turretData.getTowerData(_name).cost_Electricity;
+    }
+    #endregion
+
+    #region 找firstE
+    public void FindfirstE(List<Electricity> electricities, Electricity _build)
+    {
+        if (electricities.Count < 1)
+        {
+            _build.firstE = _build;
+            Debug.Log(_build.name + "electricities.Count < 1");
+            return;
+        }
+        if (_build == _build.firstE)
+        {
+            Debug.Log(_build.name + "_build == _build.firstE");
+            return;
+        }
+
+        foreach (var item in electricities)
+        {
+            if (_build == item)
+            {
+                Debug.Log(_build.name + "_build == item");
+                continue;
+            }
+
+            if (Vector3.Distance(_build.transform.position, item.transform.position) <= _build.tetst * 2)
+            {
+                if (!_build.myTouch.Contains(item))
+                {
+                    _build.myTouch.Add(item);
+                    item.myTouch.Add(_build);
+                }
+
+                if (item.firstE == null)
+                {
+                    if (_build.firstE == null)
+                        _build.firstE = _build;
+                    Debug.Log(_build.name + "item.firstE == null");
+                    return;
+                }
+
+                #region 改變firstE
+                if (_build.firstE == null)
+                {
+                    _build.firstE = item.firstE;
+
+                    _build.firstE.connectElectricitys.Add(_build);
+                    _build.firstE.resource_Electricity += _build.resource_Electricity;
+
+                    Debug.Log(_build.name + "_build.firstE == null");
+                }
+                else if (item.firstE != _build.firstE)
+                {
+                    _build.firstE.resource_Electricity += item.firstE.resource_Electricity;
+                    _build.firstE.connectElectricitys.Add(item.firstE);
+
+                    foreach (var i in item.firstE.connectTowers)
+                        _build.firstE.connectTowers.Add(i);
+
+                    item.firstE.connectTowers.Clear();
+                    foreach (var i in item.firstE.connectElectricitys)
+                    {
+                        _build.firstE.connectElectricitys.Add(i);
+                        if (i != item)
+                            i.firstE = _build.firstE;
+                    }
+                    item.firstE.connectElectricitys.Clear();
+
+                    if (item != item.firstE)
+                        item.firstE.firstE = _build.firstE;
+
+                    item.firstE = _build.firstE;
+                    Debug.Log(_build.name + "item.firstE != _build.firstE");
+                }
+                #endregion
+            }
+        }
+
+        if (_build.firstE == null)
+        {
+            _build.firstE = _build;
+        }
     }
     #endregion
 }

@@ -8,13 +8,14 @@ namespace AtkTower
     public class Turret_Manager : Photon.MonoBehaviour
     {
         //數據
-        [SerializeField] GameManager.whichObject DataName;
+        public GameManager.whichObject DataName;
         protected TurretData.TowerDataBase turretData;
         protected TurretData.TowerDataBase originalTurretData;
         protected float nowCD = 0;
         [SerializeField]
         LayerMask currentMask;
-
+        public int GridNumber;
+        public Electricity power;
         //正確目標
         protected Transform target;
         [Header("位置")]
@@ -25,9 +26,12 @@ namespace AtkTower
         protected isDead deadManager;
 
         protected PhotonView Net;
+
+        private SceneObjManager sceneObjManager;
+        private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
+
         private void Start()
         {
-            deadManager = GetComponent<isDead>();
             Net = GetComponent<PhotonView>();
             formatData();
             if (photonView.isMine)
@@ -43,8 +47,11 @@ namespace AtkTower
 
         private void Update()
         {
-            if (deadManager.checkDead)  //死亡
+            if (deadManager.checkDead || power == null || power.resource_Electricity <= 0)  //死亡或沒電
+            {
+                Debug.Log("死亡或沒電中");
                 return;
+            }
 
             overHeat();
 
@@ -66,9 +73,22 @@ namespace AtkTower
         #region 恢復初始數據
         protected void formatData()
         {
+            if (deadManager == null)
+            {
+                deadManager = GetComponent<isDead>();
+                deadManager.ifDead(false);
+            }
+            else
+            {
+                deadManager.ifDead(false);
+                if (photonView.isMine)
+                    SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                else
+                    SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+            }
+
             originalTurretData = TurretData.instance.getTowerData(DataName);
             turretData = originalTurretData;
-            Net.RPC("show_HPBar", PhotonTargets.All, 1.0f);
             Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
         }
         #endregion
@@ -161,7 +181,7 @@ namespace AtkTower
         {
             if (target != null && !turretData.Fad_overHeat)
             {
-                if (nowCD <= 0)
+                if (nowCD <= 0 &&photonView.isMine)
                 {
                     Tower_shoot();
                     nowCD = turretData.Atk_Gap;
@@ -258,14 +278,16 @@ namespace AtkTower
                 return;
 
             float tureDamage = CalculatorDamage(_damage);
-            if (photonView.isMine)
+
+            if (turretData.UI_Hp > 0)
+                turretData.UI_Hp -= tureDamage;
+
+            if (turretData.UI_Hp <= 0)
             {
-                if (turretData.UI_Hp > 0)
-                    turretData.UI_Hp -= tureDamage;
-                
-                if (turretData.UI_Hp <= 0)
-                    Net.RPC("NowDeath", PhotonTargets.All);              
+                deadManager.ifDead(true);
+                StartCoroutine(Death());
             }
+
             openPopupObject(tureDamage);
         }
         #endregion
@@ -274,27 +296,9 @@ namespace AtkTower
         void openPopupObject(float _damage)
         {
             FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
-            if (!photonView.isMine)
-                return;
-            float _value = turretData.UI_Hp / turretData.UI_maxHp;
-            Net.RPC("show_HPBar", PhotonTargets.All, _value);
+            healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         }
         #endregion
-
-        //同步血量
-        [PunRPC]
-        public void show_HPBar(float _value)
-        {
-            healthBar.fillAmount = _value;
-        }
-
-        //同步死亡
-        [PunRPC]
-        public void NowDeath()
-        {
-            deadManager.ifDead(true);
-            StartCoroutine(Death());
-        }
 
         #region 計算傷害
         protected virtual float CalculatorDamage(float _damage)
@@ -315,11 +319,14 @@ namespace AtkTower
         #region 返回物件池
         protected void returnBulletPool()
         {
-            ObjectPooler.instance.Repool(DataName, this.gameObject);
+            if (photonView.isMine)
+                ObjectPooler.instance.Repool(DataName, this.gameObject);
+            else
+                Net.RPC("SetActiveF", PhotonTargets.All);
         }
         #endregion
 
-        public void OnDrawGizmosSelected()
+      /*  public void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, turretData.Atk_Range);
@@ -329,6 +336,6 @@ namespace AtkTower
             }
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, turretData.Atk_MinRange);
-        }
+        }*/
     }
 }

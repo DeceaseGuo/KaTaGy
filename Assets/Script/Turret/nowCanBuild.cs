@@ -11,48 +11,30 @@ public class nowCanBuild : MonoBehaviour
     public Color notBuildColor;
     [SerializeField] Transform centerPos;
     [SerializeField] LayerMask DetectMask;
-    [SerializeField] Vector3 DetectCube; 
+    [SerializeField] Vector3 DetectCube;
+    public Collider[] nott;
+    Vector3 pos;
 
-  /*  private void OnTriggerStay(Collider other)
+    private void Start()
     {
-        if (other.gameObject.layer == 8 || other.gameObject.tag == "Player")
-        {
-            ifBuild.ifCanBuild = false;
-            render.material.color = notBuildColor;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.layer == 8 || other.gameObject.tag == "Player")
-        {
-            ifBuild.ifCanBuild = false;
-            render.material.color = notBuildColor;
-        }
-        else
-        {
-            ifBuild.ifCanBuild = true;
-            render.material.color = origonalColor;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.layer == 8 || other.gameObject.tag == "Player")
-        {
-            render.material.color = origonalColor;
-        }
-        ifBuild.ifCanBuild = true;
-    }*/
-
-    private void LateUpdate()
-    {
+        pos = transform.position;
         DetectCanBuild();
     }
 
+    private void LateUpdate()
+    {
+        if (pos != transform.position)
+        {
+            pos = transform.position;
+
+            DetectCanBuild();
+        }
+    }
+
     void DetectCanBuild()
-    {        
-        bool walkableTwo = (Physics.CheckBox(centerPos.position, DetectCube, centerPos.rotation, DetectMask));
+    {
+        nott = Physics.OverlapBox(transform.position, DetectCube, transform.localRotation, DetectMask);
+        bool walkableTwo = (Physics.CheckBox(transform.position, DetectCube, transform.localRotation, DetectMask));
         if (!walkableTwo)
         {
             ifBuild.ifCanBuild = true;
@@ -67,10 +49,9 @@ public class nowCanBuild : MonoBehaviour
         }
     }
 
-   /* public GameObject lllll;
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmosSelected()
     {
-        lllll.transform.position = centerPos.position;
-        lllll.transform.rotation = centerPos.rotation;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(centerPos.position, DetectCube);
     }*/
 }

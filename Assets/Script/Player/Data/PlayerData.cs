@@ -22,6 +22,8 @@ public class PlayerData:MonoBehaviour
         public float rotSpeed;
         public float stoppingDst;
         public float GV;
+        public float Dodget_Delay;
+        public float ReBorn_CountDown;
         [Header("攻擊")]
         public float Atk_Damage;
         public float Atk_maxDamage;
@@ -35,6 +37,20 @@ public class PlayerData:MonoBehaviour
         public float Hp_original;
         public float Ap_Max;
         public float Ap_original;
+        public float add_APValue;
+        [Header("升級相關")]
+        public float Add_hp1;
+        public float Add_hp2;
+        public float Add_hp3;
+        public float Add_ap1;
+        public float Add_ap2;
+        public float Add_ap3;
+        public float Add_atk1;
+        public float Add_atk2;
+        public float Add_atk3;
+        public float Add_def1;
+        public float Add_def2;
+        public float Add_def3;
     }
 
     public PlayerDataBase Allen;

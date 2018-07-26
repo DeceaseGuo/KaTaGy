@@ -9,8 +9,6 @@ public class Mini_Soldier : EnemyControl
     {
         if (nowState == states.Atk)
         {
-            Debug.Log("可攻擊區域");
-            nav.avoidancePriority = 10;
             firstAtk = true;
 
             nav.enabled = false;
@@ -18,22 +16,26 @@ public class Mini_Soldier : EnemyControl
             //轉向目標
             rotToTarget();
 
-
             fieldOfView.resetChaseTime();
-            //ani.SetTrigger("Atk");
-            ani.SetBool("Stop", true);
-            canAtking = false;
-
+            Net.RPC("TP_stopAni", PhotonTargets.All, true);
+            canAtking = false;            
             Net.RPC("getAtkAnimator", PhotonTargets.All);
-            delayToAtk_time = StartCoroutine(delayTimeToAtk(enemyData.atk_delay));
-            yield return new WaitForSeconds(2.5f);
-            nav.avoidancePriority = 50;
+
+            delayTimeToAtk();
+            yield return new WaitForSeconds(1.5f);
             nowState = states.Wait_Move;
 
             OverAtkDis = false;
             shortPos = null;
-            stopWait_time = StartCoroutine(stopWait());
+            sotpWait_time = StartCoroutine(stopWait());
         }
+    }
+
+    [PunRPC]
+    public void getAtkAnimator()
+    {
+        if (!deadManager.checkDead)
+            ani.SetTrigger("Atk");
     }
     #endregion
 
@@ -53,20 +55,17 @@ public class Mini_Soldier : EnemyControl
     #region 攻擊是否打中
     protected override void TouchTarget()
     {
-        if (haveHit)
+        Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.5f, 2.8f, .3f), sword_1.rotation, fieldOfView.currentMask);
+        foreach (var target in enemies)
         {
-            Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.65f, 3f, .8f), sword_1.rotation, fieldOfView.currentMask);
-            foreach (var target in enemies)
+            if (!alreadytakeDamage.Contains(target.gameObject))
             {
-                if (!alreadytakeDamage.Contains(target.gameObject))
+                if (target.gameObject == fieldOfView.currentTarget.gameObject)
                 {
-                    if (target.gameObject == fieldOfView.currentTarget.gameObject)
-                    {
 
-                        giveCurrentDamage(fieldOfView.targetDeadScript);
-                        alreadytakeDamage.Add(target.gameObject);
+                    giveCurrentDamage(fieldOfView.targetDeadScript);
+                    alreadytakeDamage.Add(target.gameObject);
 
-                    }
                 }
             }
         }
@@ -76,7 +75,7 @@ public class Mini_Soldier : EnemyControl
     #region 給與正確目標傷害
     protected override void giveCurrentDamage(isDead _target)
     {
-        if (target == null || _target == null)
+        if (!photonView.isMine || target == null || _target == null)
             return;
 
         switch (DataName)
@@ -85,11 +84,11 @@ public class Mini_Soldier : EnemyControl
                 switch (_target.myAttributes)
                 {
                     case GameManager.NowTarget.Player:
-                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage);
+                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
                         //target.gameObject.SendMessage("GetDeBuff_Stun");
                         break;
                     case GameManager.NowTarget.Soldier:
-                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, GetComponent<PhotonView>().viewID, enemyData.atk_Damage);
+                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
                         break;
                     case GameManager.NowTarget.Tower:
                         target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
@@ -100,6 +99,17 @@ public class Mini_Soldier : EnemyControl
                         break;
                 }
                 break;
+        }
+    }
+    #endregion
+
+    #region 打擊感功能
+    protected override void Feedback()
+    {
+        if (nowState != states.Atk)
+        {
+            if (!deadManager.checkDead)
+                ani.SetTrigger("Hit");
         }
     }
     #endregion

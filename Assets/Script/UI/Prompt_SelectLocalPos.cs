@@ -56,11 +56,11 @@ public class Prompt_SelectLocalPos : MonoBehaviour
     [SerializeField] Sprite null_Image;
 
     [Header("面板類")]
-    [SerializeField] GameObject Menu_0_0; //頭像,名稱
-    [SerializeField] GameObject Menu_0_1; //需求
-    [SerializeField] GameObject Menu_0_2; //屬性條
-    [SerializeField] GameObject Menu_1_0; //文字框
-    [SerializeField] GameObject Menu_2; //Click顯示
+    [SerializeField] CanvasGroup Menu_0_0; //頭像,名稱
+    [SerializeField] CanvasGroup Menu_0_1; //需求
+    [SerializeField] CanvasGroup Menu_0_2; //屬性條
+    [SerializeField] CanvasGroup Menu_1_0; //文字框
+    [SerializeField] CanvasGroup Menu_2; //Click顯示
 
     private Prompt_SelectObj selectObj;
 
@@ -75,18 +75,18 @@ public class Prompt_SelectLocalPos : MonoBehaviour
         switch (_nowMenu)
         {
             case (allMenu.MoinB_atk):
-                Menu_0_0.SetActive(true);
-                Menu_0_1.SetActive(true);
-                Menu_0_2.SetActive(true);
+                Menu_0_0.alpha = 1;
+                Menu_0_1.alpha = 1;
+                Menu_0_2.alpha = 1;
                 return;
             case (allMenu.MoinB_build):
-                Menu_0_0.SetActive(true);
-                Menu_0_1.SetActive(true);
-                Menu_1_0.SetActive(true);
+                Menu_0_0.alpha = 1;
+                Menu_0_1.alpha = 1;
+                Menu_1_0.alpha = 1;
                 return;
             case (allMenu.Click_Obj):
-                Menu_0_0.SetActive(true);
-                Menu_2.SetActive(true);
+                Menu_0_0.alpha = 1;
+                Menu_2.alpha = 1;
                 return;
         }
     }
@@ -244,16 +244,11 @@ public class Prompt_SelectLocalPos : MonoBehaviour
     #region 關閉一切畫面
     public void ClearPrompt()
     {
-        /*if (selectObj != null)
-        {
-            selectObj.isSelect = false;
-            selectObj = null;
-        }*/
-        Menu_0_0.SetActive(false);
-        Menu_0_1.SetActive(false);
-        Menu_0_2.SetActive(false);
-        Menu_1_0.SetActive(false);
-        Menu_2.SetActive(false);
+        Menu_0_0.alpha = 0;
+        Menu_0_1.alpha = 0;
+        Menu_0_2.alpha = 0;
+        Menu_1_0.alpha = 0;
+        Menu_2.alpha = 0;
     }
     #endregion
 }

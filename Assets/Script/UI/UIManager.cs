@@ -1,18 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class UIManager : MonoBehaviour
 {
-    private Transform enemyBtnPos;
-    private Transform towerBtPos;
-    public List<Transform> tmpObj;
+    [SerializeField] ButtonManager_Solider soldierBtnPos;
+    [SerializeField] ButtonManager_Tower towerBtPos;
+    private CanvasGroup soldier_CG;
+    private CanvasGroup tower_CG;
+
     private bool isTowerMenu;
+    public bool IsTowerMenu { get { return isTowerMenu; } private set { isTowerMenu = value; } }
+    //倉庫區
+    [SerializeField] GameObject warehouseObj;
+    private bool isOpen = false;
+    private Tweener myTweener;
 
     private Prompt_SelectLocalPos prompt_localPos;
+    [SerializeField] Text populationText;
+    private ArraySoldier arraySoldier;
 
     #region 單例
     public static UIManager instance;
+
     private void Awake()
     {
         if (instance == null)
@@ -20,84 +32,123 @@ public class UIManager : MonoBehaviour
             instance = this;
         }
 
-        enemyBtnPos = GameObject.Find("Monster_BtnPos").transform;
-        towerBtPos = GameObject.Find("Tower_BtnPos").transform;
+        soldier_CG = soldierBtnPos.GetComponent<CanvasGroup>();
+        tower_CG = towerBtPos.GetComponent<CanvasGroup>();
         prompt_localPos = GameObject.Find("Prompt_SelectObj").GetComponent<Prompt_SelectLocalPos>();
+        arraySoldier = GetComponent<ArraySoldier>();
     }
     #endregion
 
     private void Start()
     {
-        produceButton();
-        getTowerList();
         CloseTowerMenu();
+        reSetTween();
     }
 
-    //確認目前玩家為誰
-    //生成對應按鈕 (怪物與塔防)
-
-    #region  生成按鈕區
-    void produceButton()
+    #region 初始化
+    //倉庫彈出
+    void reSetTween()
     {
-        RectTransform _enemyBtnObj = Instantiate(Resources.Load("Prefabs/UI/Monster_Btn", typeof(RectTransform))) as RectTransform;
-        RectTransform _towerBtnObj = Instantiate(Resources.Load("Prefabs/UI/Tower_Btn", typeof(RectTransform))) as RectTransform;
-
-        _enemyBtnObj.transform.SetParent(enemyBtnPos);
-        _towerBtnObj.transform.SetParent(towerBtPos);
-        resetPos(_enemyBtnObj);
-        resetPos(_towerBtnObj);
-    }
-    #endregion
-
-    #region 生成歸零
-    void resetPos(RectTransform _pos)
-    {
-        _pos.offsetMax = new Vector2(0, 0);
-        _pos.offsetMin = new Vector2(0, 0);
-        _pos.sizeDelta = new Vector2(0, 0);
-
-        _pos.localScale = new Vector3(1, 1, 1);
-    }
-    #endregion
-
-    #region 蓋塔區陣列
-    void getTowerList()
-    {
-        Transform tmp = towerBtPos.GetChild(0);
-        tmpObj.Add(tmp.GetChild(0));
-        tmpObj.Add(tmp.GetChild(1));
-        tmpObj.Add(tmp.GetChild(2));
-        tmpObj.Add(tmp.GetChild(3));
+        myTweener = warehouseObj.transform.DOLocalMoveX(739.5f, .2f).SetEase(Ease.OutBack);
+        myTweener.SetAutoKill(false);
+        myTweener.Pause();
     }
     #endregion
 
     #region 切換塔防與生怪畫面
     public void OpenTowerMenu()
     {
-        isTowerMenu = true;
+        IsTowerMenu = true;
         prompt_localPos.ClearPrompt();
-        towerBtPos.gameObject.SetActive(true);
-        enemyBtnPos.gameObject.SetActive(false);        
+
+        MenuOpen(tower_CG);
+        MenuClose(soldier_CG);
+
+        towerBtPos.switchTowerMenu(true);
+        soldierBtnPos.switchTowerMenu(false);
+
     }
 
     public void CloseTowerMenu()
     {
-        isTowerMenu = false;
+        IsTowerMenu = false;
         prompt_localPos.ClearPrompt();
-        foreach (var item in tmpObj)
-        {
-            if (item.name == "Tower_TopMenu")
-                item.gameObject.SetActive(true);
-            else
-                item.gameObject.SetActive(false);
-        }
-        towerBtPos.gameObject.SetActive(false);
-        enemyBtnPos.gameObject.SetActive(true);
+
+        MenuOpen(soldier_CG);
+        MenuClose(tower_CG);
+
+        soldierBtnPos.switchTowerMenu(true);
+        towerBtPos.switchTowerMenu(false);
     }
     #endregion
 
-    public bool getTowerMenu()
+    #region 開啟關閉canvasGroup
+    public void MenuOpen(CanvasGroup _CG)
     {
-        return isTowerMenu;
+        if (_CG != null)
+        {
+            _CG.alpha = 1;
+            _CG.blocksRaycasts = true;
+            _CG.interactable = true;
+        }
     }
+
+    public void MenuClose(CanvasGroup _CG)
+    {
+        if (_CG != null)
+        {
+            _CG.alpha = 0;
+            _CG.blocksRaycasts = false;
+            _CG.interactable = false;
+        }
+    }
+    #endregion
+
+    #region 開啟倉庫與交換區按鈕
+    private void click_Warehouse()
+    {
+        //快捷鍵
+        //if (Input.GetKeyDown(KeyCode.RightShift))
+    }
+
+    public void switch_Warehouse()
+    {
+        if (!isOpen)
+        {
+            isOpen = true;
+            myTweener.Play();
+            myTweener.PlayForward();
+            arraySoldier.MenuOpen();
+        }
+        else
+        {
+            isOpen = false;
+            myTweener.PlayBackwards();
+            Info_Exit();
+            arraySoldier.MenuClose();
+        }
+    }
+    #endregion
+
+    #region 顯示倉庫怪物資訊
+    public void Info_MouseIn(MyEnemyData.Enemies _data , int _population)
+    {
+        prompt_localPos.ClearPrompt();
+
+        prompt_localPos.setMoInBtMenu(_data.headImage, _data.firstAtk, _data.objectName);
+        prompt_localPos.setMoInBtMenu_Need(_data.cost_Ore, _data.cost_Money, 0, _data.soldier_CountDown);
+        prompt_localPos.setMoInBtMenu_Bar(_data.atk_Damage, _data.atk_delay, _data.def_base, _data.moveSpeed);
+
+        prompt_localPos.openMenu(Prompt_SelectLocalPos.allMenu.MoinB_atk);
+
+        if (populationText != null)
+            populationText.text = _population.ToString();
+    }
+
+    public void Info_Exit()
+    {
+        prompt_localPos.ClearPrompt();
+        populationText.text = 0.ToString();
+    }
+    #endregion
 }   

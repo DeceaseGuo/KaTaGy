@@ -11,6 +11,7 @@ public class PromptScreen : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private MyEnemyData.Enemies SoldierData;
     private TurretData.TowerDataBase TowerData;
 
+    [SerializeField] Image lockImage;
     private Button localBtn;
     private Prompt_SelectLocalPos prompt_localPos;
 
@@ -57,6 +58,13 @@ public class PromptScreen : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         prompt_localPos.openMenu(Prompt_SelectLocalPos.allMenu.MoinB_atk);
     }
     #endregion
+
+    public void UnLock()
+    {
+        if (lockImage != null)
+            DestroyImmediate(lockImage);
+        localBtn.interactable = true;
+    }
 
     #region 滑鼠離開範圍與點擊時
     public void OnPointerExit(PointerEventData eventData)
