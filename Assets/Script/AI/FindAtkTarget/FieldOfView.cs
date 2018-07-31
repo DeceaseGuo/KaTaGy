@@ -1,5 +1,6 @@
-﻿using MyCode.Timer;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using MyCode.Timer;
 using UnityEngine;
 
 public class FieldOfView : Photon.MonoBehaviour
@@ -11,8 +12,6 @@ public class FieldOfView : Photon.MonoBehaviour
     private float chaseTime = 0;
     [SerializeField] float waitTime;
     public float viewRadius;
-    [Range(0, 360)]
-    public float viewAngle;
 
     public LayerMask currentMask;
 
@@ -46,9 +45,10 @@ public class FieldOfView : Photon.MonoBehaviour
 
     public void StopDetectT()
     {
-        StopCoroutine(findVisible);
+        StopCoroutine(findVisible);        
     }
 
+    public List<GameObject> test;
     void SetCoroutine()
     {
         findVisible = Timer.Start(.6f, true, () =>
@@ -58,7 +58,16 @@ public class FieldOfView : Photon.MonoBehaviour
 
             if (!enemyControl.firstAtk && !enemyControl.ifAtkMoveStop && !ifFirstAtkTarget())
             {
-                Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, currentMask);
+                test = SceneObjManager.Instance.CalculationDis(gameObject, viewRadius, false, false);
+                for (int i = 0; i < test.Count; i++)
+                {
+                    isDead _attributes = test[i].GetComponent<isDead>();
+                    if (!_attributes.checkDead)
+                    {
+                        getCurrentTarget(_attributes);
+                    }
+                }
+            /*    Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, currentMask);
                 foreach (var soldier in targetsInViewRadius)
                 {
                     isDead _attributes = soldier.GetComponent<isDead>();
@@ -67,7 +76,7 @@ public class FieldOfView : Photon.MonoBehaviour
                     {
                         getCurrentTarget(_attributes);
                     }
-                }
+                }*/
             }
         });
 
@@ -270,14 +279,5 @@ public class FieldOfView : Photon.MonoBehaviour
             return true;
         else
             return false;
-    }
-
-    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
-    {
-        if (!angleIsGlobal)
-        {
-            angleInDegrees += transform.eulerAngles.y;
-        }
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class SceneObjManager : MonoBehaviour
 {
     #region 單例模式
-    private static SceneObjManager instance;
+    public static SceneObjManager instance;
     public static SceneObjManager Instance
     {
         get
@@ -31,17 +31,56 @@ public class SceneObjManager : MonoBehaviour
     //士兵
     public List<GameObject> mySoldierObjs = new List<GameObject>();
     public List<GameObject> enemySoldierObjs = new List<GameObject>();
+
     //玩家
-    private GameObject isMe_Player;
-    private GameObject enemy_Player;
-    //核心
-    private GameObject isMe_Core;
-    private GameObject enemy_Core;
+    public GameObject enemy_Player;
 
     private void Start()
     {
         if (Instance != this)
             Destroy(this);
+    }
+
+    //加入敵人核心
+    public void SetCore(GameObject _core)
+    {
+        enemySoldierObjs.Add(_core);
+    }
+    //加入敵人角色
+    public void SetPlayer(GameObject _player)
+    {
+        enemy_Player = _player;
+    }
+
+    public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
+    {
+        List<GameObject> tmpObj = new List<GameObject>();
+        float nowDis = 0;
+        for (int i = 0; i < enemySoldierObjs.Count; i++)
+        {
+            nowDis = Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position);
+            if (nowDis < _dis)
+                tmpObj.Add(enemySoldierObjs[i]);            
+        }
+
+        if (canAtkTower)
+        {
+            for (int i = 0; i < enemyTowerObjs.Count; i++)
+            {
+                nowDis = Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position);
+                if (nowDis < _dis)
+                    tmpObj.Add(enemyTowerObjs[i]);
+            }
+        }
+
+        if (canAtkPlay && enemy_Player != null)
+        {
+            nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
+            if (nowDis < _dis)
+                tmpObj.Add(enemy_Player);
+        }
+
+        return tmpObj;
     }
 
     #region 增加
@@ -106,8 +145,6 @@ public class SceneObjManager : MonoBehaviour
                 if (myTowerObjs.Contains(_obj))
                     myTowerObjs.Remove(_obj);
                 break;
-            case GameManager.NowTarget.Core:
-                break;
             default:
                 break;
         }
@@ -126,8 +163,6 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
                     enemyTowerObjs.Remove(_obj);
-                break;
-            case GameManager.NowTarget.Core:
                 break;
             default:
                 break;

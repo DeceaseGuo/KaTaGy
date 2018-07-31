@@ -49,7 +49,6 @@ public class ObjectPooler : MonoBehaviour
                 {
                     obj = PhotonNetwork.Instantiate(pool.filePath, Vector3.zero, Quaternion.identity, 0);
                     obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
-                    obj.GetComponent<PhotonView>().RPC("SetPoolparent", PhotonTargets.All);
                 }
                 else
                 {
@@ -126,7 +125,6 @@ public class ObjectPooler : MonoBehaviour
         {
             obj = PhotonNetwork.Instantiate(_pool.filePath, Vector3.zero, Quaternion.identity, 0);
             obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
-            obj.GetComponent<PhotonView>().RPC("SetPoolparent", PhotonTargets.All);
         }
 
         obj.transform.SetParent(transform);

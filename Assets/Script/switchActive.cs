@@ -45,17 +45,11 @@ public class switchActive : Photon.PunBehaviour
 
         if (transformView != null)
             transformView.enabled = false;
+
+        if (parentPool != null)
+            gameObject.transform.SetParent(parentPool);
     }
     #endregion
-
-    [PunRPC]
-    public void SetPoolparent()
-    {
-        if (parentPool != null)
-        {
-            this.gameObject.transform.SetParent(parentPool);
-        }
-    }
 
     [PunRPC]
     public void changeLayer(int n)

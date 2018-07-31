@@ -14,11 +14,11 @@ MonoBehaviour:
   AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
   VoiceAppID: 
   ChatAppID: 
-  HostType: 1
+  HostType: 2
   PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
-  ServerAddress: 120.113.97.72
+  ServerAddress: 192.168.1.121
   ServerPort: 5055
   VoiceServerPort: 5055
   JoinLobby: 0

@@ -38947,6 +38947,7 @@ MonoBehaviour:
   enemyTowerObjs: []
   mySoldierObjs: []
   enemySoldierObjs: []
+  enemy_Player: {fileID: 0}
 --- !u!1001 &1398975583
 Prefab:
   m_ObjectHideFlags: 0
