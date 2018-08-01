@@ -49,9 +49,9 @@ public class GameManager : Photon.MonoBehaviour
         Null,
         Player,
         Soldier,
-        Electricity,
         Tower,
         Core,
+        Electricity,
         NoChange
     }
 

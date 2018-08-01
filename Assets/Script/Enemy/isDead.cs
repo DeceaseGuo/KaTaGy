@@ -5,8 +5,10 @@ public class isDead : MonoBehaviour
 {
     public GameManager.NowTarget myAttributes;
 
-    public bool dead = false;
+    private bool dead = false;
     public bool checkDead { get { return dead; } }
+
+    public bool notFeedBack = false;
 
     private void OnEnable()
     {
