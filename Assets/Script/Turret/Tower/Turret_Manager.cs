@@ -24,15 +24,21 @@ namespace AtkTower
         [Header("UI部分")]
         public Image Fad_energyBar;
         protected isDead deadManager;
-
+        protected FloatingTextController floatingText;
         protected PhotonView Net;
 
         private SceneObjManager sceneObjManager;
         private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
 
+        private void Awake()
+        {
+            floatingText = FloatingTextController.instance;
+            Net = GetComponent<PhotonView>();
+            originalTurretData = TurretData.instance.getTowerData(DataName);
+        }
+
         private void Start()
         {
-            Net = GetComponent<PhotonView>();
             formatData();
             if (photonView.isMine)
             {
@@ -59,7 +65,9 @@ namespace AtkTower
                 return;
 
             if (target == null)
+            {
                 FindEnemy();
+            }
             else
             {
                 DetectTarget();
@@ -67,7 +75,9 @@ namespace AtkTower
             }
 
             if (nowCD > 0)
+            {
                 nowCD -= Time.deltaTime;
+            }
         }
 
         #region 恢復初始數據
@@ -82,13 +92,17 @@ namespace AtkTower
             {
                 deadManager.ifDead(false);
                 if (photonView.isMine)
+                {
                     SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                }
                 else
+                {
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+                }
             }
 
-            originalTurretData = TurretData.instance.getTowerData(DataName);
             turretData = originalTurretData;
+            healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
             Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
         }
         #endregion
@@ -218,7 +232,6 @@ namespace AtkTower
 
                 float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
                 Net.RPC("showHeatBar", PhotonTargets.All, _value);
-                
             }
         }
 
@@ -292,10 +305,11 @@ namespace AtkTower
         }
         #endregion
 
+
         #region 傷害顯示
         void openPopupObject(float _damage)
         {
-            FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+            floatingText.CreateFloatingText(_damage.ToString("0.0"), this.transform);
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         }
         #endregion

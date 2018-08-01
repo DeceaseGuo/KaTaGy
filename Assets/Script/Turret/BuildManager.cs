@@ -264,7 +264,7 @@ public class BuildManager : MonoBehaviour
     {
         foreach (var item in e)
         {
-            if (Vector3.Distance(tur_manager.transform.position, item.transform.position) <= item.tetst)
+            if (Vector3.Distance(tur_manager.transform.position, item.transform.position) <= item.range)
             {
                 tur_manager.power = item;
                 item.firstE.connectTowers.Add(tur_manager);
@@ -320,7 +320,7 @@ public class BuildManager : MonoBehaviour
                 continue;
             }
 
-            if (Vector3.Distance(_build.transform.position, item.transform.position) <= _build.tetst * 2)
+            if (Vector3.Distance(_build.transform.position, item.transform.position) <= _build.range * 2)
             {
                 if (!_build.myTouch.Contains(item))
                 {

@@ -116,7 +116,7 @@ public class Allen_Ani : PlayerAni
     {
         if (!photonView.isMine)
             return;
-        if (GameManager.instance.TTTEEESSSTTT)
+        if (GameManager.instance.open)
         {
 
             currentAtkDir = player.nowMouseDir();

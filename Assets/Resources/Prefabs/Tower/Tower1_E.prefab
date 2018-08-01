@@ -329,24 +329,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resource_Electricity: 30
-  origonalColor: {r: 0.33059016, g: 0.9056604, b: 0.17515129, a: 0}
-  notBuildColor: {r: 0.8584906, g: 0.14983091, b: 0.14983091, a: 0}
-  DataName: 14
+  range: 15
+  firstE: {fileID: 0}
   connectElectricitys: []
   connectTowers: []
   myTouch: []
-  firstE: {fileID: 0}
+  origonalColor: {r: 0.33059016, g: 0.9056604, b: 0.17515129, a: 0}
+  notBuildColor: {r: 0.8584906, g: 0.14983091, b: 0.14983091, a: 0}
+  DataName: 14
   GridMask:
     serializedVersion: 2
     m_Bits: 33555456
-  TowerGrid:
+  currentMask:
     serializedVersion: 2
-    m_Bits: 1073741824
+    m_Bits: 0
   Pos_rotation: {fileID: 4245784088697414}
   healthBar: {fileID: 114619767991907944}
-  origine_Electricity: 0
-  gridList: []
-  tetst: 15
 --- !u!114 &114208927042349302
 MonoBehaviour:
   m_ObjectHideFlags: 1

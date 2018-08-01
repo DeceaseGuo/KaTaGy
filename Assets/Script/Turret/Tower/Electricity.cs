@@ -7,20 +7,28 @@ using AtkTower;
 [RequireComponent(typeof(isDead))]
 public class Electricity : Photon.MonoBehaviour
 {
+    [Header("電力範圍")]
     public int resource_Electricity;
-    public Color origonalColor;
-    public Color notBuildColor;
-    //數據
-    [SerializeField] GameManager.whichObject DataName;
+    public float range;
+
+    [Header("連接")]
+    public Electricity firstE;
     public List<Electricity> connectElectricitys = new List<Electricity>();
     public List<Turret_Manager> connectTowers = new List<Turret_Manager>();
     public List<Electricity> myTouch = new List<Electricity>();
-    public Electricity firstE;
+
+    [Header("網格變色")]
+    [SerializeField] Color origonalColor;
+    [SerializeField] Color notBuildColor;
+
+    //數據
+    public GameManager.whichObject DataName;
     TurretData.TowerDataBase turretData;
     TurretData.TowerDataBase originalTurretData;
-    float nowCD = 0;
+
     [SerializeField] LayerMask GridMask;
-    [SerializeField] LayerMask TowerGrid;
+    [SerializeField] LayerMask currentMask;
+    int origine_Electricity;
 
     //正確目標
     protected Transform target;
@@ -40,9 +48,8 @@ public class Electricity : Photon.MonoBehaviour
 
     private void Awake()
     {
-        deadManager = GetComponent<isDead>();
         Net = GetComponent<PhotonView>();
-
+        originalTurretData = TurretData.instance.getTowerData(DataName);
         buildManager = BuildManager.instance;
         playerObtain = PlayerObtain.instance;
         origine_Electricity = resource_Electricity;
@@ -84,7 +91,21 @@ public class Electricity : Photon.MonoBehaviour
         }
     }
 
-    public int origine_Electricity;
+    #region 目前為玩家幾
+    public void checkCurrentPlay()
+    {
+        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 30);
+            currentMask = GameManager.instance.getPlayer1_Mask;
+        }
+        else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 31);
+            currentMask = GameManager.instance.getPlayer2_Mask;
+        }
+    }
+    #endregion
 
     #region 恢復初始數據
     protected void formatData()
@@ -98,20 +119,21 @@ public class Electricity : Photon.MonoBehaviour
         {
             deadManager.ifDead(false);
             if (photonView.isMine)
+            {
                 SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+            }
             else
+            {
                 SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+            }
         }
-
-        originalTurretData = TurretData.instance.getTowerData(DataName);
+       
         turretData = originalTurretData;
-        ////////////////鳳梨加的
         healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
-        //Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
-        ///////////////
-
         resource_Electricity = origine_Electricity;
         electricity = resource_Electricity;
+
+        myTouch.Clear();
     }
     #endregion
 
@@ -177,17 +199,16 @@ public class Electricity : Photon.MonoBehaviour
     }
     #endregion
 
+    #region 電力範圍
     [SerializeField] List<Collider> gridList;
     Transform gridparent = null;
-    Collider[] grids;
-    #region 電力範圍
     void ShowElectricitRange(bool _open)
     {
-        Collider[] ColliderGrids = Physics.OverlapSphere(transform.position, tetst, GridMask);
+        Collider[] ColliderGrids = Physics.OverlapSphere(transform.position, range, GridMask);
 
         foreach (var grid in ColliderGrids)
         {
-            if (Vector3.Distance(grid.transform.position, transform.position) <= tetst)
+            if (Vector3.Distance(grid.transform.position, transform.position) <= range)
             {
                 gridparent = grid.transform.parent;
                 if (_open)
@@ -217,11 +238,11 @@ public class Electricity : Photon.MonoBehaviour
                 continue;
             }
 
-            if (Vector3.Distance(manager.transform.position, _electricity.transform.position) <= tetst)
+            if (Vector3.Distance(manager.transform.position, _electricity.transform.position) <= range)
             {
                 Debug.Log(_electricity.name + "在電力範圍內");
 
-                grids = Physics.OverlapBox(manager.transform.position, new Vector3(5.5f, 2, 5.5f), manager.transform.localRotation, TowerGrid);
+                Collider[] grids = Physics.OverlapBox(manager.transform.position, new Vector3(5.5f, 2, 5.5f), manager.transform.localRotation, currentMask);
 
                 if (grids.Length >= manager.GridNumber)
                 {
@@ -262,7 +283,6 @@ public class Electricity : Photon.MonoBehaviour
     }
     #endregion
 
-    public float tetst;
     /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -301,12 +321,12 @@ public class Electricity : Photon.MonoBehaviour
         }
     }
     #endregion
-    List<Electricity> e = new List<Electricity>();
-    List<Turret_Manager> o = new List<Turret_Manager>();
+
+    #region 死亡做的事
     public void dead()
     {
-        e.Clear();
-
+        List<Electricity> e = new List<Electricity>();
+        List<Turret_Manager> o = new List<Turret_Manager>();
         foreach (var item in myTouch)
         {
             item.myTouch.Remove(this);
@@ -321,11 +341,12 @@ public class Electricity : Photon.MonoBehaviour
         }
 
         foreach (var item in firstE.connectTowers)
+        {
             o.Add(item);
+        }
 
         firstE.connectTowers.Clear();
-        myTouch.Clear();
-
+        
         foreach (var item in firstE.connectElectricitys)
         {
             item.firstE = null;
@@ -347,12 +368,6 @@ public class Electricity : Photon.MonoBehaviour
         {
             FindTower(o, item);
         }
-
-        /*foreach (var obj in o)
-        {
-            Debug.Log("開始重新扣電" + obj.name);
-            
-            buildManager.consumeElectricity(e ,obj);
-        }*/
     }
+    #endregion
 }

@@ -6,15 +6,25 @@ using UnityEngine.UI;
 public class GameManager : Photon.MonoBehaviour
 {
     public static GameManager instance;
-    //
-    public bool TTTEEESSSTTT;
-    public Toggle toggle;
-    public void ToggleIsOn()
+    //開啟
+    public bool open;
+    public Toggle OpenToggle;
+    public void IsOpenToggle()
     {
-        if (toggle.isOn)
-            TTTEEESSSTTT = true;
+        if (OpenToggle.isOn)
+            open = true;
         else
-            TTTEEESSSTTT = false;
+            open = false;
+    }
+    //
+    //單人
+    public Toggle singleToggle;
+    public void IsSingleToggle()
+    {
+        if (singleToggle.isOn)
+            PhotonNetManager.instance.singlePeople = true;
+        else
+            PhotonNetManager.instance.singlePeople = false;
     }
     //
     private bool gameOver = false;

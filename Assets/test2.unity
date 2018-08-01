@@ -44884,7 +44884,7 @@ MonoBehaviour:
   playerScript: {fileID: 0}
   nowBuilding: 0
   nowSelect: 1
-  oobject: {fileID: 0}
+  DestoryObj: {fileID: 0}
 --- !u!114 &1592002457
 MonoBehaviour:
   m_ObjectHideFlags: 0
