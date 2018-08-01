@@ -21,10 +21,19 @@ public class GameManager : Photon.MonoBehaviour
     public Toggle singleToggle;
     public void IsSingleToggle()
     {
+        PhotonNetManager manager = PhotonNetManager.instance;
         if (singleToggle.isOn)
-            PhotonNetManager.instance.singlePeople = true;
+        {
+            manager.singlePeople = true;
+            manager.MaxPlayersPerRoom = 1;
+            manager.GoGameNumber = 1;
+        }
         else
-            PhotonNetManager.instance.singlePeople = false;
+        {
+            manager.singlePeople = false;
+            manager.MaxPlayersPerRoom = 2;
+            manager.GoGameNumber = 2;
+        }
     }
     //
     private bool gameOver = false;

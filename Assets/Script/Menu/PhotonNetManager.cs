@@ -5,24 +5,29 @@ using System;
 
 public class PhotonNetManager : Photon.PunBehaviour
 {
-    public bool singlePeople = false;
+    
     private ExitGames.Client.Photon.Hashtable ddd;
 
     [PunRPC]
     public void getFirestPlayer(GameManager.MyNowPlayer _player)
     {
-        GameManager.instance.firstPlayer = _player;
+        gm.firstPlayer = _player;
     }
 
     #region Public Variables
     public static PhotonNetManager instance;
-    public PhotonLogLevel Loglevel = PhotonLogLevel.Informational;
-    public byte MaxPlayersPerRoom;//房間最大人數
-    public int GoGameNumber;//開始遊戲所需人數
-    public float reciprocalTime;//遊戲倒數時間
-    public GameObject HostI;
-    public GameObject matchBtn_obj;
-    public GameObject SignIn;
+    [SerializeField] PhotonLogLevel Loglevel = PhotonLogLevel.Informational;
+    [HideInInspector]
+    public bool singlePeople = false;
+    [HideInInspector]
+    public byte MaxPlayersPerRoom = 2;//房間最大人數
+    //[HideInInspector]
+    public int GoGameNumber = 2;//開始遊戲所需人數
+    [SerializeField] float reciprocalTime;//遊戲倒數時間
+    [SerializeField] GameObject HostI;
+    [SerializeField] GameObject matchBtn_obj;
+    [SerializeField] Button cancel_btn;
+    [SerializeField] GameObject SignIn;
     #endregion
 
     #region Private Varlables
@@ -30,6 +35,7 @@ public class PhotonNetManager : Photon.PunBehaviour
     Button _matchBtn;
     Text _matchTxt;
     GameObject StartGametimer;
+    GameManager gm;
     #endregion
 
     #region Photon.PunBehaviour CallBacks
@@ -51,9 +57,10 @@ public class PhotonNetManager : Photon.PunBehaviour
     public override void OnConnectedToMaster()
     {
         Debug.Log("已連線");
+        cancel_btn.interactable = true;
         //match按鈕初始
         _matchTxt.text = "隨機配對";
-        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.Null)
+        if (gm.getMyPlayer() == GameManager.MyNowPlayer.Null)
         {
             _matchBtn.interactable = false;
             rock.SetActive(true);
@@ -69,11 +76,6 @@ public class PhotonNetManager : Photon.PunBehaviour
         Debug.Log("隨機加入房間失敗");
 
         PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = MaxPlayersPerRoom }, null);
-    }
-
-    public override void OnCreatedRoom()
-    {
-        Debug.Log("創建房間");
     }
 
     public override void OnJoinedRoom()
@@ -102,21 +104,15 @@ public class PhotonNetManager : Photon.PunBehaviour
             Debug.Log("玩家數量到達");
             _matchTxt.text = "遊戲倒數";
 
-            if (PhotonNetwork.isMasterClient)
+            if (StartGametimer == null)
             {
-                GetComponent<PhotonView>().RPC("getFirestPlayer", PhotonTargets.All, GameManager.instance.getMyFirst());
-
-                if (StartGametimer == null)
-                {
-                    StartGametimer = PhotonNetwork.Instantiate("StartGametimer", Vector3.zero, Quaternion.identity, 0, null);
-                }
-                else
-                {
-                    StartGametimer.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All);
-                }
-                //    PhotonNetwork.automaticallySyncScene = true;
-                timer = StartCoroutine(ReciprocalTimer());
+                StartGametimer = PhotonNetwork.Instantiate("StartGametimer", Vector3.zero, Quaternion.identity, 0, null);
             }
+            else
+            {
+                StartGametimer.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All);
+            }
+            timer = StartCoroutine(ReciprocalTimer());
         }
         ///////////////////////////////////////////////////
     }
@@ -138,7 +134,7 @@ public class PhotonNetManager : Photon.PunBehaviour
 
             if (PhotonNetwork.isMasterClient)
             {
-                GetComponent<PhotonView>().RPC("getFirestPlayer", PhotonTargets.All, GameManager.instance.getMyFirst());
+                GetComponent<PhotonView>().RPC("getFirestPlayer", PhotonTargets.All, gm.getMyFirst());
 
                 if (StartGametimer == null)
                 {
@@ -211,12 +207,12 @@ public class PhotonNetManager : Photon.PunBehaviour
 
     public void Match()
     {
-        if (!PhotonNetwork.inRoom)
+        if (!PhotonNetwork.inRoom && PhotonNetwork.connected)
         {
              PhotonNetwork.JoinRandomRoom();
 
             _matchBtn.interactable = false;
-            if (GameManager.instance.getMyFirst() == GameManager.MyNowPlayer.player_1)
+            if (gm.getMyFirst() == GameManager.MyNowPlayer.player_1)
             {
                 P1.colors = nowBtn;
                 P2.colors = orBtn;
@@ -228,6 +224,10 @@ public class PhotonNetManager : Photon.PunBehaviour
             }
             P1.interactable = false;
             P2.interactable = false;
+        }
+        else
+        {
+            Debug.Log("我是基德，請稍等");
         }
     }
 
@@ -245,7 +245,7 @@ public class PhotonNetManager : Photon.PunBehaviour
 
     public void matchIn()
     {
-        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.Null)
+        if (gm.getMyPlayer() == GameManager.MyNowPlayer.Null)
         {
             _matchBtn.interactable = false;
         }
@@ -276,8 +276,8 @@ public class PhotonNetManager : Photon.PunBehaviour
 
     private void Start()
     {
-
         Connect();
+        gm = GameManager.instance;
     }
 
     void Connect()
@@ -313,6 +313,7 @@ public class PhotonNetManager : Photon.PunBehaviour
 
             if (time <= 0)
             {
+                cancel_btn.interactable = false;
                 ReciprocalTimeEnd();
                 if (singlePeople)
                 {
@@ -352,8 +353,8 @@ void ReciprocalTimeEnd()//結束遊戲計時
         {
             PhotonNetwork.LoadLevel(0);
         }
-        Destroy(GameManager.instance.gameObject);
-        Destroy(PhotonNetManager.instance.gameObject);
+        Destroy(gm.gameObject);
+        Destroy(this.gameObject);
     }
     #endregion
 }

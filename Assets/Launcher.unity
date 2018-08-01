@@ -3344,7 +3344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -6839,7 +6839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.084905684, g: 0.013216452, b: 0.013216452, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -7316,13 +7316,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb4e7095ddd6a484786b793bd0e36663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  singlePeople: 0
   Loglevel: 0
+  singlePeople: 0
   MaxPlayersPerRoom: 2
   GoGameNumber: 2
   reciprocalTime: 1.3
   HostI: {fileID: 1144556543}
   matchBtn_obj: {fileID: 1630352568}
+  cancel_btn: {fileID: 1287975200}
   SignIn: {fileID: 1752500824}
   P1: {fileID: 1993853013}
   P2: {fileID: 52165566}

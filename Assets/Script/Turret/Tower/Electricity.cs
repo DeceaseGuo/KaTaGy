@@ -68,7 +68,7 @@ public class Electricity : Photon.MonoBehaviour
     }
 
     int electricity;
-    int _mytouch;
+    int _mytouch = -1;
     private void FixedUpdate()
     {
         if (myTouch.Count > 0 && myTouch.Count > _mytouch)
@@ -121,18 +121,24 @@ public class Electricity : Photon.MonoBehaviour
             if (photonView.isMine)
             {
                 SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                Debug.Log("AddMyList");
             }
             else
             {
                 SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+                Debug.Log("AddEnemyList");
             }
         }
-       
+
         turretData = originalTurretData;
         healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         resource_Electricity = origine_Electricity;
         electricity = resource_Electricity;
+        _mytouch = -1;
 
+        firstE = null;
+        connectElectricitys.Clear();
+        connectTowers.Clear();
         myTouch.Clear();
     }
     #endregion
@@ -229,7 +235,7 @@ public class Electricity : Photon.MonoBehaviour
     #endregion
 
     #region 找塔防
-    public void FindTower(List<Turret_Manager> TurretList, Electricity _electricity)
+    void FindTower(List<Turret_Manager> TurretList, Electricity _electricity)
     {
         foreach (var manager in TurretList)
         {
@@ -355,8 +361,6 @@ public class Electricity : Photon.MonoBehaviour
         }
         firstE.connectElectricitys.Clear();
 
-        firstE = null;
-        
         foreach (var item in e)
         {
             Debug.Log("開始重新找FindfirstE" + item.name);

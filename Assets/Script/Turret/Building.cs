@@ -215,8 +215,6 @@ public class Building : MonoBehaviour
             buildManager.FindfirstE(buildManager.electricityTurrets, e);
             buildManager.electricityTurrets.Add(e);
         }
-
-        obj.GetComponent<PhotonView>().RPC("AddInList", PhotonTargets.Others);
         buildManager.closeTurretToBuild();
     }
     #endregion
