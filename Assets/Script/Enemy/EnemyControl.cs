@@ -7,41 +7,59 @@ using UnityEngine.AI;
 using DG.Tweening;
 
 [RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(FieldOfView))]
 [RequireComponent(typeof(isDead))]
 public class EnemyControl : Photon.MonoBehaviour
 {
+    #region 取得單例
     private SceneObjManager sceneObjManager;
     private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
 
+    private MatchTimer matchTime;
+    private MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+    #endregion
     //數據
     public GameManager.whichObject DataName;
     public MyEnemyData.Enemies enemyData;
     protected MyEnemyData.Enemies originalData;
-    protected GameObject displayHpBarPos;
     [HideInInspector]
-    public isDead deadManager;
-    protected FieldOfView fieldOfView;    
+    public isDead deadManager;  
 
     //尋找目標
+    [SerializeField] protected GameManager.NowTarget firstPriority;
+    protected GameManager.NowTarget nowTarget = GameManager.NowTarget.Null;
+
+    [Tooltip("偵測半徑")]
+    [SerializeField] protected float viewRadius;
+    [Tooltip("追逐時間")]
+    [SerializeField] protected float waitTime;
+    //目前剩餘時間
+    private float chaseTime = 0;
+    //能攻擊對象layer
+    public LayerMask currentMask;
+    //正確目標
+    protected GameObject currentTarget;
+    //正確目標是否死亡腳本
+    protected isDead targetDeadScript;
+
+    private IEnumerator findVisible;
+    public List<GameObject> myTarget;
+    //尋路
     protected NavMeshAgent nav;
     protected NavMeshObstacle stopNav;
     protected RandomNodeManager randomNodeManager;
-
-    //尋路
     public Node[] agentPoints;
-    protected Transform targetPoint;
-    protected int nowPoint;
+  //  protected Transform targetPoint;
     private int Find_PathPoint;
+    protected int nowPoint;
     public int NowPoint { get { return nowPoint; } }
     protected bool nextPos;
-    //攻擊目標
-    public Transform target;
+    //取得傷害
+    protected bool firstAtk;
+    protected bool ifAtkMoveStop;
 
     //血量
     private float maxValue;
     [SerializeField] Renderer myRender;
-    [SerializeField] float height_Hpbar; //血條高度
     [SerializeField] CanvasGroup UI_HpObj;
     [SerializeField] Image UI_HpBar;
 
@@ -66,27 +84,50 @@ public class EnemyControl : Photon.MonoBehaviour
     public Transform sword_1;
     protected Vector3 atkDir;
 
-    private void Awake()
+    //正確敵人位置腳本
+    protected CreatPoints points;
+    //正確敵人位置
+    public Transform correctPos;
+
+    public PhotonView Net;
+    private void OnEnable()
     {
-        displayHpBarPos = GameObject.Find("Display_HpBarPos");
-        UI_HpObj.transform.SetParent(displayHpBarPos.transform, false);
+        myRender.material.SetFloat("Vector1_D655974D", 0);
+        if (nav == null)
+            nav = GetComponent<NavMeshAgent>();
+
+        formatData();
+
+        if (Net != null)
+        {
+            if (ani.GetBool("Stop"))
+                Net.RPC("TP_stopAni", PhotonTargets.All, false);
+            if (photonView.isMine)
+            {
+                StartDetectT();
+                stopNav.enabled = false;
+                nav.enabled = true;
+                nowState = states.Move;
+                selectRoad();
+                getNextPoint();
+            }
+        }
     }
 
     private void Start()
     {
-        randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();
-        fieldOfView = GetComponent<FieldOfView>();        
+        randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();    
         Net = GetComponent<PhotonView>();
         ani = GetComponent<Animator>();
         if (photonView.isMine)
-        {            
+        {
             CreatPoints Cpoint = GetComponent<CreatPoints>();
             Cpoint.enabled = false;
             checkCurrentPlay();
+            SetCoroutine();
         }
         else
-        {            
-            fieldOfView.enabled = false;
+        {
             nav.enabled = false;
             return;
         }
@@ -98,45 +139,21 @@ public class EnemyControl : Photon.MonoBehaviour
         nowState = states.Move;
     }
 
-    public PhotonView Net;
-    private void OnEnable()
+    private void Update()
     {
-        myRender.material.SetFloat("Vector1_D655974D", 0);
-        if (nav == null)      
-            nav = GetComponent<NavMeshAgent>();
-
-        formatData();
-
-        if (Net != null)
-        {
-            if (ani.GetBool("Stop"))
-                Net.RPC("TP_stopAni", PhotonTargets.All, false);
-            if (photonView.isMine)
-            {
-                fieldOfView.StartDetectT();
-                stopNav.enabled = false;
-                nav.enabled = true;
-                nowState = states.Move;
-                selectRoad();
-                getNextPoint();
-            }
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        displayHpBar();
-
         if (!photonView.isMine)
             return;
 
         if (!deadManager.checkDead)
         {
-            if (nowState != states.Atk && nowState != states.Wait_Move)
+            if (nowState != states.Atk && nowState != states.Wait_Move && nowState != states.Wait_TargetDie)
                 DetectState();
 
-            if (haveHit && fieldOfView.targetDeadScript != null && !fieldOfView.targetDeadScript.checkDead)
+            if (haveHit && targetDeadScript != null && !targetDeadScript.checkDead)
                 TouchTarget();
+
+            if ((nowState == states.Wait_TargetDie && nowTarget == GameManager.NowTarget.Null) || currentTarget != null)
+                delayCancelTarget();
         }
     }
 
@@ -171,14 +188,163 @@ public class EnemyControl : Photon.MonoBehaviour
     }
     #endregion
 
-    #region 血條跟隨怪物
-    public void displayHpBar()
+    #region 尋找正確敵人(協成設定)
+    //開始尋找目標
+    public void StartDetectT()
     {
-      //  if (UI_HpObj.alpha == 1)
-       // {
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, height_Hpbar, 0));
-            UI_HpObj.transform.position = screenPos;
-       // }
+        if (photonView.isMine)
+        {
+            StopDetectT();
+            StartCoroutine(findVisible);
+        }
+    }
+    //停止偵測目標
+    public void StopDetectT()
+    {
+        StopCoroutine(findVisible);
+    }
+
+    void SetCoroutine()
+    {
+        findVisible = Timer.Start(.65f, true, () =>
+        {
+            if (deadManager.checkDead)
+                StopCoroutine(findVisible);
+
+            if (!firstAtk && !ifAtkMoveStop && !ifFirstAtkTarget())
+            {
+                SetFindT();
+                for (int i = 0; i < myTarget.Count; i++)
+                {
+                    isDead _attributes = myTarget[i].GetComponent<isDead>();
+                    if (!_attributes.checkDead)
+                    {
+                        getCurrentTarget(_attributes);
+                    }
+                }
+            }
+        });
+
+        StartDetectT();
+    }
+    //給其他小兵更改
+    protected virtual void SetFindT()
+    {
+        myTarget = SceneManager.CalculationDis(gameObject, viewRadius, false, false);
+    }
+    #endregion
+
+    #region 偵測攻擊優先順序
+    void getCurrentTarget(isDead _inform)
+    {
+        if (nowTarget != GameManager.NowTarget.NoChange)
+        {
+            if (currentTarget != null)
+            {
+                if (_inform.myAttributes == GameManager.NowTarget.Core)
+                {
+                    //未完成
+                    // currentTarget = _pos;
+                    nowTarget = GameManager.NowTarget.NoChange;
+                    //chaseTime = 9999;
+                    return;
+                }
+                else if (nowTarget != firstPriority && _inform.myAttributes == firstPriority)
+                {
+                    CreatPoints tmpPoint = _inform.GetComponent<CreatPoints>();
+                    if (!tmpPoint.CheckFull(enemyData.atk_Range))
+                    {
+                        nowTarget = firstPriority;
+                        goAtkPos(tmpPoint, _inform);
+                    }
+
+                    return;
+                }
+                return;
+            }
+            else
+            {
+                CreatPoints tmpPoint = _inform.GetComponent<CreatPoints>();
+
+                if (_inform.myAttributes == GameManager.NowTarget.Core)
+                {
+                    //未完成
+                    nowTarget = GameManager.NowTarget.NoChange;
+                }
+                else if (_inform.myAttributes == firstPriority)
+                {
+                    if (!tmpPoint.CheckFull(enemyData.atk_Range))
+                    {
+                        nowTarget = firstPriority;
+                        goAtkPos(tmpPoint, _inform);
+                    }
+                }
+                else if (_inform.myAttributes == GameManager.NowTarget.Soldier)
+                {
+                    if (!tmpPoint.CheckFull(enemyData.atk_Range))
+                    {
+                        nowTarget = GameManager.NowTarget.Soldier;
+                        goAtkPos(tmpPoint, _inform);
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region 判斷並前往攻擊點
+    public void goAtkPos(CreatPoints _tmpPoint, isDead _isdaed)
+    {
+        if (deadManager.checkDead)
+            return;
+
+        points = _tmpPoint;
+        targetDeadScript = _isdaed;
+        currentTarget = _isdaed.gameObject;
+        if (nowTarget == GameManager.NowTarget.Null)
+            nowTarget = _isdaed.myAttributes;
+
+        Transform tmpPos = points.getPoint(enemyData.atk_Range, this.transform, enemyData.width, true);
+        if (tmpPos == null)
+        {
+            cancelSelectTarget(true);
+            return;
+        }
+        correctPos = tmpPos;
+        points.TestNext.Add(correctPos);
+        resetChaseTime();
+        nowState = states.AtkMove;
+    }
+    #endregion
+
+    #region 前往攻擊點
+    public void goWaitAtkPos(float _dis)
+    {
+        if (deadManager.checkDead)
+            return;
+
+        if (points.CheckFull(_dis))
+        {
+            cancelSelectTarget(false);
+            return;
+        }
+
+        Transform tmpPos = points.getPoint(enemyData.atk_Range, this.transform, enemyData.width, true);
+        if (tmpPos == null && chaseTime > 0)
+        {
+            //Debug.Log("找點啦 耖");
+            return;
+        }
+        else if (tmpPos == null && chaseTime <= 0)
+        {
+            cancelSelectTarget(true);
+            return;
+        }
+
+        correctPos = tmpPos;
+        points.TestNext.Add(correctPos);
+        resetChaseTime();
+        nowState = states.AtkMove;
     }
     #endregion
 
@@ -188,14 +354,14 @@ public class EnemyControl : Photon.MonoBehaviour
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 28);
-            fieldOfView.currentMask = GameManager.instance.getPlayer1_Mask;
+            currentMask = GameManager.instance.getPlayer1_Mask;
             nowPoint = 0;
             Find_PathPoint = nowPoint;
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 29);
-            fieldOfView.currentMask = GameManager.instance.getPlayer2_Mask;
+            currentMask = GameManager.instance.getPlayer2_Mask;
             nowPoint = 9;
             Find_PathPoint = nowPoint;
             
@@ -223,8 +389,10 @@ public class EnemyControl : Photon.MonoBehaviour
                 enemyMove();
                 break;
             case (states.AtkMove):
-                if (fieldOfView.targetDeadScript != null && !fieldOfView.targetDeadScript.checkDead)
+                if (targetDeadScript != null && !targetDeadScript.checkDead)
                     enemyMove();
+                else                
+                    cancelSelectTarget(false);                
                 break;
             case (states.Skill):
 
@@ -232,11 +400,10 @@ public class EnemyControl : Photon.MonoBehaviour
             case (states.AtkWait):
                 if (!ani.GetBool("Stop"))
                     Net.RPC("TP_stopAni", PhotonTargets.All, true);
-                if (fieldOfView.targetDeadScript != null && !fieldOfView.targetDeadScript.checkDead)
-                {
-                   // if (fieldOfView.points.CheckThisPointFull(fieldOfView.nowPoint) && !ifAtkMoveStop)
-                        fieldOfView.goWaitAtkPos(enemyData.atk_Range);
-                }
+                if (targetDeadScript != null && !targetDeadScript.checkDead)
+                    goWaitAtkPos(enemyData.atk_Range);
+                else
+                    cancelSelectTarget(false);
                 break;
             default:
                 return;
@@ -279,16 +446,16 @@ public class EnemyControl : Photon.MonoBehaviour
         {
             if (!ifAtkMoveStop)
             {
-                Transform ABC = fieldOfView.points.GoComparing(enemyData.atk_Range, this.transform, fieldOfView.nowPoint, true);
+                Transform ABC = points.GoComparing(enemyData.atk_Range, transform, correctPos, true);
                 if (ABC != null)
                 {
-                    fieldOfView.points.TestNext.Remove(fieldOfView.nowPoint);
+                    points.TestNext.Remove(correctPos);
 
-                    fieldOfView.points.TestNext.Add(ABC);
-                    fieldOfView.nowPoint = ABC;
+                    points.TestNext.Add(ABC);
+                    correctPos = ABC;
                 }
 
-                if (fieldOfView.points != null && fieldOfView.nowPoint == null)
+                if (points != null && correctPos == null)
                 {
                     //點不見了
                     nowState = states.AtkWait;
@@ -296,24 +463,25 @@ public class EnemyControl : Photon.MonoBehaviour
                 }
             }
 
-            target = fieldOfView.currentTarget.transform;
-             getTatgetPoint(fieldOfView.nowPoint.position);
-
+            getTatgetPoint(correctPos.position);
             findNextPath();
 
             #region 判斷是否到攻擊目標點→否則執行移動
             if (ifReach(nav.destination))
             {
+                if (!ani.GetBool("Stop"))
+                    Net.RPC("TP_stopAni", PhotonTargets.All, true);
+
                 rotToTarget();
+                ifAtkMoveStop = true;
 
                 if (canAtking && !deadManager.checkDead)
                 {
-                    ifAtkMoveStop = true;
-                    fieldOfView.points.AddPoint(enemyData.atk_Range, fieldOfView.nowPoint);
+                    points.AddPoint(enemyData.atk_Range, correctPos);
                     nowState = states.Atk;
                     nav.ResetPath();
 
-                    fieldOfView.StopDetectT();
+                    StopDetectT();
                     enemyAttack_time = StartCoroutine(enemyAttack());
                 }
             }
@@ -323,7 +491,6 @@ public class EnemyControl : Photon.MonoBehaviour
         }
     }
     #endregion
-
 
     #region 尋找下一個位置方向
     void findNextPath()
@@ -353,29 +520,30 @@ public class EnemyControl : Photon.MonoBehaviour
     {
         while (nowState == states.Wait_Move)
         {
-            if (fieldOfView.currentTarget == null || deadManager.checkDead)
+            if (currentTarget == null || deadManager.checkDead)
+            {
+                cancelSelectTarget(false);
                 yield break;
+            }
 
-            float tmpNowDis_F = Vector3.Distance(this.transform.position, fieldOfView.currentTarget.transform.position);
+            float tmpNowDis_F = Vector3.Distance(this.transform.position, currentTarget.transform.position);
 
             //攻擊延遲到了
             if (canAtking && !deadManager.checkDead)
             {
-                if (!fieldOfView.points.IFDis(enemyData.atk_Range, tmpNowDis_F - enemyData.stoppingDst))
+                if (!points.IFDis(enemyData.atk_Range, tmpNowDis_F - enemyData.stoppingDst))
                 {
                    // 不在攻擊區域→往攻擊移動                  
-                    fieldOfView.points.RemovePoint(enemyData.atk_Range, fieldOfView.nowPoint);
+                    points.RemovePoint(enemyData.atk_Range, correctPos);
                     ifAtkMoveStop = false;
                     nowState = states.AtkWait;
-                   // fieldOfView.StartDetectT();
-                    //fieldOfView.goWaitAtkPos(enemyData.atk_Range);
                     yield break;
                 }
                 else
                 {
                     //在攻擊區內→進行攻擊
                     nowState = states.Atk;
-                    fieldOfView.StopDetectT();
+                    StopDetectT();
                     enemyAttack_time = StartCoroutine(enemyAttack());
                     yield break;
                 }
@@ -383,10 +551,10 @@ public class EnemyControl : Photon.MonoBehaviour
             else //攻擊延遲還沒到
             {
                 //超過攻擊範圍時 →OverAtkDis=True
-                if (!fieldOfView.points.IFDis(enemyData.atk_Range, tmpNowDis_F - enemyData.stoppingDst) && !OverAtkDis)
+                if (!points.IFDis(enemyData.atk_Range, tmpNowDis_F - enemyData.stoppingDst) && !OverAtkDis)
                 {
-                    shortPos = fieldOfView.nowPoint;
-                    fieldOfView.points.RemovePoint(enemyData.atk_Range, fieldOfView.nowPoint);
+                    shortPos = correctPos;
+                    points.RemovePoint(enemyData.atk_Range, correctPos);
                     stopNav.enabled = false;
                     nav.enabled = true;
                     OverAtkDis = true;
@@ -395,7 +563,7 @@ public class EnemyControl : Photon.MonoBehaviour
                 //超過攻擊範圍進行追趕
                 if (OverAtkDis)
                 {
-                    Transform ABC = fieldOfView.points.GoComparing(enemyData.atk_Range, this.transform, fieldOfView.nowPoint, false);
+                    Transform ABC = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, false);
                     if (ABC != null)
                         shortPos = ABC;
                     //未到達範圍 →追趕
@@ -408,12 +576,12 @@ public class EnemyControl : Photon.MonoBehaviour
                     else //到達範圍 →OverAtkDis=False
                     {
                         OverAtkDis = false;
-                        fieldOfView.nowPoint = shortPos;
-                        fieldOfView.points.AddPoint(enemyData.atk_Range, fieldOfView.nowPoint);
+                        correctPos = shortPos;
+                        points.AddPoint(enemyData.atk_Range, correctPos);
                         shortPos = null;
                     }
                 }
-                else //沒超過攻擊範圍 士兵不動自動換點
+                else //沒超過攻擊範圍 士兵不自動換點
                 {
                     nav.enabled = false;
                     stopNav.enabled = true;
@@ -421,14 +589,14 @@ public class EnemyControl : Photon.MonoBehaviour
                     if (!ani.GetBool("Stop"))
                         Net.RPC("TP_stopAni", PhotonTargets.All, true);
 
-                    Transform ABC = fieldOfView.points.GoComparing(enemyData.atk_Range, this.transform, fieldOfView.nowPoint, false);
+                    Transform ABC = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, false);
                     if (ABC != null)
                     {
                         //Debug.Log("我找到一個更近的囉");
 
-                        fieldOfView.points.RemovePoint(enemyData.atk_Range, fieldOfView.nowPoint);
-                        fieldOfView.nowPoint = ABC;
-                        fieldOfView.points.AddPoint(enemyData.atk_Range, fieldOfView.nowPoint);
+                        points.RemovePoint(enemyData.atk_Range, correctPos);
+                        correctPos = ABC;
+                        points.AddPoint(enemyData.atk_Range, correctPos);
                     }
                 }
 
@@ -449,7 +617,7 @@ public class EnemyControl : Photon.MonoBehaviour
     #region 面對目標
     protected void rotToTarget()
     {
-        atkDir = target.position - transform.position;
+        atkDir = currentTarget.transform.position - transform.position;
         atkDir.y = 0;
         CharacterRot = Quaternion.LookRotation(atkDir.normalized);
         transform.rotation = CharacterRot;
@@ -523,18 +691,20 @@ public class EnemyControl : Photon.MonoBehaviour
     //每次攻擊間隔
     protected void delayTimeToAtk()
     {
-        StartCoroutine(Timer.StartRealtime(enemyData.atk_delay, () =>
-        {
-            canAtking = true;
-        }));
+        StartCoroutine(MatchTimeManager.SetCountDown(atkIsOk, enemyData.atk_delay));
+    }
+    void atkIsOk()
+    {
+        canAtking = true;
     }
     //被攻擊時反應時間
     protected void beAttackStop()
     {
-        StartCoroutine(Timer.StartRealtime(enemyData.beAtk_delay, () =>
-        {
-            nowState = states.AtkMove;
-        }));
+        StartCoroutine(MatchTimeManager.SetCountDown(waitToAtk, enemyData.beAtk_delay));
+    }
+    void waitToAtk()
+    {
+        nowState = states.AtkMove;
     }
     //關閉一切時間延遲
     void CloseThis(Coroutine _coroutine)
@@ -551,10 +721,6 @@ public class EnemyControl : Photon.MonoBehaviour
         CloseThis(sotpWait_time);        
     }
     #endregion
-
-    //#region 取得傷害
-    public bool firstAtk;
-    public bool ifAtkMoveStop;
 
     #region 前往下個目標點
     public void getNextPoint()
@@ -611,14 +777,14 @@ public class EnemyControl : Photon.MonoBehaviour
 
             if (_isdead.myAttributes != GameManager.NowTarget.Tower)
             {
-                if (!firstAtk && !fieldOfView.ifFirstAtkTarget())
+                if (!firstAtk && !ifFirstAtkTarget())
                 {
                     CreatPoints tmpPoint = _isdead.gameObject.GetComponent<CreatPoints>();
                     firstAtk = true;
                     nowState = states.BeAtk;
-                    fieldOfView.goAtkPos(tmpPoint, _isdead);
+                    goAtkPos(tmpPoint, _isdead);
                     beAttackStop();
-                    fieldOfView.resetChaseTime();
+                    resetChaseTime();
                 }
             }
         }
@@ -630,14 +796,9 @@ public class EnemyControl : Photon.MonoBehaviour
     void MyHelath(float _damage)
     {
         //血量顯示與消失
-        if (UI_HpObj.alpha == 0 && HP_Time <= 0)
-        {
-            UI_HpObj.alpha = 1;
-            HP_Time = 5f;
-            StartCoroutine(closeHP());
-        }
-        else
-            HP_Time = 5f;
+        UI_HpObj.alpha = 1;
+        CloseHP();
+
         //扣血
         if (enemyData.UI_HP > 0)
         {
@@ -646,7 +807,6 @@ public class EnemyControl : Photon.MonoBehaviour
             {
                 deadManager.ifDead(true);
                 Death();
-                HP_Time = 0f;
                 UI_HpObj.alpha = 0;
             }
             BeHitChangeColor();
@@ -695,21 +855,24 @@ public class EnemyControl : Photon.MonoBehaviour
     #endregion
     #endregion
 
-    private float HP_Time;
-    protected IEnumerator closeHP()
+    #region 關閉血量顯示
+    private float HP_Time = 5.5f;
+    private Coroutine hpCoroutine;
+    protected void CloseHP()
     {
-        while (true)
+        if (hpCoroutine == null)
+            hpCoroutine = StartCoroutine(MatchTimeManager.SetCountDown(closeHpBar, HP_Time));
+        else
         {
-            yield return new WaitForEndOfFrame();
-            HP_Time -= Time.deltaTime;
-            if (HP_Time <= 0 || deadManager.checkDead)
-            {
-                UI_HpObj.alpha = 0;
-                HP_Time = 0f;
-                yield break;
-            }
+            StopCoroutine(hpCoroutine);
+            hpCoroutine = StartCoroutine(MatchTimeManager.SetCountDown(closeHpBar, HP_Time));
         }
     }
+    void closeHpBar()
+    {
+        UI_HpObj.alpha = 0;
+    }
+    #endregion
 
     #region 傷害顯示
     public void openPopupObject(float _damage)
@@ -735,7 +898,7 @@ public class EnemyControl : Photon.MonoBehaviour
             {
                 haveHit = false;
                 alreadytakeDamage.Clear();
-                fieldOfView.cancelSelectTarget(true);
+                cancelSelectTarget(true);
                 SceneManager.RemoveMyList(gameObject, deadManager.myAttributes);
                 ifAtkMoveStop = false;
                 firstAtk = false;
@@ -759,4 +922,84 @@ public class EnemyControl : Photon.MonoBehaviour
         }));
     }
     #endregion
+
+    #region 取消目標偵測
+    void delayCancelTarget()
+    {
+        //目標死亡時等待時間
+        if (nowState == states.Wait_TargetDie)
+        {
+            if (chaseTime > 0)
+            {
+                chaseTime -= Time.deltaTime;
+            }
+            else
+            {
+                if (nowTarget == GameManager.NowTarget.Null)
+                {
+                    getNextPoint();
+                    nowState = states.Move;
+                }
+            }
+        }
+        else
+        {
+            //有目標且未死亡時
+            if (chaseTime > 0)
+            {
+                if (targetDeadScript.checkDead)
+                {
+                    cancelSelectTarget(false);
+                    return;
+                }
+                chaseTime -= Time.deltaTime;
+            }
+            else
+            {
+                cancelSelectTarget(false);
+            }
+        }
+    }
+    #endregion
+
+    #region 取消目標(尋找敵人方面)
+    public void cancelSelectTarget(bool _now)
+    {
+        if (correctPos != null)
+        {
+            points.RemovePoint(enemyData.atk_Range, correctPos);
+            points.TestNext.Remove(correctPos);
+        }
+        correctPos = null;
+        points = null;
+        targetDeadScript = null;
+        currentTarget = null;
+
+        chaseTime = 0;
+        nowTarget = GameManager.NowTarget.Null;
+        closeAllDelay();
+        firstAtk = false;
+        ifAtkMoveStop = false;
+        if (!_now)
+        {
+            chaseTime = 1f;
+            nowState = states.Wait_TargetDie;
+            StartDetectT();
+        }
+    }
+    #endregion
+
+    //回歸時間
+    public void resetChaseTime()
+    {
+        chaseTime = waitTime;
+    }
+    //判斷是否為優先目標
+    public bool ifFirstAtkTarget()
+    {
+        if (nowTarget == GameManager.NowTarget.Core || nowTarget == firstPriority)
+            return true;
+        else
+            return false;
+    }
 }

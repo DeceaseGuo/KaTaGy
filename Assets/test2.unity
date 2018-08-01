@@ -98,18 +98,18 @@ NavMeshSettings:
   m_BuildSettings:
     serializedVersion: 2
     agentTypeID: 0
-    agentRadius: 0.5
+    agentRadius: 0.85
     agentHeight: 2
-    agentSlope: 45
+    agentSlope: 36.5
     agentClimb: 0.4
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0
     minRegionArea: 2
     manualCellSize: 0
-    cellSize: 0.16666667
+    cellSize: 0.28333333
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
+    accuratePlacement: 1
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 90c410939d867ca46a9c18eaadac1ba5, type: 2}
@@ -36991,7 +36991,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierGapTime: 0.55
   arraySoldier: {fileID: 1598956575}
-  bornSoldier: 0
+  bornSoldier: 1
 --- !u!114 &1332093344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38833,7 +38833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SecondsBeforeStart: 40.4
-  isAutoBorn: 0
+  isAutoBorn: 1
   allTimeText: {fileID: 738595691}
   nextWaveText: {fileID: 1898698680}
 --- !u!82 &1398734229

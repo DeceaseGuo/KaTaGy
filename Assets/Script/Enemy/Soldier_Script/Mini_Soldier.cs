@@ -9,6 +9,7 @@ public class Mini_Soldier : EnemyControl
     {
         if (nowState == states.Atk)
         {
+            deadManager.notFeedBack = true;
             firstAtk = true;
 
             nav.enabled = false;
@@ -16,8 +17,7 @@ public class Mini_Soldier : EnemyControl
             //轉向目標
             rotToTarget();
 
-            fieldOfView.resetChaseTime();
-            Net.RPC("TP_stopAni", PhotonTargets.All, true);
+            resetChaseTime();
             canAtking = false;            
             Net.RPC("getAtkAnimator", PhotonTargets.All);
 
@@ -55,15 +55,15 @@ public class Mini_Soldier : EnemyControl
     #region 攻擊是否打中
     protected override void TouchTarget()
     {
-        Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.5f, 2.8f, .3f), sword_1.rotation, fieldOfView.currentMask);
+        Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.5f, 2.8f, .3f), sword_1.rotation, currentMask);
         foreach (var target in enemies)
         {
             if (!alreadytakeDamage.Contains(target.gameObject))
             {
-                if (target.gameObject == fieldOfView.currentTarget.gameObject)
+                if (target.gameObject == currentTarget.gameObject)
                 {
 
-                    giveCurrentDamage(fieldOfView.targetDeadScript);
+                    giveCurrentDamage(targetDeadScript);
                     alreadytakeDamage.Add(target.gameObject);
 
                 }
@@ -75,29 +75,24 @@ public class Mini_Soldier : EnemyControl
     #region 給與正確目標傷害
     protected override void giveCurrentDamage(isDead _target)
     {
-        if (!photonView.isMine || target == null || _target == null)
+        if (!photonView.isMine || currentTarget == null || _target == null)
             return;
 
-        switch (DataName)
+        switch (_target.myAttributes)
         {
-            case (GameManager.whichObject.Soldier_1):
-                switch (_target.myAttributes)
-                {
-                    case GameManager.NowTarget.Player:
-                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
-                        //target.gameObject.SendMessage("GetDeBuff_Stun");
-                        break;
-                    case GameManager.NowTarget.Soldier:
-                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
-                        break;
-                    case GameManager.NowTarget.Tower:
-                        target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
-                        break;
-                    case GameManager.NowTarget.Core:
-                        break;
-                    default:
-                        break;
-                }
+            case GameManager.NowTarget.Player:
+                currentTarget.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
+                //target.gameObject.SendMessage("GetDeBuff_Stun");
+                break;
+            case GameManager.NowTarget.Soldier:
+                currentTarget.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
+                break;
+            case GameManager.NowTarget.Tower:
+                currentTarget.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
+                break;
+            case GameManager.NowTarget.Core:
+                break;
+            default:
                 break;
         }
     }
@@ -106,7 +101,7 @@ public class Mini_Soldier : EnemyControl
     #region 打擊感功能
     protected override void Feedback()
     {
-        if (nowState != states.Atk)
+        if (!deadManager.notFeedBack)
         {
             if (!deadManager.checkDead)
                 ani.SetTrigger("Hit");
