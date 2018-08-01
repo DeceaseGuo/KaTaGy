@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 114912160598240508}
   - component: {fileID: 114471971377212674}
   - component: {fileID: 114197138805307868}
-  m_Layer: 30
+  m_Layer: 0
   m_Name: Tower1_E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,6 +345,7 @@ MonoBehaviour:
     m_Bits: 0
   Pos_rotation: {fileID: 4245784088697414}
   healthBar: {fileID: 114619767991907944}
+  gridList: []
 --- !u!114 &114208927042349302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -533,8 +534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5829af3bf5e39204da0e9f26a41c8d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myAttributes: 3
-  dead: 0
+  myAttributes: 5
+  notFeedBack: 0
 --- !u!114 &114912160598240508
 MonoBehaviour:
   m_ObjectHideFlags: 1
