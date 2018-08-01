@@ -60,16 +60,16 @@ public class BuildManager : MonoBehaviour
         turretData = TurretData.instance;
     }
 
-    [SerializeField] GameObject oobject;
+    [SerializeField] GameObject DestoryObj;
     private void Update()
     {
         if (Input.GetKeyDown("a"))
         {
-            oobject.GetComponent<Electricity>().takeDamage(50);
+            DestoryObj.GetComponent<Electricity>().takeDamage(50);
         }
         if (Input.GetKeyDown("s"))
         {
-            Turret_Manager tur_manager = oobject.GetComponent<Turret_Manager>();
+            Turret_Manager tur_manager = DestoryObj.GetComponent<Turret_Manager>();
             tur_manager.takeDamage(50);
             Debug.Log("tur_manager name : " + tur_manager.name);
         }
@@ -201,22 +201,26 @@ public class BuildManager : MonoBehaviour
     #endregion
 
     #region 鷹架的開啟 和 關閉
-    PhotonView Scaff_Net;
     public void openScaffolding(Vector3 _pos)
     {
         if (build_Scaffolding == null)
+        {
             build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0);
+        }
+        else
+        {
+            build_Scaffolding.transform.position = _pos;
+            build_Scaffolding.SetActive(true);
+            build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.Others, _pos);
+        }
 
-        build_Scaffolding.transform.position = _pos;
-        build_Scaffolding.SetActive(true);
-        build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.Others, _pos);
         build_CD_Obj.transform.position = _pos + new Vector3(0, 7.5f, 0);
         build_CD_Obj.SetActive(true);
     }
 
     public void closeScaffolding()
     {
-         build_Scaffolding.SetActive(false);
+        build_Scaffolding.SetActive(false);
         build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.Others);
         build_CD_Obj.SetActive(false);
     }
