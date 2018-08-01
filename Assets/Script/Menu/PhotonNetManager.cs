@@ -157,7 +157,7 @@ public class PhotonNetManager : Photon.PunBehaviour
 
     public override void OnPhotonPlayerDisconnected(PhotonPlayer otherPlayer)//有人離開，除了離開的都會呼叫
     {
-        if (GameManager.instance != null)
+        if (StopMenu.instance != null)
         {
             StopMenu.instance.SurrenderClick();
             Debug.Log("SurrenderClick();");
