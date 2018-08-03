@@ -16,6 +16,8 @@ public class ObjectPooler : MonoBehaviour
     }
     #endregion
 
+    
+
     [System.Serializable]
     public class pool
     {
@@ -45,16 +47,16 @@ public class ObjectPooler : MonoBehaviour
             for (int i = 0; i < pool.pool_amount; i++)
             {
                 GameObject obj = null;
-                if (pool.pool_Prefab.GetComponent<PhotonView>() != null)
-                {
-                    obj = PhotonNetwork.Instantiate(pool.filePath, Vector3.zero, Quaternion.identity, 0);
-                    obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
-                }
-                else
+                if (pool.pool_Prefab.GetComponent<PhotonView>() == null)
                 {
                     obj = Instantiate(pool.pool_Prefab);
                     obj.SetActive(false);
                     obj.transform.SetParent(transform);
+                }
+                else
+                {
+                    obj = PhotonNetwork.Instantiate(pool.filePath, Vector3.zero, Quaternion.identity, 0);
+                    obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
                 }
 
                 obj.transform.position = Vector3.zero;
@@ -75,22 +77,23 @@ public class ObjectPooler : MonoBehaviour
         }
 
         GameObject objectToSpawn = poolDictionary[_name].Dequeue();
-        if (poolDictionary[_name].Count == 0)
+        if (poolDictionary[_name].Count == 0)//拿出來之後等於0就會增加
         {
-            GameObject newObjToSpawn = PoolAddNewObj(_name);
-            Repool(_name, newObjToSpawn);
+            Repool(_name, PoolAddNewObj(_name));
         }
 
         objectToSpawn.transform.rotation = _rot;
+        PhotonView Net = objectToSpawn.GetComponent<PhotonView>();
 
-        if (objectToSpawn.GetComponent<PhotonView>() == null)
+        if (Net == null)
         {
             objectToSpawn.transform.position = _pos;
             objectToSpawn.SetActive(true);
         }
         else
         {
-            objectToSpawn.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All, _pos);
+            Net.RPC("SetActiveT", PhotonTargets.All, _pos);
+            AddInList(objectToSpawn, objectToSpawn.GetComponent<isDead>().myAttributes, Net.isMine);
         }
         return objectToSpawn;
     }
@@ -99,12 +102,14 @@ public class ObjectPooler : MonoBehaviour
     #region 返回物件池
     public void Repool(GameManager.whichObject _name, GameObject _obj)
     {
-        PhotonView photon_Script = _obj.GetComponent<PhotonView>();
-        if (photon_Script == null)
+        PhotonView Net = _obj.GetComponent<PhotonView>();
+        if (Net == null)
             _obj.SetActive(false);
         else
-            photon_Script.RPC("SetActiveF", PhotonTargets.All);
-
+        {
+            Net.RPC("SetActiveF", PhotonTargets.All);
+            RemoveInList(_obj, _obj.GetComponent<isDead>().myAttributes, Net.isMine);
+        }
         poolDictionary[_name].Enqueue(_obj);
     }
     #endregion
@@ -129,6 +134,34 @@ public class ObjectPooler : MonoBehaviour
 
         obj.transform.SetParent(transform);
         return obj;
+    }
+    #endregion
+
+    #region list
+    private SceneObjManager sceneObjManager;
+    private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
+    void AddInList(GameObject _obj, GameManager.NowTarget _whoIs, bool ismine)
+    {
+        if (ismine)
+        {
+            SceneManager.AddMyList(_obj, _whoIs);
+        }
+        else
+        {
+            SceneManager.AddEnemyList(_obj, _whoIs);
+        }
+    }
+
+    void RemoveInList(GameObject _obj, GameManager.NowTarget _whoIs, bool ismine)
+    {
+        if (ismine)
+        {
+            SceneManager.RemoveMyList(_obj, _whoIs);
+        }
+        else
+        {
+            SceneManager.RemoveEnemyList(_obj, _whoIs);
+        }
     }
     #endregion
 }

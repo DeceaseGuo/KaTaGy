@@ -7,20 +7,28 @@ using AtkTower;
 [RequireComponent(typeof(isDead))]
 public class Electricity : Photon.MonoBehaviour
 {
-    public int resource_Electricity;
-    public Color origonalColor;
-    public Color notBuildColor;
     //數據
-    [SerializeField] GameManager.whichObject DataName;
-    public List<Electricity> connectElectricitys = new List<Electricity>();
-    public List<Turret_Manager> connectTowers = new List<Turret_Manager>();
-    public List<Electricity> myTouch = new List<Electricity>();
-    public Electricity firstE;
+    public GameManager.whichObject DataName;
     TurretData.TowerDataBase turretData;
     TurretData.TowerDataBase originalTurretData;
-    float nowCD = 0;
+
+    [Header("電力範圍")]
+    public int resource_Electricity;
+    public float range;
+
+    [Header("連接")]
+    public Electricity firstE;
+    public List<Electricity> connectElectricitys = new List<Electricity>();
+    public List<GameObject> connectTowers = new List<GameObject>();
+    public List<Electricity> myTouch = new List<Electricity>();
+
+    [Header("網格變色")]
+    [SerializeField] Color origonalColor;
+    [SerializeField] Color notBuildColor;
     [SerializeField] LayerMask GridMask;
-    [SerializeField] LayerMask TowerGrid;
+    [SerializeField] LayerMask TowerMask;
+
+    int origine_Electricity;
 
     //正確目標
     protected Transform target;
@@ -40,34 +48,45 @@ public class Electricity : Photon.MonoBehaviour
 
     private void Awake()
     {
-        deadManager = GetComponent<isDead>();
         Net = GetComponent<PhotonView>();
-
+        originalTurretData = TurretData.instance.getTowerData(DataName);
         buildManager = BuildManager.instance;
         playerObtain = PlayerObtain.instance;
+        deadManager = GetComponent<isDead>();
+        deadManager.ifDead(false);
         origine_Electricity = resource_Electricity;
+    }
+
+    private void Start()
+    {
+        formatData();
+
+        if (photonView.isMine)
+        {
+            checkCurrentPlay();
+        }
+        else
+        {
+            this.enabled = false;
+        }
     }
 
     private void OnEnable()
     {
-        formatData();
-        /*if (!photonView.isMine)
+        if (photonView.isMine)
         {
-            this.enabled = false;
-            return;
-        }*/
-
-        ShowElectricitRange(true);
+            ShowElectricitRange(true);
+        }
     }
 
     int electricity;
-    int _mytouch;
+    int _mytouch = -1;
     private void FixedUpdate()
     {
         if (myTouch.Count > 0 && myTouch.Count > _mytouch)
         {
             _mytouch = myTouch.Count;
-            FindTower(buildManager.Turrets, this);
+            FindTower(SceneManager.myTowerObjs, this);
             Debug.Log(name + "FindTower");
         }
 
@@ -80,38 +99,34 @@ public class Electricity : Photon.MonoBehaviour
             SynchronizeElectricity();
             
             changeGridColor(0);
-            Debug.Log("電量改變囉");
+            Debug.Log("電量改變囉 " + resource_Electricity);
         }
     }
 
-    public int origine_Electricity;
+    #region 目前為玩家幾
+    public void checkCurrentPlay()
+    {
+        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 30);
+        }
+        else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 31);
+        }
+    }
+    #endregion
 
     #region 恢復初始數據
     protected void formatData()
     {
-        if (deadManager == null)
-        {
-            deadManager = GetComponent<isDead>();
-            deadManager.ifDead(false);
-        }
-        else
-        {
-            deadManager.ifDead(false);
-            if (photonView.isMine)
-                SceneManager.AddMyList(gameObject, deadManager.myAttributes);
-            else
-                SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
-        }
+        deadManager.ifDead(false);
 
-        originalTurretData = TurretData.instance.getTowerData(DataName);
         turretData = originalTurretData;
-        ////////////////鳳梨加的
         healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
-        //Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
-        ///////////////
-
         resource_Electricity = origine_Electricity;
         electricity = resource_Electricity;
+        _mytouch = -1;
     }
     #endregion
 
@@ -129,10 +144,16 @@ public class Electricity : Photon.MonoBehaviour
 
         if (turretData.UI_Hp <= 0)
         {
-            ShowElectricitRange(false);
-            
-            dead();
-
+            if(photonView.isMine)
+            {
+                //SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Electricity);
+                ShowElectricitRange(false);
+                dead();
+            }
+            /*else
+            {
+                SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Electricity);
+            }*/
             deadManager.ifDead(true);
             deathTimer = StartCoroutine(Death());
         }
@@ -160,6 +181,10 @@ public class Electricity : Photon.MonoBehaviour
     protected virtual IEnumerator Death()
     {
         yield return new WaitForSeconds(1.5f);
+        firstE = null;
+        connectElectricitys.Clear();
+        connectTowers.Clear();
+        myTouch.Clear();
         formatData();
         returnBulletPool();
         StopCoroutine(deathTimer);
@@ -172,22 +197,22 @@ public class Electricity : Photon.MonoBehaviour
     {
         if (photonView.isMine)
             ObjectPooler.instance.Repool(DataName, this.gameObject);
-        else
-            Net.RPC("SetActiveRPC", PhotonTargets.All, false);
+        /*else
+            Net.RPC("SetActiveF", PhotonTargets.All);*/
     }
     #endregion
 
-    [SerializeField] List<Collider> gridList;
-    Transform gridparent = null;
-    Collider[] grids;
     #region 電力範圍
+    [SerializeField] List<Collider> gridList;
+    [SerializeField] Collider[] ColliderGrids;
+    Transform gridparent = null;
     void ShowElectricitRange(bool _open)
     {
-        Collider[] ColliderGrids = Physics.OverlapSphere(transform.position, tetst, GridMask);
+        ColliderGrids = Physics.OverlapSphere(transform.position, range, GridMask);
 
         foreach (var grid in ColliderGrids)
         {
-            if (Vector3.Distance(grid.transform.position, transform.position) <= tetst)
+            if (Vector3.Distance(grid.transform.position, transform.position) <= range)
             {
                 gridparent = grid.transform.parent;
                 if (_open)
@@ -206,33 +231,40 @@ public class Electricity : Photon.MonoBehaviour
         }
     }
     #endregion
-
+    
     #region 找塔防
-    public void FindTower(List<Turret_Manager> TurretList, Electricity _electricity)
+    void FindTower(List<GameObject> TurretList, Electricity _electricity)
     {
         foreach (var manager in TurretList)
         {
-            if (_electricity.firstE.connectTowers.Contains(manager))
+            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<isDead>().myAttributes == GameManager.NowTarget.Electricity)
             {
+                Debug.Log("continue");
                 continue;
             }
 
-            if (Vector3.Distance(manager.transform.position, _electricity.transform.position) <= tetst)
+            if (manager.GetComponent<isDead>().myAttributes == GameManager.NowTarget.Electricity)
+            {
+                Debug.Log("myAttributes");
+                continue;
+            }
+
+            if (Vector3.Distance(manager.transform.position, _electricity.transform.position) <= range)
             {
                 Debug.Log(_electricity.name + "在電力範圍內");
 
-                grids = Physics.OverlapBox(manager.transform.position, new Vector3(5.5f, 2, 5.5f), manager.transform.localRotation, TowerGrid);
-
-                if (grids.Length >= manager.GridNumber)
+                Collider[] TowerGrids = Physics.OverlapBox(manager.transform.position, new Vector3(5.5f, 2, 5.5f), manager.transform.localRotation, TowerMask);
+                Turret_Manager t = manager.GetComponent<Turret_Manager>();
+                if (TowerGrids.Length >= t.GridNumber)
                 {
                     _electricity.firstE.connectTowers.Add(manager);
-                    _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(manager.DataName));
-                    manager.power = _electricity;
+                    _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(t.DataName));
+                    t.power = _electricity;
                     Debug.Log(_electricity.name + "grids.Length >= manager.GridNumber");
                 }
                 else
                 {
-                    manager.power = null;
+                    t.power = null;
                     Debug.Log(_electricity.name + "沒有在網格內");
                 }
             }
@@ -246,23 +278,21 @@ public class Electricity : Photon.MonoBehaviour
         foreach (var grid in gridList)
         {
             gridparent = grid.transform.parent;
-            MeshRenderer render = gridparent.Find("_grid").GetComponent<MeshRenderer>();
 
             if (playerObtain.Check_ElectricityAmount(resource_Electricity, _electricity))
             {
                 grid.gameObject.layer = 25;
-                render.material.SetColor("_EmissionColor", origonalColor);
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", origonalColor);
             }
             else
             {
                 grid.gameObject.layer = 10;
-                render.material.SetColor("_EmissionColor", notBuildColor);
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", notBuildColor);
             }
         }
     }
     #endregion
 
-    public float tetst;
     /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -301,17 +331,17 @@ public class Electricity : Photon.MonoBehaviour
         }
     }
     #endregion
-    List<Electricity> e = new List<Electricity>();
-    List<Turret_Manager> o = new List<Turret_Manager>();
+    [SerializeField]List<GameObject> o = new List<GameObject>();
+    #region 死亡做的事
     public void dead()
     {
-        e.Clear();
-
+        Debug.Log("然後就死掉了");
+        List<Electricity> e = new List<Electricity>();
+        
         foreach (var item in myTouch)
         {
             item.myTouch.Remove(this);
         }
-        buildManager.electricityTurrets.Remove(this);
 
         if (firstE != this)
         {
@@ -321,11 +351,13 @@ public class Electricity : Photon.MonoBehaviour
         }
 
         foreach (var item in firstE.connectTowers)
+        {
+            item.GetComponent<Turret_Manager>().power = null;
             o.Add(item);
+        }
 
         firstE.connectTowers.Clear();
-        myTouch.Clear();
-
+        
         foreach (var item in firstE.connectElectricitys)
         {
             item.firstE = null;
@@ -334,8 +366,6 @@ public class Electricity : Photon.MonoBehaviour
         }
         firstE.connectElectricitys.Clear();
 
-        firstE = null;
-        
         foreach (var item in e)
         {
             Debug.Log("開始重新找FindfirstE" + item.name);
@@ -347,12 +377,6 @@ public class Electricity : Photon.MonoBehaviour
         {
             FindTower(o, item);
         }
-
-        /*foreach (var obj in o)
-        {
-            Debug.Log("開始重新扣電" + obj.name);
-            
-            buildManager.consumeElectricity(e ,obj);
-        }*/
     }
+    #endregion
 }

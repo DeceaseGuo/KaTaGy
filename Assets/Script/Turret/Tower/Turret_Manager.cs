@@ -24,15 +24,21 @@ namespace AtkTower
         [Header("UI部分")]
         public Image Fad_energyBar;
         protected isDead deadManager;
-
+        protected FloatingTextController floatingText;
         protected PhotonView Net;
 
         private SceneObjManager sceneObjManager;
         private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
 
+        private void Awake()
+        {
+            floatingText = FloatingTextController.instance;
+            Net = GetComponent<PhotonView>();
+            originalTurretData = TurretData.instance.getTowerData(DataName);
+        }
+
         private void Start()
         {
-            Net = GetComponent<PhotonView>();
             formatData();
             if (photonView.isMine)
             {
@@ -49,7 +55,6 @@ namespace AtkTower
         {
             if (deadManager.checkDead || power == null || power.resource_Electricity <= 0)  //死亡或沒電
             {
-                Debug.Log("死亡或沒電中");
                 return;
             }
 
@@ -59,7 +64,9 @@ namespace AtkTower
                 return;
 
             if (target == null)
+            {
                 FindEnemy();
+            }
             else
             {
                 DetectTarget();
@@ -67,7 +74,9 @@ namespace AtkTower
             }
 
             if (nowCD > 0)
+            {
                 nowCD -= Time.deltaTime;
+            }
         }
 
         #region 恢復初始數據
@@ -81,14 +90,18 @@ namespace AtkTower
             else
             {
                 deadManager.ifDead(false);
-                if (photonView.isMine)
+                /*if (photonView.isMine)
+                {
                     SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                }
                 else
+                {
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+                }*/
             }
 
-            originalTurretData = TurretData.instance.getTowerData(DataName);
             turretData = originalTurretData;
+            healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
             Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
         }
         #endregion
@@ -218,7 +231,6 @@ namespace AtkTower
 
                 float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
                 Net.RPC("showHeatBar", PhotonTargets.All, _value);
-                
             }
         }
 
@@ -284,6 +296,16 @@ namespace AtkTower
 
             if (turretData.UI_Hp <= 0)
             {
+                if (photonView.isMine)
+                {
+                    //SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    BuildManager.instance.obtaniElectricity(this);
+                }
+                /*else
+                {
+                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
+                }*/
+
                 deadManager.ifDead(true);
                 StartCoroutine(Death());
             }
@@ -292,10 +314,11 @@ namespace AtkTower
         }
         #endregion
 
+
         #region 傷害顯示
         void openPopupObject(float _damage)
         {
-            FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+            floatingText.CreateFloatingText(_damage.ToString("0.0"), this.transform);
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         }
         #endregion
@@ -321,8 +344,8 @@ namespace AtkTower
         {
             if (photonView.isMine)
                 ObjectPooler.instance.Repool(DataName, this.gameObject);
-            else
-                Net.RPC("SetActiveF", PhotonTargets.All);
+            /*else
+                Net.RPC("SetActiveF", PhotonTargets.All);*/
         }
         #endregion
 

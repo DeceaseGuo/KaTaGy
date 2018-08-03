@@ -19,11 +19,6 @@ public class tex :Photon.PunBehaviour {
         //gameObject.SetActive(false);
     }
 	
-	
-	public void Update () {
-
-    }
-
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
