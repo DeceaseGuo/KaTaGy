@@ -55,7 +55,6 @@ namespace AtkTower
         {
             if (deadManager.checkDead || power == null || power.resource_Electricity <= 0)  //死亡或沒電
             {
-                Debug.Log("死亡或沒電中");
                 return;
             }
 
@@ -91,14 +90,14 @@ namespace AtkTower
             else
             {
                 deadManager.ifDead(false);
-                if (photonView.isMine)
+                /*if (photonView.isMine)
                 {
                     SceneManager.AddMyList(gameObject, deadManager.myAttributes);
                 }
                 else
                 {
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
-                }
+                }*/
             }
 
             turretData = originalTurretData;
@@ -297,6 +296,16 @@ namespace AtkTower
 
             if (turretData.UI_Hp <= 0)
             {
+                if (photonView.isMine)
+                {
+                    //SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    BuildManager.instance.obtaniElectricity(this);
+                }
+                /*else
+                {
+                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
+                }*/
+
                 deadManager.ifDead(true);
                 StartCoroutine(Death());
             }
@@ -335,8 +344,8 @@ namespace AtkTower
         {
             if (photonView.isMine)
                 ObjectPooler.instance.Repool(DataName, this.gameObject);
-            else
-                Net.RPC("SetActiveF", PhotonTargets.All);
+            /*else
+                Net.RPC("SetActiveF", PhotonTargets.All);*/
         }
         #endregion
 

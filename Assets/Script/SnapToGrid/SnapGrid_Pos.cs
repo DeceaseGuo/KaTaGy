@@ -34,6 +34,12 @@ public class SnapGrid_Pos : MonoBehaviour
         UpdateGridData();
         buildManager = BuildManager.instance;
     }
+
+    private void OnEnable()
+    {
+        DetectPos();
+    }
+
     private void Update()
     {
         if (!buildManager.nowBuilding)

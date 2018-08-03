@@ -21,7 +21,7 @@ public class PhotonNetManager : Photon.PunBehaviour
     public bool singlePeople = false;
     [HideInInspector]
     public byte MaxPlayersPerRoom = 2;//房間最大人數
-    //[HideInInspector]
+    [HideInInspector]
     public int GoGameNumber = 2;//開始遊戲所需人數
     [SerializeField] float reciprocalTime;//遊戲倒數時間
     [SerializeField] GameObject HostI;

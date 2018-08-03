@@ -12,9 +12,6 @@ public class BuildManager : MonoBehaviour
 
     [SerializeField] Grid_Snap grid_snap;
 
-    public List<Electricity> electricityTurrets;
-    public List<Turret_Manager> Turrets;
-
     [Header("鷹架")]
     [SerializeField] GameObject build_Scaffolding;
     [SerializeField] GameObject build_CD_Obj;
@@ -36,6 +33,9 @@ public class BuildManager : MonoBehaviour
     public bool nowSelect = true;   //是否可以按下按鈕
     private bool haveTower;
     public bool HaveTower { get { return haveTower; } private set { haveTower = value; } }
+
+    private SceneObjManager sceneObjManager;
+    public SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
 
     TurretData turretData;
 
@@ -65,12 +65,12 @@ public class BuildManager : MonoBehaviour
     {
         if (Input.GetKeyDown("a"))
         {
-            DestoryObj.GetComponent<Electricity>().takeDamage(50);
+            DestoryObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 50f);
         }
         if (Input.GetKeyDown("s"))
         {
             Turret_Manager tur_manager = DestoryObj.GetComponent<Turret_Manager>();
-            tur_manager.takeDamage(50);
+            tur_manager.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 50f);
             Debug.Log("tur_manager name : " + tur_manager.name);
         }
     }
@@ -101,7 +101,7 @@ public class BuildManager : MonoBehaviour
             detectObjectPrefab.transform.position = tmpMousePos;
             detectObjectPrefab.SetActive(true);
 
-            foreach (var item in electricityTurrets)
+            foreach (var item in SceneManager.myElectricityObjs)
             {
                 item.changeGridColor(turretToBuild.cost_Electricity);
             }
@@ -151,13 +151,13 @@ public class BuildManager : MonoBehaviour
     #region 取消目前的選擇
     public void cancelSelect()
     {
-        foreach (var item in electricityTurrets)
+        closeTurretToBuild();
+        closeNowDetectObj();
+
+        foreach (var item in SceneManager.myElectricityObjs)
         {
             item.changeGridColor(0);
         }
-
-        closeTurretToBuild();
-        closeNowDetectObj();
     }
     #endregion
 
@@ -267,7 +267,7 @@ public class BuildManager : MonoBehaviour
             if (Vector3.Distance(tur_manager.transform.position, item.transform.position) <= item.range)
             {
                 tur_manager.power = item;
-                item.firstE.connectTowers.Add(tur_manager);
+                item.firstE.connectTowers.Add(tur_manager.gameObject);
                 int t = findCost_Electricity(tur_manager.DataName);
                 item.firstE.Use_Electricit(-t);
                 Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
@@ -300,9 +300,10 @@ public class BuildManager : MonoBehaviour
     #region 找firstE
     public void FindfirstE(List<Electricity> electricities, Electricity _build)
     {
-        if (electricities.Count < 1)
+        if (electricities.Count <= 1)
         {
             _build.firstE = _build;
+            Debug.Log(_build.firstE);
             Debug.Log(_build.name + "electricities.Count < 1");
             return;
         }
@@ -314,6 +315,7 @@ public class BuildManager : MonoBehaviour
 
         foreach (var item in electricities)
         {
+
             if (_build == item)
             {
                 Debug.Log(_build.name + "_build == item");
@@ -340,7 +342,6 @@ public class BuildManager : MonoBehaviour
                 if (_build.firstE == null)
                 {
                     _build.firstE = item.firstE;
-
                     _build.firstE.connectElectricitys.Add(_build);
                     _build.firstE.resource_Electricity += _build.resource_Electricity;
 

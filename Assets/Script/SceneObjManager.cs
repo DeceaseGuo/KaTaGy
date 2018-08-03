@@ -25,7 +25,7 @@ public class SceneObjManager : MonoBehaviour
     #endregion
 
     //塔
-    public List<GameObject> myElectricityObjs = new List<GameObject>();
+    public List<Electricity> myElectricityObjs = new List<Electricity>();
     public List<GameObject> myTowerObjs = new List<GameObject>();
     public List<GameObject> enemyTowerObjs = new List<GameObject>();
     //士兵
@@ -86,6 +86,8 @@ public class SceneObjManager : MonoBehaviour
     #region 增加
     public void AddMyList(GameObject _obj,GameManager.NowTarget _whoIs)
     {
+        Debug.Log("AddMyList " + _obj.name);
+        
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:
@@ -94,7 +96,10 @@ public class SceneObjManager : MonoBehaviour
                 mySoldierObjs.Add(_obj);
                 break;
             case GameManager.NowTarget.Electricity:
-                myElectricityObjs.Add(_obj);
+                {
+                    myElectricityObjs.Add(_obj.GetComponent<Electricity>());
+                    myTowerObjs.Add(_obj);
+                }
                 break;
             case GameManager.NowTarget.Tower:
                 myTowerObjs.Add(_obj);
@@ -108,6 +113,7 @@ public class SceneObjManager : MonoBehaviour
 
     public void AddEnemyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
+        Debug.Log("AddEnemyList " + _obj.name);
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:
@@ -129,21 +135,31 @@ public class SceneObjManager : MonoBehaviour
     #region 移除
     public void RemoveMyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
+        Debug.Log("RemoveMyList " + _obj.name);
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:
                 break;
             case GameManager.NowTarget.Soldier:
-                if (mySoldierObjs.Contains(_obj))
-                    mySoldierObjs.Remove(_obj);
+                {
+                    if (mySoldierObjs.Contains(_obj))
+                        mySoldierObjs.Remove(_obj);
+                }
                 break;
             case GameManager.NowTarget.Electricity:
-                if (myElectricityObjs.Contains(_obj))
-                    myElectricityObjs.Remove(_obj);
+                {
+                    if (myElectricityObjs.Contains(_obj.GetComponent<Electricity>()))
+                    {
+                        myElectricityObjs.Remove(_obj.GetComponent<Electricity>());
+                        myTowerObjs.Remove(_obj);
+                    }
+                }
                 break;
             case GameManager.NowTarget.Tower:
-                if (myTowerObjs.Contains(_obj))
-                    myTowerObjs.Remove(_obj);
+                {
+                    if (myTowerObjs.Contains(_obj))
+                        myTowerObjs.Remove(_obj);
+                }
                 break;
             default:
                 break;
@@ -152,6 +168,7 @@ public class SceneObjManager : MonoBehaviour
 
     public void RemoveEnemyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
+        Debug.Log("RemoveEnemyList " + _obj.name);
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:

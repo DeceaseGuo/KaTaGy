@@ -52,7 +52,6 @@ MonoBehaviour:
   - SecondDecide
   - SetActiveF
   - SetActiveT
-  - SetPoolparent
   - showHeatBar
   - takeDamage
   - TP_Combo

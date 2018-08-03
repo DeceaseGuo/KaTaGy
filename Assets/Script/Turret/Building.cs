@@ -129,7 +129,8 @@ public class Building : MonoBehaviour
                 _start = false;
                 buildManager.closeTmpObj();
                 buildManager.nowNotSelectSwitch(true);
-                buildManager.closeTurretToBuild();
+                //buildManager.closeTurretToBuild();
+                buildManager.cancelSelect();
             }
         }
     }
@@ -206,14 +207,13 @@ public class Building : MonoBehaviour
         {
             Debug.Log("蓋塔防YA");
             Turret_Manager tur_manager = obj.GetComponent<Turret_Manager>();
-            buildManager.consumeElectricity(buildManager.electricityTurrets, tur_manager);
-            buildManager.Turrets.Add(tur_manager);
+            buildManager.consumeElectricity(buildManager.SceneManager.myElectricityObjs, tur_manager);
         }
         else
         {
             Electricity e = obj.GetComponent<Electricity>();
-            buildManager.FindfirstE(buildManager.electricityTurrets, e);
-            buildManager.electricityTurrets.Add(e);
+            buildManager.FindfirstE(buildManager.SceneManager.myElectricityObjs, e);
+            obj.name += buildManager.SceneManager.myElectricityObjs.Count;
         }
         buildManager.closeTurretToBuild();
     }
