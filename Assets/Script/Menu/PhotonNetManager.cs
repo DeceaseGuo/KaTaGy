@@ -171,8 +171,10 @@ public class PhotonNetManager : Photon.PunBehaviour
     public override void OnDisconnectedFromPhoton()
     {
         Debug.Log("伺服器連線已中斷");
-
-        StopMenu.instance.SurrenderClick();
+        if (StopMenu.instance)
+        {
+            StopMenu.instance.SurrenderClick();
+        }
         Application.Quit();
     }
 
