@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.Events;
 public class test : MonoBehaviour
 {
     public Text num;
     public Coroutine testaaa;
     public float coutnDown;
+    public UnityEvent kkk;
 
     private void Update()
     {

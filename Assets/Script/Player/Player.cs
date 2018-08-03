@@ -8,10 +8,14 @@ using UnityEngine.UI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Player : Photon.MonoBehaviour
 {
+    private MatchTimer matchTime;
+    public MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+
     public PlayerData.PlayerDataBase playerData;
     public PlayerData.PlayerDataBase originalData;
-    private PlayerAni AniControll;
-    private BuildManager buildManager;
+    public PlayerAni AniControll;
+    [HideInInspector]
+    public BuildManager buildManager;
     private HintManager hintManager;
     [HideInInspector] public isDead deadManager;
     private Ray ray;
@@ -51,7 +55,7 @@ public class Player : Photon.MonoBehaviour
         canMove_Atk,
         canMvoe_Build,
         UAV,
-        beHit,
+        notMove,
         Combo
     }
     private statesData myState = statesData.canMove_Atk;
@@ -94,15 +98,12 @@ public class Player : Photon.MonoBehaviour
                 headImage = GameObject.Find("headImage_leftTop").GetComponent<Image>();
 
             headImage.sprite = playerData.headImage;
-            //MyCore.P_ATK += UpdateAtkData;
         }
         else
         {
             nav.enabled = false;
             this.enabled = false;
         }
-
-        //    InvokeRepeating("TestAtk", 2f, TestAtkTime);
     }
 
     #region 恢復初始數據
@@ -217,9 +218,6 @@ public class Player : Photon.MonoBehaviour
             AddPower();
 
         nowCanDo();
-
-        if (Input.GetKeyDown(KeyCode.F3))
-            StartCoroutine(Death());
     }
 
     private void FixedUpdate()
@@ -254,7 +252,7 @@ public class Player : Photon.MonoBehaviour
                 else
                     UAV_Btn(statesData.canMvoe_Build);
                 break;
-            case statesData.beHit:
+            case statesData.notMove:
                 Dodge_Btn();
                 break;
             case statesData.Combo:
@@ -286,11 +284,13 @@ public class Player : Photon.MonoBehaviour
     private void Dodge_Btn()
     {
         if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt)))
-        {
-            Dodge_FCN(nowMouseDir());
-            ConsumeAP(20f);
-            MySkill = skillData.Dodge;
-            MyState = statesData.canMove_Atk;
+        {            
+            if (ConsumeAP(20f))
+            {
+                MySkill = skillData.Dodge;
+                MyState = statesData.canMove_Atk;
+                Dodge_FCN(nowMouseDir());
+            }
         }
     }
     //開關UAV
@@ -391,7 +391,7 @@ public class Player : Photon.MonoBehaviour
             }*/
 
             #region 尋找下一個位置方向
-            Vector3 tmpNextPos = nav.steeringTarget - transform.position;
+            Vector3 tmpNextPos = nav.steeringTarget - transform.localPosition;
             tmpNextPos.y = transform.localPosition.y;
             if (tmpNextPos != Vector3.zero)
             {
@@ -402,7 +402,7 @@ public class Player : Photon.MonoBehaviour
             #endregion
 
             #region 判斷是否到最終目標點→否則執行移動
-            Vector3 maxDisGap = nav.destination - transform.position;
+            Vector3 maxDisGap = nav.destination - transform.localPosition;
             float maxDis = maxDisGap.sqrMagnitude;
             if (maxDis < Mathf.Pow(playerData.stoppingDst, 2))
             {
@@ -427,22 +427,26 @@ public class Player : Photon.MonoBehaviour
         if (photonView.isMine)
         {
             AniControll.beOtherHit();
-            MyState = statesData.beHit;
+            MyState = statesData.notMove;
         }
     }
     #endregion
 
     #region 功能
     //消耗能量
-    private void ConsumeAP(float _value)
+    private bool ConsumeAP(float _value)
     {
         if (playerData.Ap_original - _value >= 0)
         {
             playerData.Ap_original -= _value;
             leftTopPowerBar.fillAmount = playerData.Ap_original / playerData.Ap_Max;
+            return true;
         }
         else
+        {
             hintManager.CreatHint("能量不足");
+            return false;
+        }
     }
     private void AddPower()
     {        
@@ -459,15 +463,12 @@ public class Player : Photon.MonoBehaviour
         CharacterRot = Quaternion.LookRotation(_dir.normalized);
         transform.rotation = CharacterRot;
         Net.RPC("GoDodge", PhotonTargets.All, _dir);
-        //AniControll.GoDodge(_dir);
-        StartCoroutine(Dodge_Delay(playerData.Dodget_Delay-0.3f));
+        StartCoroutine(MatchTimeManager.SetCountDown(Dodge_End, playerData.Dodget_Delay));
     }
-    //閃避功能延遲
-    IEnumerator Dodge_Delay(float _time)
+    //閃避結束執行
+    void Dodge_End()
     {
-        yield return new WaitForSeconds(0.3f);
-        MySkill = skillData.None;
-        yield return new WaitForSeconds(_time);
+     //   MySkill = skillData.None;
         canDodge = true;
     }
     #endregion

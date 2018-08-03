@@ -55,7 +55,7 @@ public class Queen_Ani : PlayerAni
                 break;
             //閃避取消
             case (1):
-                CancleAllAni();
+                GoBackIdle_canMove();
                 SwitchAtkRange(2);
                 break;
             //結束點
@@ -63,7 +63,7 @@ public class Queen_Ani : PlayerAni
                 if (!anim.GetBool("Action"))
                 {
                     anim.SetTrigger("ExitCombo");
-                    CancleAllAni();
+                    GoBackIdle_canMove();
                     SwitchAtkRange(2);
                 }
                 break;
