@@ -38,6 +38,7 @@ public class PlayerAni : Photon.MonoBehaviour
 
     protected int comboIndex;
     protected float beHit_time = 0;
+    protected bool canStiffness = true;
 
     protected Tweener myTweener;
 
@@ -112,10 +113,16 @@ public class PlayerAni : Photon.MonoBehaviour
             //武器回背上
             case (0):
                 weapon.transform.SetParent(swordRecyclePos);
+                weapon.transform.localPosition = new Vector3(0, 0, 0);
+                weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+                weapon.transform.localScale = new Vector3(1, 1, 1);
                 break;
             //武器回手上
             case (1):
                 weapon.transform.SetParent(pullSwordPos);
+                weapon.transform.localPosition = new Vector3(0, 0, 0);
+                weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+                weapon.transform.localScale = new Vector3(1, 1, 1);
                 break;
             //玩家不可移動
             case (2):
@@ -133,99 +140,57 @@ public class PlayerAni : Photon.MonoBehaviour
     #region 被攻擊僵直反饋
     public void beOtherHit()
     {
-        if (player.MySkill == Player.skillData.Dodge)
-            return;
-
         if (!player.deadManager.checkDead)
         {
-            CancleAllAni();
-
-            if (beHit_time <= 0)
+            if (canStiffness)
             {
-                // Debug.Log("beHIT延遲" + beHit_time);
-                beHit_time = 0.45f;
-                StartCoroutine(waitHitTime());
+                canStiffness = false;
+                StartCoroutine(player.MatchTimeManager.SetCountDown(StiffnessEnd, beHit_time));
             }
         }
     }
-
-    protected IEnumerator waitHitTime()
+    void StiffnessEnd()
     {
-
-       /* StartCoroutine(Timer.NextFrame(() =>
-        {
-            beHit_time -= Time.deltaTime;
-
-            if (player.MySkill == Player.skillData.Dodge)
-            {
-                player.stopAnything_Switch(false);
-                yield break;
-            }
-
-            if (beHit_time <= 0)
-            {
-                player.stopAnything_Switch(false);
-                yield break;
-            }
-        }));*/
-        while (true)
-        {
-            yield return new WaitForEndOfFrame();
-            beHit_time -= Time.deltaTime;
-
-            if (player.MySkill == Player.skillData.Dodge)
-            {
-                player.stopAnything_Switch(false);
-                yield break;
-            }
-
-            if (beHit_time <= 0)
-            {
-                player.stopAnything_Switch(false);
-                yield break;
-            }
-        }
+        canStiffness = true;
+        player.stopAnything_Switch(false);
     }
     #endregion
 
     //取消動作Ani
     protected void CancleAllAni()
     {
-        if (player.MyState == Player.statesData.Combo)
-        {
-            comboIndex = 0;
-            anim.SetInteger("comboIndex", 0);
-            canClick = true;
-            Ani_Run(false);
-            nextComboBool = false;
-            after_shaking = false;
-            brfore_shaking = false;
-            player.MyState = Player.statesData.canMove_Atk;
+        ComboAniEnd();
+        SwitchAtkRange(8);
+        Ani_Run(false);
+    }
+
+    public void GoBackIdle_canMove()
+    {
+        ComboAniEnd();
+        Ani_Run(false);
+        player.stopAnything_Switch(false);
+    }
+
+    void ComboAniEnd()
+    {
+        comboIndex = 0;
+        anim.SetInteger("comboIndex", 0);
+        canClick = true;
+        nextComboBool = false;
+        after_shaking = false;
+        brfore_shaking = false;
+        if (myTweener != null)
             myTweener.Kill();
-        }
-        else
-        {
-            Ani_Run(false);
-            player.stopAnything_Switch(false);
-        }
     }
 
     #region 閃避
     [PunRPC]
     public void GoDodge(Vector3 _dir)
     {
-        //player.Net.RPC("getDodgeAni", PhotonTargets.All);
         CancleAllAni();
         anim.SetTrigger("Dodge");
-        GoMovePoint(_dir, 18f, .65f, Ease.OutExpo);
+        GoMovePoint(_dir, 18f, .25f, Ease.OutExpo);
     }
-
-    /*[PunRPC]
-    public void getDodgeAni()
-    {
-        comboCheck(1);
-        anim.SetTrigger("Dodge");
-    }*/
     #endregion
 
     #region Combo
@@ -396,14 +361,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void pushOtherTarget(Vector3 _dir, float _dis)
     {
-        /* sss[0] = transform.localPosition;
-         sss[1] = transform.localPosition + _dir.normalized * _dis / 2;
-         sss[2] = transform.localPosition + _dir.normalized * _dis;
-         Vector3 ggg = _dir.normalized * _dis * 2;
-         sss[3] = sss[1] + new Vector3(ggg.x, 0, ggg.y);
-         sss[4] = sss[0] + new Vector3(ggg.x, 0, ggg.y);*/
-        //myTweener = transform.DOPath(sss, 1f).SetEase(Ease.OutBounce);
-        comboCheck(1);
+        CancleAllAni();
         myTweener = transform.DOMove(transform.localPosition + _dir.normalized * _dis, .6f).SetEase(Ease.OutBack);
         myTweener.OnUpdate(stopMoveBack);
     }

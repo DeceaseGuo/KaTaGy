@@ -36991,7 +36991,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierGapTime: 0.55
   arraySoldier: {fileID: 1598956575}
-  bornSoldier: 1
+  bornSoldier: 0
 --- !u!114 &1332093344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38833,7 +38833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SecondsBeforeStart: 40.4
-  isAutoBorn: 1
+  isAutoBorn: 0
   allTimeText: {fileID: 738595691}
   nextWaveText: {fileID: 1898698680}
 --- !u!82 &1398734229

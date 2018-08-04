@@ -104,6 +104,7 @@ public class Attribute_HP : Photon.MonoBehaviour
         {
             player.playerData.Hp_original -= tureDamage;
             BeHitChangeColor();
+            ani.SetBool("PullSword", true);
             if (ifHit)
             {
                 ani.SetTrigger("Hit");

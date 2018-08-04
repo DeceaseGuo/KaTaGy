@@ -50,17 +50,12 @@ public class Allen_Ani : PlayerAni
                 canClick = true;
                 anim.SetBool("Action", false);
                 break;
-            //閃避取消
-            case (1):
-                CancleAllAni();
-                SwitchAtkRange(8);
-                break;
             //結束點
             case (2):
                 if (!anim.GetBool("Action"))
                 {
                     anim.SetTrigger("ExitCombo");
-                    CancleAllAni();
+                    GoBackIdle_canMove();
                     SwitchAtkRange(8);
                 }
                 break;

@@ -764,22 +764,6 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.99144536
-        functionName: WeaponChangePos
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
-          type: 3}
-        floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
-      - time: 0
-        functionName: WeaponChangePos
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
-          type: 3}
-        floatParameter: 0
-        intParameter: 2
-        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -1023,22 +1007,6 @@ ModelImporter:
           type: 3}
         floatParameter: 0
         intParameter: 1
-        messageOptions: 0
-      - time: 0.99826145
-        functionName: WeaponChangePos
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
-          type: 3}
-        floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
-      - time: 0
-        functionName: WeaponChangePos
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
-          type: 3}
-        floatParameter: 0
-        intParameter: 2
         messageOptions: 0
       transformMask:
       - path: 

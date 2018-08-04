@@ -496,7 +496,7 @@ public class EnemyControl : Photon.MonoBehaviour
     void findNextPath()
     {
         Vector3 tmpNextPos = nav.steeringTarget - transform.position;
-        tmpNextPos.y = 0;
+        tmpNextPos.y = transform.localPosition.y;
 
         if (tmpNextPos != Vector3.zero)
             CharacterRot = Quaternion.LookRotation(tmpNextPos);
