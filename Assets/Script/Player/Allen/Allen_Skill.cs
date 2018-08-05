@@ -5,7 +5,8 @@ using DG.Tweening;
 
 public class Allen_Skill : Photon.MonoBehaviour
 {
-    [SerializeField] Player playerScript;
+    private Player playerScript;
+    private PlayerAni aniScript;
     //抓
     private Tweener grabSkill;
     [Tooltip("lineRenderer鎖鏈")]
@@ -22,9 +23,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     private bool isForward = false;
     private GameObject catchObj = null;
 
-    //暫時
-    public LayerMask testMask;
-
+    
     /*private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
@@ -36,6 +35,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     private void Start()
     {
         playerScript = GetComponent<Player>();
+        aniScript = GetComponent<PlayerAni>();
     }
 
     #region 抓取技能
@@ -60,7 +60,7 @@ public class Allen_Skill : Photon.MonoBehaviour
         {
             if (catchObj == null)
             {
-                Collider[] enemy = Physics.OverlapSphere(grab_MovePos.position, handRadiu, testMask);
+                Collider[] enemy = Physics.OverlapSphere(grab_MovePos.position, handRadiu, aniScript.canAtkMask);
                 if (enemy.Length != 0)
                 {
                     catchObj = enemy[0].gameObject;

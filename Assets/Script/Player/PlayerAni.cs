@@ -10,11 +10,11 @@ public class PlayerAni : Photon.MonoBehaviour
     protected Animator anim;
 
     [Header("武器")]
-    public GameObject weapon;
-    public Transform swordRecyclePos;   //回收武器的地方
-    public Transform pullSwordPos;      //拔起武器的地方
+   // public GameObject weapon;
+    public MeshRenderer swordRecyclePos;   //回收武器的地方
+    public MeshRenderer pullSwordPos;      //拔起武器的地方
     public Transform weapon_Detect;     //武器攻擊判斷中心
-    public Transform weapon_Detect_Hand; //第2個攻擊判斷區域(艾倫手)
+    //public Transform weapon_Detect_Hand; //第2個攻擊判斷區域(艾倫手)
     public LayerMask canAtkMask;
 
     [Header("Combo")]
@@ -48,55 +48,12 @@ public class PlayerAni : Photon.MonoBehaviour
         player = GetComponent<Player>();
 
         cameraControl = SmoothFollow.instance;
-
-        if (photonView.isMine)
-        {
-            checkCurrentPlay();
-        }
-       /* else
-        {
-            this.enabled = false;
-        }*/
     }
 
     /* private void Update()
      {
          DetectAtkRanage();
      }*/
-
-    #region 改變正確玩家(可以攻擊的對象)
-    void checkCurrentPlay()
-    {
-        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
-        {
-            player.Net.RPC("changeLayer", PhotonTargets.All, 30);
-            canAtkMask = GameManager.instance.getPlayer1_Mask;
-            farDistance += GameManager.instance.getPlayer1_Mask;
-            player.arrow.gameObject.layer = 0;
-            player.Net.RPC("changeMask_1", PhotonTargets.Others);
-        }
-        else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
-        {
-            player.Net.RPC("changeLayer", PhotonTargets.All, 31);
-            canAtkMask = GameManager.instance.getPlayer2_Mask;
-            farDistance += GameManager.instance.getPlayer2_Mask;
-            player.arrow.gameObject.layer = 0;
-            player.Net.RPC("changeMask_2", PhotonTargets.Others);
-        }
-    }
-    [PunRPC]
-    public void changeMask_1()
-    {
-        canAtkMask = GameManager.instance.getPlayer1_Mask;
-        farDistance += GameManager.instance.getPlayer1_Mask;
-    }
-    [PunRPC]
-    public void changeMask_2()
-    {
-        canAtkMask = GameManager.instance.getPlayer2_Mask;
-        farDistance += GameManager.instance.getPlayer2_Mask;
-    }
-    #endregion
 
     #region 武器切換
     [PunRPC]
@@ -112,17 +69,22 @@ public class PlayerAni : Photon.MonoBehaviour
         {
             //武器回背上
             case (0):
-                weapon.transform.SetParent(swordRecyclePos);
-                weapon.transform.localPosition = new Vector3(0, 0, 0);
-                weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-                weapon.transform.localScale = new Vector3(1, 1, 1);
+                /*     weapon.transform.SetParent(swordRecyclePos);
+                     weapon.transform.localPosition = new Vector3(0, 0, 0);
+                     weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+                     weapon.transform.localScale = new Vector3(1, 1, 1);*/
+                swordRecyclePos.enabled = true;
+                pullSwordPos.enabled = false;
+
                 break;
             //武器回手上
             case (1):
-                weapon.transform.SetParent(pullSwordPos);
-                weapon.transform.localPosition = new Vector3(0, 0, 0);
-                weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-                weapon.transform.localScale = new Vector3(1, 1, 1);
+                /* weapon.transform.SetParent(pullSwordPos);
+                 weapon.transform.localPosition = new Vector3(0, 0, 0);
+                 weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+                 weapon.transform.localScale = new Vector3(1, 1, 1);*/
+                swordRecyclePos.enabled = false;
+                pullSwordPos.enabled = true;
                 break;
             //玩家不可移動
             case (2):
