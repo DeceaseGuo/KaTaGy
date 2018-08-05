@@ -284,9 +284,12 @@ public class BuildManager : MonoBehaviour
     #region 退回電量
     public void obtaniElectricity(Turret_Manager tur_manager)
     {
-        int t = findCost_Electricity(tur_manager.DataName);
-        tur_manager.power.firstE.Use_Electricit(t);
-        Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
+        if (tur_manager.power != null)
+        {
+            int t = findCost_Electricity(tur_manager.DataName);
+            tur_manager.power.firstE.Use_Electricit(t);
+            Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
+        }
     }
     #endregion
 
