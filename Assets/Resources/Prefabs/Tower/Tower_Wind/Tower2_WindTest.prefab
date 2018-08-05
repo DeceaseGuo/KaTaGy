@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 65854029470279968}
   - component: {fileID: 114737864377177434}
   - component: {fileID: 114645060204286374}
-  m_Layer: 18
+  m_Layer: 0
   m_Name: Tower2_WindTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}

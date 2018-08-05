@@ -117,9 +117,15 @@ public class SceneObjManager : MonoBehaviour
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:
+                enemy_Player = _obj;
                 break;
             case GameManager.NowTarget.Soldier:
                 enemySoldierObjs.Add(_obj);
+                break;
+            case GameManager.NowTarget.Electricity:
+                {
+                    enemyTowerObjs.Add(_obj);
+                }
                 break;
             case GameManager.NowTarget.Tower:
                 enemyTowerObjs.Add(_obj);
@@ -139,6 +145,7 @@ public class SceneObjManager : MonoBehaviour
         switch (_whoIs)
         {
             case GameManager.NowTarget.Player:
+                enemy_Player = null;
                 break;
             case GameManager.NowTarget.Soldier:
                 {
@@ -176,6 +183,14 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
                     enemySoldierObjs.Remove(_obj);
+                break;
+            case GameManager.NowTarget.Electricity:
+                {
+                    if (enemyTowerObjs.Contains(_obj))
+                    {
+                        enemyTowerObjs.Remove(_obj);
+                    }
+                }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
