@@ -52,15 +52,11 @@ public class Electricity : Photon.MonoBehaviour
         originalTurretData = TurretData.instance.getTowerData(DataName);
         buildManager = BuildManager.instance;
         playerObtain = PlayerObtain.instance;
-        deadManager = GetComponent<isDead>();
-        deadManager.ifDead(false);
         origine_Electricity = resource_Electricity;
     }
 
     private void Start()
     {
-        formatData();
-
         if (photonView.isMine)
         {
             checkCurrentPlay();
@@ -73,6 +69,7 @@ public class Electricity : Photon.MonoBehaviour
 
     private void OnEnable()
     {
+        formatData();
         if (photonView.isMine)
         {
             ShowElectricitRange(true);
@@ -120,7 +117,23 @@ public class Electricity : Photon.MonoBehaviour
     #region 恢復初始數據
     protected void formatData()
     {
-        deadManager.ifDead(false);
+        if (deadManager == null)
+        {
+            deadManager = GetComponent<isDead>();
+            deadManager.ifDead(false);
+        }
+        else
+        {
+            deadManager.ifDead(false);
+            if (photonView.isMine)
+            {
+                SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+            }
+            else
+            {
+                SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+            }
+        }
 
         turretData = originalTurretData;
         healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
@@ -146,14 +159,14 @@ public class Electricity : Photon.MonoBehaviour
         {
             if(photonView.isMine)
             {
-                //SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Electricity);
+                SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Electricity);
                 ShowElectricitRange(false);
                 dead();
             }
-            /*else
+            else
             {
                 SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Electricity);
-            }*/
+            }
             deadManager.ifDead(true);
             deathTimer = StartCoroutine(Death());
         }
@@ -185,7 +198,7 @@ public class Electricity : Photon.MonoBehaviour
         connectElectricitys.Clear();
         connectTowers.Clear();
         myTouch.Clear();
-        formatData();
+        //formatData();
         returnBulletPool();
         StopCoroutine(deathTimer);
         deathTimer = null;
@@ -331,13 +344,13 @@ public class Electricity : Photon.MonoBehaviour
         }
     }
     #endregion
-    [SerializeField]List<GameObject> o = new List<GameObject>();
+
     #region 死亡做的事
     public void dead()
     {
         Debug.Log("然後就死掉了");
         List<Electricity> e = new List<Electricity>();
-        
+        List<GameObject> o = new List<GameObject>();
         foreach (var item in myTouch)
         {
             item.myTouch.Remove(this);

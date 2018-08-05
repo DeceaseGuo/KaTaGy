@@ -71,7 +71,7 @@ public class Bullet_Normal : Photon.MonoBehaviour
                 target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 0, CalculatorDamage());
                 break;
             case (GameManager.NowTarget.Player):
-                target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, CalculatorDamage());
+                target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, CalculatorDamage(), transform.forward, false);
                 break;
             case (GameManager.NowTarget.Tower):
                 target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, CalculatorDamage());

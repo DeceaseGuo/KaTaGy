@@ -2351,7 +2351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 2
-  dead: 0
+  notFeedBack: 0
 --- !u!114 &114454684593881948
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2527,9 +2527,6 @@ MonoBehaviour:
     m_Bits: 0
   myTarget: []
   agentPoints: []
-  target: {fileID: 0}
-  firstAtk: 0
-  ifAtkMoveStop: 0
   myRender: {fileID: 137665488934913142}
   UI_HpObj: {fileID: 225329297914210818}
   UI_HpBar: {fileID: 114864166845612310}

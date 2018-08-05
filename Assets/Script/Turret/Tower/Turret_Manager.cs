@@ -32,14 +32,13 @@ namespace AtkTower
 
         private void Awake()
         {
-            floatingText = FloatingTextController.instance;
             Net = GetComponent<PhotonView>();
+            floatingText = FloatingTextController.instance;
             originalTurretData = TurretData.instance.getTowerData(DataName);
         }
 
         private void Start()
-        {
-            formatData();
+        {           
             if (photonView.isMine)
             {
                 checkCurrentPlay();
@@ -49,6 +48,11 @@ namespace AtkTower
                 this.enabled = false;
                 return;
             }
+        }
+
+        private void OnEnable()
+        {
+            formatData();
         }
 
         private void Update()
@@ -66,6 +70,7 @@ namespace AtkTower
             if (target == null)
             {
                 FindEnemy();
+                //print("沒有目標");
             }
             else
             {
@@ -90,14 +95,14 @@ namespace AtkTower
             else
             {
                 deadManager.ifDead(false);
-                /*if (photonView.isMine)
+                if (photonView.isMine)
                 {
                     SceneManager.AddMyList(gameObject, deadManager.myAttributes);
                 }
                 else
                 {
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
-                }*/
+                }
             }
 
             turretData = originalTurretData;
@@ -125,19 +130,46 @@ namespace AtkTower
         #region 尋找敵人
         public void FindEnemy()
         {
-            Collider[] AllEnemys = Physics.OverlapSphere(transform.position, turretData.Atk_Range + 1.5f, currentMask);
-
-            foreach (var enemyObj in AllEnemys)
+            //Collider[] AllEnemys = Physics.OverlapSphere(transform.position, turretData.Atk_Range + 1.5f, currentMask);
+            if (SceneManager.enemy_Player != null)
             {
-                Vector3 maxDisGap = enemyObj.transform.position - transform.position;
-                float maxDis = maxDisGap.sqrMagnitude;
+                float dis = (SceneManager.enemy_Player.transform.position - transform.position).sqrMagnitude;
+                if (dis <= Mathf.Pow(turretData.Atk_Range, 2))
+                {
+                    print("在距離內");
+                    if (!SceneManager.enemy_Player.GetComponent<isDead>().checkDead)
+                    {
+                        print("還活著");
+                        if (SceneManager.enemy_Player.gameObject.activeInHierarchy)
+                        {
+                            print("當作目標");
+                            target = SceneManager.enemy_Player.transform;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            CheckDis(SceneManager.enemySoldierObjs);
+            CheckDis(SceneManager.enemyTowerObjs);
+        }
+
+        void CheckDis(List<GameObject> enemys)
+        {
+            foreach (var enemyObj in enemys)
+            {
+                //Vector3 maxDisGap = enemyObj.transform.position - transform.position;
+                float maxDis = (enemyObj.transform.position - transform.position).sqrMagnitude;
 
                 if (maxDis <= Mathf.Pow(turretData.Atk_Range, 2) && maxDis >= Mathf.Pow(turretData.Atk_MinRange, 2))
                 {
                     if (!enemyObj.GetComponent<isDead>().checkDead)
                     {
                         if (enemyObj.gameObject.activeInHierarchy)
+                        {
                             target = enemyObj.transform;
+                            return;
+                        }
                     }
                 }
             }
@@ -194,7 +226,7 @@ namespace AtkTower
         {
             if (target != null && !turretData.Fad_overHeat)
             {
-                if (nowCD <= 0 &&photonView.isMine)
+                if (nowCD <= 0 && photonView.isMine)
                 {
                     Tower_shoot();
                     nowCD = turretData.Atk_Gap;
@@ -298,13 +330,13 @@ namespace AtkTower
             {
                 if (photonView.isMine)
                 {
-                    //SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
                     BuildManager.instance.obtaniElectricity(this);
                 }
-                /*else
+                else
                 {
                     SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
-                }*/
+                }
 
                 deadManager.ifDead(true);
                 StartCoroutine(Death());
@@ -313,7 +345,6 @@ namespace AtkTower
             openPopupObject(tureDamage);
         }
         #endregion
-
 
         #region 傷害顯示
         void openPopupObject(float _damage)
@@ -334,7 +365,7 @@ namespace AtkTower
         protected virtual IEnumerator Death()
         {
             yield return new WaitForSeconds(1.5f);
-            formatData();
+            //formatData();
             returnBulletPool();
         }
         #endregion

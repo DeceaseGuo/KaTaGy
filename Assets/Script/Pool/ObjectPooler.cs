@@ -93,7 +93,6 @@ public class ObjectPooler : MonoBehaviour
         else
         {
             Net.RPC("SetActiveT", PhotonTargets.All, _pos);
-            AddInList(objectToSpawn, objectToSpawn.GetComponent<isDead>().myAttributes, Net.isMine);
         }
         return objectToSpawn;
     }
@@ -108,7 +107,6 @@ public class ObjectPooler : MonoBehaviour
         else
         {
             Net.RPC("SetActiveF", PhotonTargets.All);
-            RemoveInList(_obj, _obj.GetComponent<isDead>().myAttributes, Net.isMine);
         }
         poolDictionary[_name].Enqueue(_obj);
     }
@@ -134,34 +132,6 @@ public class ObjectPooler : MonoBehaviour
 
         obj.transform.SetParent(transform);
         return obj;
-    }
-    #endregion
-
-    #region list
-    private SceneObjManager sceneObjManager;
-    private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
-    void AddInList(GameObject _obj, GameManager.NowTarget _whoIs, bool ismine)
-    {
-        if (ismine)
-        {
-            SceneManager.AddMyList(_obj, _whoIs);
-        }
-        else
-        {
-            SceneManager.AddEnemyList(_obj, _whoIs);
-        }
-    }
-
-    void RemoveInList(GameObject _obj, GameManager.NowTarget _whoIs, bool ismine)
-    {
-        if (ismine)
-        {
-            SceneManager.RemoveMyList(_obj, _whoIs);
-        }
-        else
-        {
-            SceneManager.RemoveEnemyList(_obj, _whoIs);
-        }
     }
     #endregion
 }

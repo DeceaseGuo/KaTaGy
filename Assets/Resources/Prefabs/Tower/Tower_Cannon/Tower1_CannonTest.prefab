@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 114380071654693808}
   - component: {fileID: 114990760195376294}
   - component: {fileID: 114385197776226878}
-  m_Layer: 18
+  m_Layer: 0
   m_Name: Tower1_CannonTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
