@@ -84,7 +84,11 @@ public class PlayerObtain : MonoBehaviour
     #region 檢查電力夠不夠
     public bool Check_ElectricityAmount(int resource_Electricity, int _electricity)
     {
-        if (resource_Electricity > _electricity)
+        if (resource_Electricity <= 0)
+        {
+            return false;
+        }
+        if (resource_Electricity >= _electricity)
             return true;
         else
             return false;
