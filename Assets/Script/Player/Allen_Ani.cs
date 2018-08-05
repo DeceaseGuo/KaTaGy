@@ -144,7 +144,7 @@ public class Allen_Ani : PlayerAni
 
         if (startDetect_1)
         {
-            ProduceCheckBox(weapon_Detect_Hand, new Vector3(2.5f, 1.5f, 1.5f));
+           // ProduceCheckBox(weapon_Detect_Hand, new Vector3(2.5f, 1.5f, 1.5f));
         }
         if (startDetect_2)
         {

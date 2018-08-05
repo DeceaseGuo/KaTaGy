@@ -169,8 +169,8 @@ public class Queen_Ani : PlayerAni
        //轉刀
          if (startDetect_2)
         {
-            Collider[] enemies = Physics.OverlapBox(weapon_Detect_Hand.position, new Vector3(9.0f, 7.5f, 1.6f), weapon_Detect_Hand.rotation, canAtkMask);
-            GetCurrentTarget(enemies);
+           // Collider[] enemies = Physics.OverlapBox(weapon_Detect_Hand.position, new Vector3(9.0f, 7.5f, 1.6f), weapon_Detect_Hand.rotation, canAtkMask);
+           // GetCurrentTarget(enemies);
         }
 
         /*if (startDetect_3)

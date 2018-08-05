@@ -56,12 +56,6 @@ public class SceneObjManager : MonoBehaviour
     {
         List<GameObject> tmpObj = new List<GameObject>();
         float nowDis = 0;
-        for (int i = 0; i < enemySoldierObjs.Count; i++)
-        {
-            nowDis = Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position);
-            if (nowDis < _dis)
-                tmpObj.Add(enemySoldierObjs[i]);            
-        }
 
         if (canAtkTower)
         {
@@ -80,6 +74,13 @@ public class SceneObjManager : MonoBehaviour
                 tmpObj.Add(enemy_Player);
         }
 
+        for (int i = 0; i < enemySoldierObjs.Count; i++)
+        {
+            nowDis = Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position);
+            if (nowDis < _dis)
+                tmpObj.Add(enemySoldierObjs[i]);            
+        }
+
         return tmpObj;
     }
 
@@ -90,8 +91,6 @@ public class SceneObjManager : MonoBehaviour
         
         switch (_whoIs)
         {
-            case GameManager.NowTarget.Player:
-                break;
             case GameManager.NowTarget.Soldier:
                 mySoldierObjs.Add(_obj);
                 break;
@@ -104,8 +103,6 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Tower:
                 myTowerObjs.Add(_obj);
                 break;
-            case GameManager.NowTarget.Core:
-                break;
             default:
                 break;
         }
@@ -116,15 +113,11 @@ public class SceneObjManager : MonoBehaviour
         Debug.Log("AddEnemyList " + _obj.name);
         switch (_whoIs)
         {
-            case GameManager.NowTarget.Player:
-                break;
             case GameManager.NowTarget.Soldier:
                 enemySoldierObjs.Add(_obj);
                 break;
             case GameManager.NowTarget.Tower:
                 enemyTowerObjs.Add(_obj);
-                break;
-            case GameManager.NowTarget.Core:
                 break;
             default:
                 break;
@@ -138,8 +131,6 @@ public class SceneObjManager : MonoBehaviour
         Debug.Log("RemoveMyList " + _obj.name);
         switch (_whoIs)
         {
-            case GameManager.NowTarget.Player:
-                break;
             case GameManager.NowTarget.Soldier:
                 {
                     if (mySoldierObjs.Contains(_obj))
@@ -171,8 +162,6 @@ public class SceneObjManager : MonoBehaviour
         Debug.Log("RemoveEnemyList " + _obj.name);
         switch (_whoIs)
         {
-            case GameManager.NowTarget.Player:
-                break;
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
                     enemySoldierObjs.Remove(_obj);

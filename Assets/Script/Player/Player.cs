@@ -117,13 +117,49 @@ public class Player : Photon.MonoBehaviour
                 headImage = GameObject.Find("headImage_leftTop").GetComponent<Image>();
 
             headImage.sprite = playerData.headImage;
+            checkCurrentPlay();
         }
         else
         {
             nav.enabled = false;
+            SceneObjManager.Instance.enemy_Player = gameObject;
             this.enabled = false;
         }
     }
+
+    #region 改變正確玩家(可以攻擊的對象)
+    void checkCurrentPlay()
+    {
+        if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 30);
+            AniControll.canAtkMask = GameManager.instance.getPlayer1_Mask;
+            AniControll.farDistance += GameManager.instance.getPlayer1_Mask;
+            arrow.gameObject.layer = 0;
+            Net.RPC("changeMask_1", PhotonTargets.Others);
+        }
+        else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
+        {
+            Net.RPC("changeLayer", PhotonTargets.All, 31);
+            AniControll.canAtkMask = GameManager.instance.getPlayer2_Mask;
+            AniControll.farDistance += GameManager.instance.getPlayer2_Mask;
+            arrow.gameObject.layer = 0;
+            Net.RPC("changeMask_2", PhotonTargets.Others);
+        }
+    }
+    [PunRPC]
+    public void changeMask_1()
+    {
+        AniControll.canAtkMask = GameManager.instance.getPlayer1_Mask;
+        AniControll.farDistance += GameManager.instance.getPlayer1_Mask;
+    }
+    [PunRPC]
+    public void changeMask_2()
+    {
+        AniControll.canAtkMask = GameManager.instance.getPlayer2_Mask;
+        AniControll.farDistance += GameManager.instance.getPlayer2_Mask;
+    }
+    #endregion
 
     #region 恢復初始數據
     public void formatData()

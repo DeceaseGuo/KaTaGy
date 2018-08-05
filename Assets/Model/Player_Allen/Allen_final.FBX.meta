@@ -243,25 +243,25 @@ ModelImporter:
     4300006: hand
     4300008: bighand
     7400000: T_pose
-    7400002: Idle
-    7400004: hit1
+    7400002: Idle_Atk
+    7400004: hit
     7400006: hit2
     7400008: hit fly
-    7400010: run
+    7400010: Run_Atk
     7400012: dodge
     7400014: dead
     7400016: combo1
     7400018: combo2
     7400020: combo3
     7400022: combo4
-    7400024: switch to biuld
-    7400026: biuld idle
+    7400024: Switch_to_Biuld
+    7400026: build_Idle
     7400028: biuld hit1
     7400030: biuld hit2
-    7400032: biuld run
+    7400032: build_run
     7400034: biulding
     7400036: biuld dead
-    7400038: switch to idle
+    7400038: Switch_to_Atk_Idle
     7400040: skill1_1
     7400042: skill1_2
     7400044: skill2
@@ -339,7 +339,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Idle
+      name: Idle_Atk
       takeName: Take 001
       firstFrame: 7
       lastFrame: 41
@@ -352,11 +352,11 @@ ModelImporter:
       loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 1
-      loopBlendPositionY: 1
+      loopBlendPositionY: 0
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
+      keepOriginalPositionXZ: 1
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
@@ -619,7 +619,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: hit1
+      name: hit
       takeName: Take 001
       firstFrame: 43
       lastFrame: 65
@@ -633,7 +633,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -1459,7 +1459,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: run
+      name: Run_Atk
       takeName: Take 001
       firstFrame: 164
       lastFrame: 185
@@ -1473,7 +1473,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -1751,8 +1751,8 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
@@ -3419,7 +3419,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: switch to biuld
+      name: Switch_to_Biuld
       takeName: Take 001
       firstFrame: 332
       lastFrame: 372
@@ -3433,7 +3433,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -3441,7 +3441,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.7520165
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -3699,7 +3707,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: biuld idle
+      name: build_Idle
       takeName: Take 001
       firstFrame: 374
       lastFrame: 408
@@ -3713,7 +3721,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -4539,7 +4547,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: biuld run
+      name: build_run
       takeName: Take 001
       firstFrame: 474
       lastFrame: 494
@@ -4553,7 +4561,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -5379,7 +5387,7 @@ ModelImporter:
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: switch to idle
+      name: Switch_to_Atk_Idle
       takeName: Take 001
       firstFrame: 549
       lastFrame: 589
@@ -5393,7 +5401,7 @@ ModelImporter:
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -5401,7 +5409,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.1754035
+        functionName: WeaponChangePos
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -7629,11 +7645,11 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
