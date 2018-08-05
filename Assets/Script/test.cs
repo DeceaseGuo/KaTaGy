@@ -10,12 +10,21 @@ public class test : MonoBehaviour
     public float coutnDown;
     public UnityEvent kkk;
 
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+       /* if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            TestA();
+            kkk.Invoke();
+            Debug.Log("click");
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+
+
+        }*/
+
     }
 
     void TestA()

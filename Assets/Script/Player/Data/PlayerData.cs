@@ -38,6 +38,11 @@ public class PlayerData:MonoBehaviour
         public float Ap_Max;
         public float Ap_original;
         public float add_APValue;
+        [Header("技能CD")]
+        public float skillCD_Q;
+        public float skillCD_W;
+        public float skillCD_E;
+        public float skillCD_R;
         [Header("升級相關")]
         public float Add_hp1;
         public float Add_hp2;

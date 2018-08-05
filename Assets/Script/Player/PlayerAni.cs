@@ -37,7 +37,7 @@ public class PlayerAni : Photon.MonoBehaviour
     protected Vector3 currentAtkDir;
 
     protected int comboIndex;
-    protected float beHit_time = 0;
+    protected float beHit_time = 0.25f;
     protected bool canStiffness = true;
 
     protected Tweener myTweener;
@@ -151,6 +151,7 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     void StiffnessEnd()
     {
+        Debug.Log("重製");
         canStiffness = true;
         player.stopAnything_Switch(false);
     }
@@ -270,7 +271,7 @@ public class PlayerAni : Photon.MonoBehaviour
     protected RaycastHit hit;
     protected void stopMove()
     {
-        if (player.MySkill != Player.skillData.Dodge)
+      //  if (player.MySkill != Player.skillData.Dodge)
             RedressDir();
 
         if (Physics.BoxCast(detectStartPos.position, new Vector3(2f, 4, 0.2f), detectStartPos.forward, out hit, detectStartPos.rotation, 7.0f, farDistance))
