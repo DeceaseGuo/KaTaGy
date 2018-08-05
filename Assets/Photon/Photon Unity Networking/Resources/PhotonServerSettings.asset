@@ -18,7 +18,7 @@ MonoBehaviour:
   PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
-  ServerAddress: 192.168.1.121
+  ServerAddress: 120.113.98.111
   ServerPort: 5055
   VoiceServerPort: 5055
   JoinLobby: 0
@@ -53,6 +53,7 @@ MonoBehaviour:
   - SetActiveF
   - SetActiveT
   - showHeatBar
+  - Skill_Q
   - takeDamage
   - TP_Combo
   - TP_Data

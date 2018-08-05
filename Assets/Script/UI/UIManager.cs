@@ -42,12 +42,12 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         CloseTowerMenu();
-        reSetTween();
+        ReSetTween();
     }
 
     #region 初始化
     //倉庫彈出
-    void reSetTween()
+    void ReSetTween()
     {
         myTweener = warehouseObj.transform.DOLocalMoveX(739.5f, .2f).SetEase(Ease.OutBack);
         myTweener.SetAutoKill(false);

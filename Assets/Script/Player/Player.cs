@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(NavMeshAgent))]
@@ -48,6 +49,9 @@ public class Player : Photon.MonoBehaviour
     private Vector3 mousePosition;
     public Transform arrow;
 
+    public UnityEvent skill_Q;
+    public UnityEvent cancelSkill;
+
     #region 狀態
     public enum statesData
     {
@@ -60,14 +64,29 @@ public class Player : Photon.MonoBehaviour
     }
     private statesData myState = statesData.canMove_Atk;
     public statesData MyState { get { return myState; } set { myState = value; } }
-    public enum skillData
+    /*public enum skillData
     {
         None,
-        Dodge
+        Q,
+        W,
+        E,
+        R
     }
     private skillData mySkill = skillData.None;
     public skillData MySkill { get { return mySkill; } private set { mySkill = value; } }
+    */
+    public enum buffData
+    {
+        None,
+        NoDamage,
+        NoCC,
+        Shield //盾
+    }
+    private buffData nowBuff = buffData.None;
+    public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }
     #endregion
+
+    private bool canSkill_Q = true;
 
     private void Awake()
     {
@@ -218,6 +237,12 @@ public class Player : Photon.MonoBehaviour
             AddPower();
 
         nowCanDo();
+        CorrectDirection();
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+
+            transform.position = mousePosition;
+        }
     }
 
     private void FixedUpdate()
@@ -234,15 +259,17 @@ public class Player : Photon.MonoBehaviour
         switch (MyState)
         {
             case statesData.canMove_Atk:
-                ClickPoint();
+                if (Input.GetMouseButtonDown(1))
+                    ClickPoint();
                 UAV_Btn(statesData.UAV);
-
-                CharacterAtk_Q();
+                DetectSkillBtn();
+                CharacterAtk_F();
                 Dodge_Btn();
                 ATK_Build_Btn();
                 break;
             case statesData.canMvoe_Build:
-                ClickPoint();
+                if (Input.GetMouseButtonDown(1))
+                    ClickPoint();
                 UAV_Btn(statesData.UAV);
                 ATK_Build_Btn();
                 break;
@@ -256,8 +283,8 @@ public class Player : Photon.MonoBehaviour
                 Dodge_Btn();
                 break;
             case statesData.Combo:
-                comboRayPoint();
-                CharacterAtk_Q();
+                DetectSkillBtn();
+                CharacterAtk_F();
                 Dodge_Btn();
                 AniControll.DetectAtkRanage();
                 break;
@@ -284,10 +311,10 @@ public class Player : Photon.MonoBehaviour
     private void Dodge_Btn()
     {
         if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt)))
-        {            
+        {
             if (ConsumeAP(20f))
             {
-                MySkill = skillData.Dodge;
+                // MySkill = skillData.Dodge;
                 MyState = statesData.canMove_Atk;
                 Dodge_FCN(nowMouseDir());
             }
@@ -302,10 +329,10 @@ public class Player : Photon.MonoBehaviour
             MyState = _data;
         }
     }
-    //按下Q→目前為combo
-    private void CharacterAtk_Q()
+    //按下F→目前為combo
+    private void CharacterAtk_F()
     {
-        if (Input.GetKeyDown("q") && AniControll.canClick)
+        if (Input.GetKeyDown(KeyCode.F) && AniControll.canClick)
         {
             getIsRunning = false;
             nav.ResetPath();
@@ -321,6 +348,23 @@ public class Player : Photon.MonoBehaviour
             AniControll.TypeCombo(tmpDir);
         }
     }
+    //技能
+    private void DetectSkillBtn()
+    {
+        Character_Skill_Q();
+    }
+    private void Character_Skill_Q()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && canSkill_Q)
+        {
+            canSkill_Q = false;
+            StopAllOnlyDodge();
+            transform.forward = arrow.forward;
+            Net.RPC("Skill_Q", PhotonTargets.All);
+            //skill_Q.Invoke();
+            StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
+        }
+    }
     #endregion
 
     #region 偵測點擊位置
@@ -330,27 +374,15 @@ public class Player : Photon.MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
         {
-            mousePosition = hit.point;
-            nowMouseDir();
             if (hit.transform.tag == "CanClickMove")
             {
-                if (Input.GetMouseButtonDown(1))
-                {
-                    clickPointPos.transform.position = hit.point;
-                    getTatgetPoint(clickPointPos.transform.position);
-
-                }
-            }
-
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-
-                transform.position = hit.point;
+                clickPointPos.transform.position = hit.point;
+                getTatgetPoint(clickPointPos.transform.position);
             }
         }
     }
     //combo狀態時偵測滑鼠位置用
-    void comboRayPoint()
+    void CorrectDirection()
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -365,7 +397,7 @@ public class Player : Photon.MonoBehaviour
     {
         Vector3 tmpDir = mousePosition - transform.position;
         tmpDir.y = transform.localPosition.y;
-        arrow.transform.rotation = Quaternion.LookRotation(tmpDir);
+        arrow.rotation = Quaternion.LookRotation(tmpDir);
         return tmpDir.normalized;
     }
     #endregion
@@ -384,11 +416,11 @@ public class Player : Photon.MonoBehaviour
     {
         if (getIsRunning)
         {
-          /*  if (!Chara.isGrounded)
-            {
-                Debug.Log("不在地板上");
-                return;
-            }*/
+            /*  if (!Chara.isGrounded)
+              {
+                  Debug.Log("不在地板上");
+                  return;
+              }*/
 
             #region 尋找下一個位置方向
             Vector3 tmpNextPos = nav.steeringTarget - transform.localPosition;
@@ -432,6 +464,45 @@ public class Player : Photon.MonoBehaviour
     }
     #endregion
 
+    #region 負面效果
+    //暈眩 僵直
+    public void GetDeBuff_Stun()
+    {        
+        stopAnything_Switch(true);
+        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, 0.75f));
+    }
+    //緩速
+    protected virtual void GetDeBuff_Slow()
+    {
+
+    }
+    //破甲
+    protected virtual void GetDeBuff_DestoryDef()
+    {
+
+    }
+    //燒傷
+    protected virtual void GetDeBuff_Burn()
+    {
+
+    }
+    //擊退
+    /*[PunRPC]
+    protected virtual void pushOtherTarget(Vector3 _dir, float _dis)
+    {
+        this.transform.DOMove(transform.localPosition + _dir.normalized * _dis, .8f).SetEase(Ease.OutBounce);
+        Quaternion Rot = Quaternion.LookRotation(-_dir.normalized);
+        this.transform.rotation = Rot;
+    }*/
+
+    void Recover_Stun()
+    {
+        GoBack_AtkState();
+        //if (!photonView.isMine)
+        //    GetComponent<PhotonTransformView>().enabled = true;
+    }
+    #endregion
+
     #region 功能
     //消耗能量
     private bool ConsumeAP(float _value)
@@ -449,7 +520,7 @@ public class Player : Photon.MonoBehaviour
         }
     }
     private void AddPower()
-    {        
+    {
         playerData.Ap_original += playerData.add_APValue * Time.deltaTime;
         playerData.Ap_original = Mathf.Clamp(playerData.Ap_original, 0, playerData.Ap_Max);
         leftTopPowerBar.fillAmount = playerData.Ap_original / playerData.Ap_Max;
@@ -468,8 +539,28 @@ public class Player : Photon.MonoBehaviour
     //閃避結束執行
     void Dodge_End()
     {
-     //   MySkill = skillData.None;
+        //   MySkill = skillData.None;
         canDodge = true;
+    }
+
+    [PunRPC]
+    public void Skill_Q()
+    {
+        Invoke("testCatch", .6f);
+    }
+
+    public void testCatch()
+    {
+        skill_Q.Invoke();
+    }
+    //技能Q冷卻時間
+    void CountDown_Q()
+    {
+        canSkill_Q = true;
+    }
+    public void KillAllSkill()
+    {
+        cancelSkill.Invoke();
     }
     #endregion
 
@@ -498,6 +589,18 @@ public class Player : Photon.MonoBehaviour
                 MyState = statesData.canMvoe_Build;
         }
     }
+    //停止行動 只能閃避
+    public void StopAllOnlyDodge()
+    {
+        isStop();
+        MyState = statesData.notMove;
+    }
+    //回攻擊狀態
+    public void GoBack_AtkState()
+    {
+        print("atkover");
+        MyState = statesData.canMove_Atk;
+    }
 
     //切換目前模式(攻擊 , 建造)
     public void switchWeapon(bool _can)
@@ -522,6 +625,7 @@ public class Player : Photon.MonoBehaviour
     }
     #endregion
 
+    #region 死亡
     public IEnumerator Death()
     {
         stopAnything_Switch(true);
@@ -539,4 +643,5 @@ public class Player : Photon.MonoBehaviour
             Net.RPC("SetActiveF", PhotonTargets.All);            
         }
     }
+    #endregion
 }

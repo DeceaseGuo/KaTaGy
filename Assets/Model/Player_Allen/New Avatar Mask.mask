@@ -1,0 +1,262 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: New Avatar Mask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: bighand
+    m_Weight: 0
+  - m_Path: body
+    m_Weight: 0
+  - m_Path: Circle002
+    m_Weight: 0
+  - m_Path: Circle002/Circle001
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle003
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle003/Circle008
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle003/Circle008/Circle009
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle003/Circle008/Circle009/Circle010
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle004
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle004/Circle006
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle004/Circle006/Circle005
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle011/Circle004/Circle006/Circle005/Circle007
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle012
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle013
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle014
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle015
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/Circle016
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Allen_L_hand_nub
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Allen_L_finger1_1_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Circle020
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Circle020/Allen_L_finger1_2_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Circle020/Circle021
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Circle020/Circle021/Allen_L_finger1_3_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle017/Circle020/Circle021/Allen_L_finger1_3_bone/Allen_L_finger1_nub_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Allen_L_finger2_1_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Circle022
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Circle022/Allen_L_finger2_2_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Circle022/Circle023
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Circle022/Circle023/Allen_L_finger2_3_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle018/Circle022/Circle023/Allen_L_finger2_3_bone/Allen_L_finger2_nub_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Allen_L_finger3_1_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Circle024
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Circle024/Allen_L_finger3_2_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Circle024/Circle025
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Circle024/Circle025/Allen_L_finger3_3_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_L_clav_bone/Allen_L_shoulder_bone/Allen_L_forearm_bone/Allen_L_wrist_bone/Allen_L_hand_bone/Circle019/Circle024/Circle025/Allen_L_finger3_3_bone/Allen_L_finger3_nub_bone
+    m_Weight: 1
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_neck_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_neck_bone/Allen_head_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_neck_bone/Allen_head_bone/Allen_head_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle026
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle026/Allen_R_thumb1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle026/Circle027
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle026/Circle027/Allen_R_thumb2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle026/Circle027/Allen_R_thumb2_bone/Allen_R_thumb_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle028
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle028/Allen_R_index1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle028/Circle029
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle028/Circle029/Allen_R_index2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle028/Circle029/Allen_R_index2_bone/Allen_R_index_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle030
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle030/Allen_R_middle1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle030/Circle033
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle030/Circle033/Allen_R_middle2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle030/Circle033/Allen_R_middle2_bone/Allen_R_middle_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle031
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle031/Allen_R_ring1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle031/Circle034
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle031/Circle034/Allen_R_ring2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle031/Circle034/Allen_R_ring2_bone/Allen_R_ring_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle032
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle032/Allen_R_pinky1_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle032/Circle035
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle032/Circle035/Allen_R_pinky2_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/hand
+      1/Circle032/Circle035/Allen_R_pinky2_bone/Allen_R_pinky_nub_bone
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/Allen_R_clav_bone/Allen_R_shoulder_bone/Allen_R_forearm_bone/Bone004/handsword
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/Allen_spine1_bone/Allen_spine2_bone/Allen_spine3_bone/backsword
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/pelvis_nub
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh/knee
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh/knee/ankle
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh/knee/ankle/toe
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh/knee/ankle/toe/toe_nub
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh(mirrored)
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh(mirrored)/knee(mirrored)
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh(mirrored)/knee(mirrored)/ankle(mirrored)
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh(mirrored)/knee(mirrored)/ankle(mirrored)/toe(mirrored)
+    m_Weight: 0
+  - m_Path: Circle002/Circle001/pelvis/thigh(mirrored)/knee(mirrored)/ankle(mirrored)/toe(mirrored)/toe_nub(mirrored)
+    m_Weight: 0
+  - m_Path: Circle002/Line001
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003/Dummy004
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003/Dummy004/IK Chain004
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003/Dummy005
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003/Dummy005/IK Chain001
+    m_Weight: 0
+  - m_Path: Circle002/Line001/Dummy001/Dummy003/Dummy005/IK Chain003
+    m_Weight: 0
+  - m_Path: Circle002/Line002
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008/Dummy006
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008/Dummy006/IK Chain005
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008/Dummy007
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008/Dummy007/IK Chain002
+    m_Weight: 0
+  - m_Path: Circle002/Line002/Dummy002/Dummy008/Dummy007/IK Chain006
+    m_Weight: 0
+  - m_Path: hand
+    m_Weight: 0
