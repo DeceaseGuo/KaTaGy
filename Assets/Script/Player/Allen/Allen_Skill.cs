@@ -56,26 +56,41 @@ public class Allen_Skill : Photon.MonoBehaviour
         if (chain.enabled)
             chain.SetPosition(1, grab_MovePos.position);
 
-        // if (!photonView.isMine)
+        if (catchObj == null)
         {
-            if (catchObj == null)
+            Collider[] enemy = Physics.OverlapSphere(grab_MovePos.position, handRadiu, aniScript.canAtkMask);
+            if (enemy.Length != 0)
             {
-                Collider[] enemy = Physics.OverlapSphere(grab_MovePos.position, handRadiu, aniScript.canAtkMask);
-                if (enemy.Length != 0)
+                catchObj = enemy[0].gameObject;
+                isDead who = catchObj.GetComponent<isDead>();
+                if (who != null)
                 {
-                    catchObj = enemy[0].gameObject;
-                    // catchObj.GetComponent<PhotonTransformView>().enabled = false;
-                    catchObj.SendMessage("GetDeBuff_Stun");
-                    print("抓到");
+                    switch (who.myAttributes)
+                    {
+                        case GameManager.NowTarget.Player:
+                            catchObj.SendMessage("GetDeBuff_Stun");
+                            break;
+                        case GameManager.NowTarget.Soldier:
+                            break;
+                        case GameManager.NowTarget.Tower:
+                            break;
+                        case GameManager.NowTarget.Core:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
             }
-            else
-            {
-                if (!photonView.isMine)
-                    catchObj.transform.position = new Vector3(grab_MovePos.transform.position.x, catchObj.transform.position.y, grab_MovePos.transform.position.z);
-            }
+        }
+        else
+        {
+            if (!photonView.isMine)
+                catchObj.transform.position = new Vector3(grab_MovePos.transform.position.x, catchObj.transform.position.y, grab_MovePos.transform.position.z);
         }
     }
     void ChangeHand_start()
