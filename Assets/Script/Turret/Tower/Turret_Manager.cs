@@ -73,9 +73,13 @@ namespace AtkTower
             {
                 FindEnemy();
                 //print("沒有目標");
-                nowCD = turretData.Atk_Gap;
+                if (nowCD <= 0)
+                {
+                    nowCD = turretData.Atk_Gap;
+                }
             }
-            else
+
+            if(target != null)
             {
                 nowCD -= Time.deltaTime;
                 DetectTarget();
@@ -153,21 +157,18 @@ namespace AtkTower
         #region 偵測是否死亡與超出攻擊範圍
         void DetectTarget()
         {
-            if (target != null)
+            if (target.GetComponent<isDead>().checkDead)
             {
-                if (target.GetComponent<isDead>().checkDead)
+                target = null;
+            }
+            else
+            {
+                Vector3 maxDisGap = target.transform.position - transform.position;
+                float distanceToEnemy = maxDisGap.sqrMagnitude;
+
+                if (distanceToEnemy > Mathf.Pow(turretData.Atk_Range, 2) || distanceToEnemy < Mathf.Pow(turretData.Atk_MinRange, 2))
                 {
                     target = null;
-                }
-                else
-                {
-                    Vector3 maxDisGap = target.transform.position - transform.position;
-                    float distanceToEnemy = maxDisGap.sqrMagnitude;
-
-                    if (distanceToEnemy > Mathf.Pow(turretData.Atk_Range, 2) || distanceToEnemy < Mathf.Pow(turretData.Atk_MinRange, 2))
-                    {
-                        target = null;
-                    }
                 }
             }
         }
@@ -176,21 +177,18 @@ namespace AtkTower
         #region 朝向敵方目標
         void LockOnTarget()
         {
-            if (target != null)
-            {
-                //砲台與敵人位置方向
-                Vector3 dir = target.position - Pos_attack.position;
-                //轉向dir
-                Quaternion lookRotation = Quaternion.LookRotation(dir);
-                Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
-                Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
-                float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
+            //砲台與敵人位置方向
+            Vector3 dir = target.position - Pos_attack.position;
+            //轉向dir
+            Quaternion lookRotation = Quaternion.LookRotation(dir);
+            Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
+            Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
+            float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
 
-               // Debug.Log("角度" + tmpAngle);
-                if (tmpAngle < 35)
-                {
-                    DecidedNowTurret();
-                }
+            // Debug.Log("角度" + tmpAngle);
+            if (tmpAngle < 35)
+            {
+                DecidedNowTurret();
             }
         }
         #endregion
@@ -200,7 +198,7 @@ namespace AtkTower
         {
             if (target != null && !turretData.Fad_overHeat)
             {
-                if (nowCD <= 0 && photonView.isMine)
+                if (nowCD < 0 && photonView.isMine)
                 {
                     Tower_shoot();
                     nowCD = turretData.Atk_Gap;
@@ -278,6 +276,35 @@ namespace AtkTower
         #endregion
 
         #endregion
+
+        /*public void test(float _damage)
+        {
+            if (deadManager.checkDead)
+                return;
+
+            float tureDamage = CalculatorDamage(_damage);
+
+            if (turretData.UI_Hp > 0)
+                turretData.UI_Hp -= tureDamage;
+
+            if (turretData.UI_Hp <= 0)
+            {
+                if (photonView.isMine)
+                {
+                    SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    BuildManager.instance.obtaniElectricity(this);
+                }
+                else
+                {
+                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
+                }
+
+                deadManager.ifDead(true);
+                StartCoroutine(Death());
+            }
+
+            openPopupObject(tureDamage);
+        }*/
 
         #region 傷害
         public Image healthBar;

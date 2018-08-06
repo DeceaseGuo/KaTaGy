@@ -24,7 +24,7 @@ public class PhotonNetManager : Photon.PunBehaviour
     [HideInInspector]
     public int GoGameNumber = 2;//開始遊戲所需人數
     [SerializeField] float reciprocalTime;//遊戲倒數時間
-    [SerializeField] GameObject HostI;
+    [SerializeField] Text HostI;
     [SerializeField] GameObject matchBtn_obj;
     [SerializeField] Button cancel_btn;
     [SerializeField] GameObject SignIn;
@@ -51,7 +51,7 @@ public class PhotonNetManager : Photon.PunBehaviour
     {
         Debug.Log("OnMasterClientSwitched");
         if (PhotonNetwork.isMasterClient && HostI != null)
-            HostI.SetActive(true);
+            HostI.gameObject.SetActive(true);
     }
 
     public override void OnConnectedToMaster()
@@ -83,7 +83,7 @@ public class PhotonNetManager : Photon.PunBehaviour
         Debug.Log("開始配對");
 
         if (PhotonNetwork.isMasterClient)
-            HostI.SetActive(true);
+            HostI.gameObject.SetActive(true);
 
         if (PhotonNetwork.playerList.Length == GoGameNumber)
         {
@@ -170,17 +170,18 @@ public class PhotonNetManager : Photon.PunBehaviour
 
     public override void OnDisconnectedFromPhoton()
     {
-        Debug.Log("伺服器連線已中斷");
+        HostI.text = "伺服器連線已中斷";
+        HostI.gameObject.SetActive(true);
         if (StopMenu.instance)
         {
             StopMenu.instance.SurrenderClick();
         }
-        Application.Quit();
+        //Application.Quit();
     }
 
     public override void OnLeftRoom()
     {
-        HostI.SetActive(false);
+        HostI.gameObject.SetActive(false);
         Debug.Log("取消配對");
     }
     #endregion

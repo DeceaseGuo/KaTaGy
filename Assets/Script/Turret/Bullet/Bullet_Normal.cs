@@ -50,7 +50,7 @@ public class Bullet_Normal : Photon.MonoBehaviour
     {
         hit = false;
         int viewID = _target.GetComponent<PhotonView>().viewID;
-        //targetDead = _target.GetComponent<isDead>();
+        targetDead = _target.GetComponent<isDead>();
         GetComponent<PhotonView>().RPC("TP_Data", PhotonTargets.All, viewID);
     }
     #endregion
@@ -60,7 +60,7 @@ public class Bullet_Normal : Photon.MonoBehaviour
     {
         PhotonView _Photon = PhotonView.Find(_id);
         target = _Photon.gameObject.transform;
-        targetDead = _Photon.transform.GetComponent<isDead>();
+        //targetDead = _Photon.transform.GetComponent<isDead>();
     }
 
     void HitTarget()
@@ -100,7 +100,7 @@ public class Bullet_Normal : Photon.MonoBehaviour
     }
 
     //返回物件池
-    public void returnBulletPool()
+    void returnBulletPool()
     {
         if (photonView.isMine)
         {
