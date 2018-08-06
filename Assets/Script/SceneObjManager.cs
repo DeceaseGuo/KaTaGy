@@ -89,14 +89,15 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 mySoldierObjs.Add(_obj);
                 break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    myElectricityObjs.Add(_obj.GetComponent<Electricity>());
-                    myTowerObjs.Add(_obj);
-                }
-                break;
             case GameManager.NowTarget.Tower:
-                myTowerObjs.Add(_obj);
+                {
+                    myTowerObjs.Add(_obj);
+                    Electricity _e = _obj.GetComponent<Electricity>();
+                    if (_e != null)
+                    {
+                        myElectricityObjs.Add(_e);
+                    }
+                }
                 break;
             default:
                 break;
@@ -110,11 +111,6 @@ public class SceneObjManager : MonoBehaviour
         {
             case GameManager.NowTarget.Soldier:
                 enemySoldierObjs.Add(_obj);
-                break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    enemyTowerObjs.Add(_obj);
-                }
                 break;
             case GameManager.NowTarget.Tower:
                 enemyTowerObjs.Add(_obj);
@@ -137,19 +133,17 @@ public class SceneObjManager : MonoBehaviour
                         mySoldierObjs.Remove(_obj);
                 }
                 break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    if (myElectricityObjs.Contains(_obj.GetComponent<Electricity>()))
-                    {
-                        myElectricityObjs.Remove(_obj.GetComponent<Electricity>());
-                        myTowerObjs.Remove(_obj);
-                    }
-                }
-                break;
             case GameManager.NowTarget.Tower:
                 {
                     if (myTowerObjs.Contains(_obj))
+                    {
                         myTowerObjs.Remove(_obj);
+                        Electricity _e = _obj.GetComponent<Electricity>();
+                        if (_e != null)
+                        {
+                            myElectricityObjs.Remove(_e);
+                        }
+                    }
                 }
                 break;
             default:
@@ -165,14 +159,6 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
                     enemySoldierObjs.Remove(_obj);
-                break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    if (enemyTowerObjs.Contains(_obj))
-                    {
-                        enemyTowerObjs.Remove(_obj);
-                    }
-                }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
