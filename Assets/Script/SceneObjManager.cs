@@ -46,16 +46,18 @@ public class SceneObjManager : MonoBehaviour
     {
         enemySoldierObjs.Add(_core);
     }
-    //加入敵人角色
-    public void SetPlayer(GameObject _player)
-    {
-        enemy_Player = _player;
-    }
 
     public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
     {
         List<GameObject> tmpObj = new List<GameObject>();
         float nowDis = 0;
+
+        if (canAtkPlay && enemy_Player != null)
+        {
+            nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
+            if (nowDis < _dis)
+                tmpObj.Add(enemy_Player);
+        }
 
         if (canAtkTower)
         {
@@ -65,13 +67,6 @@ public class SceneObjManager : MonoBehaviour
                 if (nowDis < _dis)
                     tmpObj.Add(enemyTowerObjs[i]);
             }
-        }
-
-        if (canAtkPlay && enemy_Player != null)
-        {
-            nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
-            if (nowDis < _dis)
-                tmpObj.Add(enemy_Player);
         }
 
         for (int i = 0; i < enemySoldierObjs.Count; i++)
@@ -94,14 +89,15 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 mySoldierObjs.Add(_obj);
                 break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    myElectricityObjs.Add(_obj.GetComponent<Electricity>());
-                    myTowerObjs.Add(_obj);
-                }
-                break;
             case GameManager.NowTarget.Tower:
-                myTowerObjs.Add(_obj);
+                {
+                    myTowerObjs.Add(_obj);
+                    Electricity _e = _obj.GetComponent<Electricity>();
+                    if (_e != null)
+                    {
+                        myElectricityObjs.Add(_e);
+                    }
+                }
                 break;
             default:
                 break;
@@ -115,11 +111,6 @@ public class SceneObjManager : MonoBehaviour
         {
             case GameManager.NowTarget.Soldier:
                 enemySoldierObjs.Add(_obj);
-                break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    enemyTowerObjs.Add(_obj);
-                }
                 break;
             case GameManager.NowTarget.Tower:
                 enemyTowerObjs.Add(_obj);
@@ -142,19 +133,17 @@ public class SceneObjManager : MonoBehaviour
                         mySoldierObjs.Remove(_obj);
                 }
                 break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    if (myElectricityObjs.Contains(_obj.GetComponent<Electricity>()))
-                    {
-                        myElectricityObjs.Remove(_obj.GetComponent<Electricity>());
-                        myTowerObjs.Remove(_obj);
-                    }
-                }
-                break;
             case GameManager.NowTarget.Tower:
                 {
                     if (myTowerObjs.Contains(_obj))
+                    {
                         myTowerObjs.Remove(_obj);
+                        Electricity _e = _obj.GetComponent<Electricity>();
+                        if (_e != null)
+                        {
+                            myElectricityObjs.Remove(_e);
+                        }
+                    }
                 }
                 break;
             default:
@@ -170,14 +159,6 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
                     enemySoldierObjs.Remove(_obj);
-                break;
-            case GameManager.NowTarget.Electricity:
-                {
-                    if (enemyTowerObjs.Contains(_obj))
-                    {
-                        enemyTowerObjs.Remove(_obj);
-                    }
-                }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
