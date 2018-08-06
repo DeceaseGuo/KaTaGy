@@ -159,13 +159,13 @@ public class Electricity : Photon.MonoBehaviour
         {
             if(photonView.isMine)
             {
-                SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Electricity);
+                SceneManager.RemoveMyList(gameObject, deadManager.myAttributes);
                 ShowElectricitRange(false);
                 dead();
             }
             else
             {
-                SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Electricity);
+                SceneManager.RemoveEnemyList(gameObject, deadManager.myAttributes);
             }
             deadManager.ifDead(true);
             deathTimer = StartCoroutine(Death());
@@ -250,13 +250,13 @@ public class Electricity : Photon.MonoBehaviour
     {
         foreach (var manager in TurretList)
         {
-            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<isDead>().myAttributes == GameManager.NowTarget.Electricity)
+            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<isDead>().myAttributes == deadManager.myAttributes)
             {
                 Debug.Log("continue");
                 continue;
             }
 
-            if (manager.GetComponent<isDead>().myAttributes == GameManager.NowTarget.Electricity)
+            if (manager.GetComponent<isDead>().myAttributes == deadManager.myAttributes)
             {
                 Debug.Log("myAttributes");
                 continue;
