@@ -70,7 +70,6 @@ public class GameManager : Photon.MonoBehaviour
         Soldier,
         Tower,
         Core,
-        Electricity,
         NoChange
     }
 
