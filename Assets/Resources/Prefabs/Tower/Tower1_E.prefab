@@ -347,7 +347,6 @@ MonoBehaviour:
   healthBar: {fileID: 114619767991907944}
   gridList: []
   ColliderGrids: []
-  o: []
 --- !u!114 &114208927042349302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -536,7 +535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5829af3bf5e39204da0e9f26a41c8d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myAttributes: 5
+  myAttributes: 3
   notFeedBack: 0
 --- !u!114 &114912160598240508
 MonoBehaviour:

@@ -163,13 +163,14 @@ public class Building : MonoBehaviour
     IEnumerator delayToBuildTurret()
     {
         bool suspend = false;
+        isDead _dead = buildManager.playerScript.GetComponent<isDead>();
         for (CD = 0; CD < tmpTurretBlueprint.turret_delayTime; CD += Time.deltaTime)
         {
             buildManager.build_countDown(CD);
             buildManager.playerScript.switchScaffolding(true);
                 
             #region 按下esc 中斷建造
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) || _dead.checkDead)
             {
                 buildManager.playerScript.switchScaffolding(false);
                 suspend = true;

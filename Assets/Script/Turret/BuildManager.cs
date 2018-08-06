@@ -65,15 +65,32 @@ public class BuildManager : MonoBehaviour
     {
         if (Input.GetKeyDown("a"))
         {
-            DestoryObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 50f);
-        }
-        if (Input.GetKeyDown("s"))
-        {
-            Turret_Manager tur_manager = DestoryObj.GetComponent<Turret_Manager>();
-            tur_manager.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 50f);
-            Debug.Log("tur_manager name : " + tur_manager.name);
+            Testdead(DestoryObj);
         }
     }
+
+    #region 測試用死亡方法
+    void Testdead(GameObject _obj)
+    {
+        GameManager.NowTarget _who = _obj.GetComponent<isDead>().myAttributes;
+        switch (_who)
+        {
+            case (GameManager.NowTarget.Soldier):
+                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 0, 1000f);
+                break;
+            case (GameManager.NowTarget.Player):
+                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 1000f, Vector3.zero, false);
+                break;
+            case (GameManager.NowTarget.Tower):
+                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 1000f);
+                break;
+            case (GameManager.NowTarget.Core):
+                break;
+            default:
+                return;
+        }
+    }
+    #endregion
 
     #region 付款
     public bool payment(bool _paid)
