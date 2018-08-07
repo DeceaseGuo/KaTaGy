@@ -113,47 +113,6 @@ public class Queen_Ani : PlayerAni
     }
     #endregion
 
-    #region 角色攻擊位移
-    public override void GoMovePos(int _t)
-    {
-        if (!photonView.isMine)
-            return;
-        if (GameManager.instance.open)
-        {
-
-            currentAtkDir = player.nowMouseDir();
-            player.CharacterRot = Quaternion.LookRotation(currentAtkDir.normalized);
-            transform.rotation = player.CharacterRot;
-        }
-
-        switch (anim.GetInteger("comboIndex"))
-        {
-            case (1):
-                GoMovePoint(currentAtkDir, 7f, .4f, Ease.OutBack);
-                break;
-            case (2):
-                GoMovePoint(currentAtkDir, 8f, .4f, Ease.OutBack);
-                break;
-            case (3):
-                GoMovePoint(currentAtkDir, 3.5f, .45f, Ease.OutBack);
-                break;
-            case (4):
-                GoMovePoint(currentAtkDir, 3.5f, .45f, Ease.OutBack);
-                break;
-            case (5):
-                if (_t == 0)
-                {
-                    GoMovePoint(currentAtkDir, 3f, .5f, Ease.OutBack);
-                }
-                else
-                {
-                    GoBackPoint(currentAtkDir, 5.5f, .5f, Ease.OutBack);
-                }
-                break;
-        }
-    }
-    #endregion
-
     #region 傷害判定
     public override void DetectAtkRanage()
     {

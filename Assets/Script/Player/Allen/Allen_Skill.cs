@@ -16,7 +16,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     [Tooltip("移動所需位置")]
     [SerializeField] Transform grab_MovePos;
     [Tooltip("開始時的手")]
-    [SerializeField] MeshRenderer handSmall;
+    [SerializeField] SkinnedMeshRenderer handSmall;
     [Tooltip("抓取時的手")]
     [SerializeField] MeshRenderer handBig;
     [SerializeField] float handRadiu;
@@ -37,6 +37,11 @@ public class Allen_Skill : Photon.MonoBehaviour
         playerScript = GetComponent<Player>();
         aniScript = GetComponent<PlayerAni>();
     }
+    //手的抓取範圍
+   /* private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(grab_MovePos.position, handRadiu);
+    }*/
 
     #region 抓取技能
     public void Q_GoGrab()
@@ -56,32 +61,46 @@ public class Allen_Skill : Photon.MonoBehaviour
         if (chain.enabled)
             chain.SetPosition(1, grab_MovePos.position);
 
-        if (catchObj == null)
+        if (catchObj == null && isForward)
         {
             Collider[] enemy = Physics.OverlapSphere(grab_MovePos.position, handRadiu, aniScript.canAtkMask);
             if (enemy.Length != 0)
             {
                 catchObj = enemy[0].gameObject;
+                
                 isDead who = catchObj.GetComponent<isDead>();
                 if (who != null)
                 {
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
-                            catchObj.SendMessage("GetDeBuff_Stun");
+                            catchObj.SendMessage("GetDeBuff_Stun",0.7f);
+                            if (!photonView.isMine)
+                                catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 5.5f, Vector3.zero, false);
                             break;
                         case GameManager.NowTarget.Soldier:
+                            catchObj.SendMessage("GetDeBuff_Stun", 1f);
+                            if (!photonView.isMine)
+                                catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
                             break;
                         case GameManager.NowTarget.Tower:
                             break;
                         case GameManager.NowTarget.Core:
                             break;
+                        case GameManager.NowTarget.NoChange:
+                            //傳送一個值給無傷害
+                            catchObj = null;
+                            break;
                         default:
                             break;
                     }
+                    aniScript.anim.SetBool("Catch", true);
+                    grabSkill.PlayBackwards();
+                    isForward = false;
                 }
                 else
                 {
+                    aniScript.anim.SetBool("Catch", true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
@@ -90,7 +109,8 @@ public class Allen_Skill : Photon.MonoBehaviour
         else
         {
             if (!photonView.isMine)
-                catchObj.transform.position = new Vector3(grab_MovePos.transform.position.x, catchObj.transform.position.y, grab_MovePos.transform.position.z);
+                if (catchObj != null)
+                    catchObj.transform.position = new Vector3(grab_MovePos.transform.position.x, catchObj.transform.position.y, grab_MovePos.transform.position.z);
         }
     }
     void ChangeHand_start()
@@ -105,6 +125,7 @@ public class Allen_Skill : Photon.MonoBehaviour
         if (isForward)
         {
             print("回收手");
+            aniScript.anim.SetBool("Catch", true);
             grabSkill.PlayBackwards();
             isForward = false;
         }
@@ -120,7 +141,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     {
         if (grabSkill != null)
             grabSkill.Kill();
-        
+        aniScript.anim.SetBool("Catch", false);
         isForward = false;
         catchObj = null;
         chain.enabled = false;

@@ -65,7 +65,7 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (isChose)
         {
-            GameObject soldier = ObjectPooler.instance.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
+            ObjectPooler.instance.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
         }
     }
 

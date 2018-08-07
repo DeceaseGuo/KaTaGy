@@ -44,6 +44,11 @@ public class Attribute_HP : Photon.MonoBehaviour
     private void LateUpdate()
     {
         displayHpBar();
+
+        if (Input.GetKeyDown("z"))
+        {
+            takeDamage(5f, Vector3.zero, true);
+        }
     }
 
     #region 打中效果
@@ -105,19 +110,20 @@ public class Attribute_HP : Photon.MonoBehaviour
             player.playerData.Hp_original -= tureDamage;
             BeHitChangeColor();
             ani.SetBool("PullSword", true);
-            if (ifHit)
+            if (player.playerData.Hp_original <= 0)
+            {
+                player.deadManager.ifDead(true);
+                StartCoroutine(player.Death());
+                UI_HpObj.SetActive(false);
+            }
+            openPopupObject(tureDamage);
+            if (ifHit && !player.deadManager.checkDead)
             {
                 ani.SetTrigger("Hit");
+                //ani.SetBool("StunRock", true);
                 player.beHit(_dir);
             }
         }
-        if (player.playerData.Hp_original <= 0)
-        {
-            player.deadManager.ifDead(true);
-            StartCoroutine(player.Death());
-            UI_HpObj.SetActive(false);
-        }
-        openPopupObject(tureDamage);
     }
     #endregion
 

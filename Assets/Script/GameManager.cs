@@ -6,17 +6,7 @@ using UnityEngine.UI;
 public class GameManager : Photon.MonoBehaviour
 {
     public static GameManager instance;
-    //開啟
-    public bool open;
-    public Toggle OpenToggle;
-    public void IsOpenToggle()
-    {
-        if (OpenToggle.isOn)
-            open = true;
-        else
-            open = false;
-    }
-    //
+    
     //單人
     public Toggle singleToggle;
     public void IsSingleToggle()

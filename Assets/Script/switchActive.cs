@@ -30,9 +30,7 @@ public class switchActive : Photon.PunBehaviour
     [PunRPC]
     public void SetActiveT(Vector3 _pos)
     {
-        if (_pos != null)
-            transform.position = _pos;
-
+        transform.position = _pos;
         gameObject.SetActive(true);
 
         if (transformView != null)

@@ -49,7 +49,6 @@ MonoBehaviour:
   - RequestForPickupItems
   - RequestForPickupTimes
   - returnBulletPool
-  - SecondDecide
   - SetActiveF
   - SetActiveT
   - showHeatBar
