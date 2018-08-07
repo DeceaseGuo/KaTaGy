@@ -17,6 +17,7 @@ public class Bullet_WindTower : Photon.MonoBehaviour
     [SerializeField] Vector3 offset;
     [SerializeField] Vector3 pushBox_Offset;
     public LayerMask pushMask;
+
     [Header("飛行與傷害間隔時間")]
     [SerializeField] float flyTime;
     [SerializeField] float fireCd = 0;
@@ -24,31 +25,72 @@ public class Bullet_WindTower : Photon.MonoBehaviour
 
     protected Tweener myTweener;
 
-    private void OnEnable()
+    private void Awake()
     {
-        if (Net == null)
-            Net = GetComponent<PhotonView>();
-        if (Data.objectName == null)
-            Data = TurretData.instance.getTowerData(DataName);
+        Data = TurretData.instance.getTowerData(DataName);
+        Debug.Log(Data);
+        Net = GetComponent<PhotonView>();
+        getMask();
     }
 
     private void Start()
-    {
-        if (photonView.isMine)
-            checkCurrentPlay();
+    { 
+        /*if (photonView.isMine)
+            checkCurrentPlay();*/
     }
 
     private void Update()
     {
-       // bulletMove();
+        // bulletMove();
+        /*if (!photonView.isMine)
+        {
+            DetectTarget();
+        }*/
         DetectTarget();
     }
 
     #region 目前為玩家幾
-    [PunRPC]
+    public void getMask()//主體其實沒作用
+    {
+        GameManager _gm = GameManager.instance;
+        if (photonView.isMine)
+        {
+            if(_gm.getMyPlayer() == GameManager.MyNowPlayer.player_1)
+            {
+                pushMask = _gm.getPlayer1_Mask;
+            }
+            else
+            {
+                pushMask = _gm.getPlayer2_Mask;
+            }
+        }
+        else
+        {
+            if (_gm.getMyPlayer() == GameManager.MyNowPlayer.player_1)
+            {
+                pushMask = _gm.getPlayer2_Mask;
+            }
+            else
+            {
+                pushMask = _gm.getPlayer1_Mask;
+            }
+        }
+    }
+
     public void checkCurrentPlay()
     {
         pushMask = GameManager.instance.correctMask;
+    }
+    #endregion
+
+    #region 找到目標
+    public void getTarget(Transform _target)
+    {
+        int viewID = _target.GetComponent<PhotonView>().viewID;
+        Net.RPC("TP_Data", PhotonTargets.All, viewID);       
+
+        if (photonView.isMine)
+            StartCoroutine("DisappearThis");
     }
     #endregion
 
@@ -59,18 +101,8 @@ public class Bullet_WindTower : Photon.MonoBehaviour
         nowTarget = _Photon.transform;
         transform.LookAt(nowTarget);
         dir = nowTarget.position - transform.position;
-        bulletMove();
-        if (photonView.isMine)
-            StartCoroutine("DisappearThis");
-    }
-
-    #region 找到目標
-    public void getTarget(Transform _target)
-    {
-        int viewID = _target.GetComponent<PhotonView>().viewID;
-        Net.RPC("TP_Data", PhotonTargets.All, viewID);
-    }
-    #endregion
+        bulletMove();       
+    }    
 
     #region 子彈移動
     void bulletMove()
@@ -90,7 +122,8 @@ public class Bullet_WindTower : Photon.MonoBehaviour
         _targetPoint.y = nowTarget.localPosition.y;
         myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime+.5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
-    }
+        Debug.Log("Move");
+    }//不會往前移動
     #endregion
 
     public void Reset_Rot()
@@ -110,25 +143,28 @@ public class Bullet_WindTower : Photon.MonoBehaviour
             if (_who == null)
                 return;
 
-            if (_who.myAttributes != GameManager.NowTarget.Tower && _who.myAttributes != GameManager.NowTarget.Core)
-                bePush_Obj.transform.localPosition += dir.normalized * /*distanceThisFrame*/1.7f;
-
-            if (!photonView.isMine)
-                return;
-
-            if (!checkIf(bePush_Obj.gameObject))
+            if (photonView.isMine)
+            {
+                giveDamage(bePush_Obj, _who);
+            }
+            else
+            {
+                if (_who.myAttributes != GameManager.NowTarget.Tower && _who.myAttributes != GameManager.NowTarget.Core)
+                    bePush_Obj.transform.localPosition += dir.normalized * /*distanceThisFrame*/1.7f;
+            }
+            /*if (!checkIf(bePush_Obj.gameObject))
             {
                 PhotonView _TargetNet = bePush_Obj.GetComponent<PhotonView>();
                 switch (_who.myAttributes)
                 {
                     case GameManager.NowTarget.Player:
-                        _TargetNet.RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage);
+                        _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage(), Vector3.zero, false);
                         break;
                     case GameManager.NowTarget.Soldier:
-                        _TargetNet.RPC("takeDamage", PhotonTargets.All, 0, Data.Atk_Damage);
+                        _TargetNet.RPC("takeDamage", PhotonTargets.All, 0, CalculatorDamage());
                         break;
                     case GameManager.NowTarget.Tower:
-                        _TargetNet.RPC("takeDamage", PhotonTargets.All, 4.5f);
+                        _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage());
                         break;
                     case GameManager.NowTarget.Core:
                         break;
@@ -137,10 +173,42 @@ public class Bullet_WindTower : Photon.MonoBehaviour
                 }
                 tmpNoDamage.Add(bePush_Obj.gameObject);
                 StartCoroutine(DelayDamage(bePush_Obj.gameObject));
-            }
+            }*/
         }
     }
     #endregion
+
+    //扣血
+    void giveDamage(Collider bePush_Obj, isDead _who)
+    {
+        if (!checkIf(bePush_Obj.gameObject))
+        {
+            PhotonView _TargetNet = bePush_Obj.GetComponent<PhotonView>();
+            switch (_who.myAttributes)
+            {
+                case GameManager.NowTarget.Player:
+                    _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage(), Vector3.zero, false);
+                    break;
+                case GameManager.NowTarget.Soldier:
+                    _TargetNet.RPC("takeDamage", PhotonTargets.All, 0, CalculatorDamage());
+                    break;
+                case GameManager.NowTarget.Tower:
+                    _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage());
+                    break;
+                case GameManager.NowTarget.Core:
+                    break;
+                default:
+                    break;
+            }
+            tmpNoDamage.Add(bePush_Obj.gameObject);
+            StartCoroutine(DelayDamage(bePush_Obj.gameObject));
+        }
+    }
+    //計算傷害
+    float CalculatorDamage()
+    {
+        return Data.Atk_Damage;
+    }
 
     #region 檢查敵人是否在無傷害間隔區 
     bool checkIf(GameObject _enemy)
@@ -174,9 +242,9 @@ public class Bullet_WindTower : Photon.MonoBehaviour
     void returnBulletPool()
     {
         if (photonView.isMine)
+        {
             ObjectPooler.instance.Repool(Data.bullet_Name, this.gameObject);
-        else
-            Net.RPC("SetActiveF", PhotonTargets.All);
+        }
     }
 
    /* void OnDrawGizmos()

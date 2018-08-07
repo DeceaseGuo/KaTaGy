@@ -12,17 +12,19 @@ namespace AtkTower
         protected TurretData.TowerDataBase turretData;
         protected TurretData.TowerDataBase originalTurretData;
         protected float nowCD = 0;
-        [SerializeField]
-        LayerMask currentMask;
+        [SerializeField] LayerMask currentMask;
         public int GridNumber;
         public Electricity power;
+
         //正確目標
         protected Transform target;
         [Header("位置")]
-        public Transform Pos_rotation;
+        [SerializeField] Transform Pos_rotation;
         public Transform Pos_attack;
+
         [Header("UI部分")]
         public Image Fad_energyBar;
+
         protected isDead deadManager;
         protected FloatingTextController floatingText;
         protected PhotonView Net;
@@ -57,7 +59,7 @@ namespace AtkTower
 
         private void Update()
         {
-            if (deadManager.checkDead || power == null || power.resource_Electricity <= 0)  //死亡或沒電
+            if (deadManager.checkDead || power == null || power.resource_Electricity < 0)  //死亡或沒電
             {
                 return;
             }
@@ -71,16 +73,17 @@ namespace AtkTower
             {
                 FindEnemy();
                 //print("沒有目標");
-            }
-            else
-            {
-                DetectTarget();
-                LockOnTarget();
+                if (nowCD <= 0)
+                {
+                    nowCD = turretData.Atk_Gap;
+                }
             }
 
-            if (nowCD > 0)
+            if(target != null)
             {
                 nowCD -= Time.deltaTime;
+                DetectTarget();
+                LockOnTarget();
             }
         }
 
@@ -107,7 +110,9 @@ namespace AtkTower
 
             turretData = originalTurretData;
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
-            Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
+            Fad_energyBar.fillAmount = 0.0f;
+            //Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
+
         }
         #endregion
 
@@ -130,70 +135,40 @@ namespace AtkTower
         #region 尋找敵人
         public void FindEnemy()
         {
-            //Collider[] AllEnemys = Physics.OverlapSphere(transform.position, turretData.Atk_Range + 1.5f, currentMask);
-            if (SceneManager.enemy_Player != null)
+            float d = 9999;
+            GameObject _target = null;
+            foreach (var enemy in SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true))
             {
-                float dis = (SceneManager.enemy_Player.transform.position - transform.position).sqrMagnitude;
-                if (dis <= Mathf.Pow(turretData.Atk_Range, 2))
+                float dis = Vector3.Distance(enemy.transform.position, transform.position);
+                if (dis > turretData.Atk_MinRange && dis < d)
                 {
-                    print("在距離內");
-                    if (!SceneManager.enemy_Player.GetComponent<isDead>().checkDead)
-                    {
-                        print("還活著");
-                        if (SceneManager.enemy_Player.gameObject.activeInHierarchy)
-                        {
-                            print("當作目標");
-                            target = SceneManager.enemy_Player.transform;
-                            return;
-                        }
-                    }
+                    d = dis;
+                    _target = enemy;
                 }
             }
 
-            CheckDis(SceneManager.enemySoldierObjs);
-            CheckDis(SceneManager.enemyTowerObjs);
-        }
-
-        void CheckDis(List<GameObject> enemys)
-        {
-            foreach (var enemyObj in enemys)
+            if (_target != null)
             {
-                //Vector3 maxDisGap = enemyObj.transform.position - transform.position;
-                float maxDis = (enemyObj.transform.position - transform.position).sqrMagnitude;
-
-                if (maxDis <= Mathf.Pow(turretData.Atk_Range, 2) && maxDis >= Mathf.Pow(turretData.Atk_MinRange, 2))
-                {
-                    if (!enemyObj.GetComponent<isDead>().checkDead)
-                    {
-                        if (enemyObj.gameObject.activeInHierarchy)
-                        {
-                            target = enemyObj.transform;
-                            return;
-                        }
-                    }
-                }
-            }
+                target = _target.transform;
+            }           
         }
         #endregion
 
         #region 偵測是否死亡與超出攻擊範圍
         void DetectTarget()
         {
-            if (target != null)
+            if (target.GetComponent<isDead>().checkDead)
             {
-                if (target.GetComponent<isDead>().checkDead)
+                target = null;
+            }
+            else
+            {
+                Vector3 maxDisGap = target.transform.position - transform.position;
+                float distanceToEnemy = maxDisGap.sqrMagnitude;
+
+                if (distanceToEnemy > Mathf.Pow(turretData.Atk_Range, 2) || distanceToEnemy < Mathf.Pow(turretData.Atk_MinRange, 2))
                 {
                     target = null;
-                }
-                else
-                {
-                    Vector3 maxDisGap = target.transform.position - transform.position;
-                    float distanceToEnemy = maxDisGap.sqrMagnitude;
-
-                    if (distanceToEnemy > Mathf.Pow(turretData.Atk_Range, 2) || distanceToEnemy < Mathf.Pow(turretData.Atk_MinRange, 2))
-                    {
-                        target = null;
-                    }
                 }
             }
         }
@@ -202,21 +177,18 @@ namespace AtkTower
         #region 朝向敵方目標
         void LockOnTarget()
         {
-            if (target != null)
-            {
-                //砲台與敵人位置方向
-                Vector3 dir = target.position - Pos_attack.position;
-                //轉向dir
-                Quaternion lookRotation = Quaternion.LookRotation(dir);
-                Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
-                Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
-                float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
+            //砲台與敵人位置方向
+            Vector3 dir = target.position - Pos_attack.position;
+            //轉向dir
+            Quaternion lookRotation = Quaternion.LookRotation(dir);
+            Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
+            Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
+            float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
 
-               // Debug.Log("角度" + tmpAngle);
-                if (tmpAngle < 35)
-                {
-                    DecidedNowTurret();
-                }
+            // Debug.Log("角度" + tmpAngle);
+            if (tmpAngle < 35)
+            {
+                DecidedNowTurret();
             }
         }
         #endregion
@@ -226,7 +198,7 @@ namespace AtkTower
         {
             if (target != null && !turretData.Fad_overHeat)
             {
-                if (nowCD <= 0 && photonView.isMine)
+                if (nowCD < 0 && photonView.isMine)
                 {
                     Tower_shoot();
                     nowCD = turretData.Atk_Gap;
@@ -240,7 +212,8 @@ namespace AtkTower
         {
             addHeat(1.0f);
             float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-            Net.RPC("showHeatBar", PhotonTargets.All, _value);
+            Fad_energyBar.fillAmount = _value;
+            //Net.RPC("showHeatBar", PhotonTargets.All, _value);
         }
         #endregion
 
@@ -254,7 +227,8 @@ namespace AtkTower
                     reduceHeat(1.0f);
         
                     float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-                    Net.RPC("showHeatBar", PhotonTargets.All, _value);
+                    Fad_energyBar.fillAmount = _value;
+                    //Net.RPC("showHeatBar", PhotonTargets.All, _value);
                 }
             }
             else
@@ -262,7 +236,8 @@ namespace AtkTower
                 reduceHeat(turretData.Over_downSpd);
 
                 float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-                Net.RPC("showHeatBar", PhotonTargets.All, _value);
+                Fad_energyBar.fillAmount = _value;
+                //Net.RPC("showHeatBar", PhotonTargets.All, _value);
             }
         }
 
@@ -273,7 +248,8 @@ namespace AtkTower
             float tmpValue = turretData.Fad_decreaseRate * Time.deltaTime * _speed;
             if (turretData.Fad_thermalEnergy - tmpValue <= 0)
             {
-                Net.RPC("changeColor", PhotonTargets.All, 242, 235, 0);
+                //Net.RPC("changeColor", PhotonTargets.All, 242, 235, 0);
+                Fad_energyBar.color = new Color(242, 235, 0);
                 turretData.Fad_overHeat = false;
             }
             else
@@ -288,7 +264,8 @@ namespace AtkTower
             if (turretData.Fad_thermalEnergy + tmpValue >= turretData.Fad_maxThermalEnergy)
             {
                 turretData.Fad_thermalEnergy = turretData.Fad_maxThermalEnergy;
-                Net.RPC("changeColor", PhotonTargets.All, 255, 142, 81);
+                //Net.RPC("changeColor", PhotonTargets.All, 255, 142, 81);
+                Fad_energyBar.color = new Color(255, 142, 81);
                 turretData.Fad_overHeat = true;
             }
             else
@@ -298,20 +275,36 @@ namespace AtkTower
         }
         #endregion
 
-        //熱量條傳遞
-        [PunRPC]
-        public void showHeatBar(float _value)
-        {
-            Fad_energyBar.fillAmount = _value;
-        }
-
-        //改顏色
-        [PunRPC]
-        public void changeColor(int _R, int _G, int _B)
-        {
-            Fad_energyBar.color = new Color(_R, _G, _B);
-        }
         #endregion
+
+        /*public void test(float _damage)
+        {
+            if (deadManager.checkDead)
+                return;
+
+            float tureDamage = CalculatorDamage(_damage);
+
+            if (turretData.UI_Hp > 0)
+                turretData.UI_Hp -= tureDamage;
+
+            if (turretData.UI_Hp <= 0)
+            {
+                if (photonView.isMine)
+                {
+                    SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    BuildManager.instance.obtaniElectricity(this);
+                }
+                else
+                {
+                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
+                }
+
+                deadManager.ifDead(true);
+                StartCoroutine(Death());
+            }
+
+            openPopupObject(tureDamage);
+        }*/
 
         #region 傷害
         public Image healthBar;
@@ -365,7 +358,6 @@ namespace AtkTower
         protected virtual IEnumerator Death()
         {
             yield return new WaitForSeconds(1.5f);
-            //formatData();
             returnBulletPool();
         }
         #endregion
@@ -375,21 +367,41 @@ namespace AtkTower
         {
             if (photonView.isMine)
                 ObjectPooler.instance.Repool(DataName, this.gameObject);
-            /*else
-                Net.RPC("SetActiveF", PhotonTargets.All);*/
         }
         #endregion
 
-      /*  public void OnDrawGizmos()
+        #region 過熱和顏色同步
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, turretData.Atk_Range);
-            if (target != null)
+            if (stream.isWriting)
             {
-                Gizmos.DrawLine(Pos_attack.position, target.position);
+                stream.SendNext(Fad_energyBar.fillAmount);
+                stream.SendNext(Fad_energyBar.color.r);
+                stream.SendNext(Fad_energyBar.color.g);
+                stream.SendNext(Fad_energyBar.color.b);
             }
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, turretData.Atk_MinRange);
-        }*/
+            else
+            {
+                Fad_energyBar.fillAmount = (float)stream.ReceiveNext();
+                float _r = (float)stream.ReceiveNext();
+                float _g = (float)stream.ReceiveNext();
+                float _b = (float)stream.ReceiveNext();
+
+                Fad_energyBar.color = new Color(_r, _g, _b);
+            }
+        }
+        #endregion
+
+        /*  public void OnDrawGizmos()
+          {
+              Gizmos.color = Color.red;
+              Gizmos.DrawWireSphere(transform.position, turretData.Atk_Range);
+              if (target != null)
+              {
+                  Gizmos.DrawLine(Pos_attack.position, target.position);
+              }
+              Gizmos.color = Color.blue;
+              Gizmos.DrawWireSphere(transform.position, turretData.Atk_MinRange);
+          }*/
     }
 }

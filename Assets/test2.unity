@@ -44980,7 +44980,7 @@ MonoBehaviour:
     headImage: {fileID: 21300000, guid: afffe7a1cc18cae4d95b7665d36567a5, type: 3}
     Atk_Damage: 10
     Atk_maxDamage: 0
-    Atk_Gap: 1
+    Atk_Gap: 3
     Atk_Range: 30
     Atk_MinRange: 10
     ATK_Level: 0
@@ -44988,7 +44988,7 @@ MonoBehaviour:
     def_base: 0
     DEF_Level: 0
     bullet_Name: 9
-    bullet_Speed: 70
+    bullet_Speed: 20
     UI_maxHp: 100
     UI_Hp: 100
     Fad_oneEnergy: 30

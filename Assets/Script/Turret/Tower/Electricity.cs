@@ -28,10 +28,6 @@ public class Electricity : Photon.MonoBehaviour
     [SerializeField] LayerMask GridMask;
     [SerializeField] LayerMask TowerMask;
 
-    int origine_Electricity;
-
-    //正確目標
-    protected Transform target;
     [Header("位置")]
     public Transform Pos_rotation;
 
@@ -42,6 +38,7 @@ public class Electricity : Photon.MonoBehaviour
     protected PhotonView Net;
     PlayerObtain playerObtain;
     BuildManager buildManager;
+    int origine_Electricity;
 
     private SceneObjManager sceneObjManager;
     private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
@@ -80,7 +77,7 @@ public class Electricity : Photon.MonoBehaviour
     int _mytouch = -1;
     private void FixedUpdate()
     {
-        if (myTouch.Count > 0 && myTouch.Count > _mytouch)
+        if (myTouch.Count > _mytouch)
         {
             _mytouch = myTouch.Count;
             FindTower(SceneManager.myTowerObjs, this);
@@ -143,8 +140,6 @@ public class Electricity : Photon.MonoBehaviour
     }
     #endregion
 
-    Coroutine deathTimer;
-
     #region 傷害
     [PunRPC]
     public void takeDamage(float _damage)
@@ -168,7 +163,7 @@ public class Electricity : Photon.MonoBehaviour
                 SceneManager.RemoveEnemyList(gameObject, deadManager.myAttributes);
             }
             deadManager.ifDead(true);
-            deathTimer = StartCoroutine(Death());
+            StartCoroutine(Death());
         }
 
         openPopupObject(tureDamage);
@@ -198,10 +193,8 @@ public class Electricity : Photon.MonoBehaviour
         connectElectricitys.Clear();
         connectTowers.Clear();
         myTouch.Clear();
-        //formatData();
+
         returnBulletPool();
-        StopCoroutine(deathTimer);
-        deathTimer = null;
     }
     #endregion
 
@@ -210,8 +203,6 @@ public class Electricity : Photon.MonoBehaviour
     {
         if (photonView.isMine)
             ObjectPooler.instance.Repool(DataName, this.gameObject);
-        /*else
-            Net.RPC("SetActiveF", PhotonTargets.All);*/
     }
     #endregion
 
@@ -250,15 +241,9 @@ public class Electricity : Photon.MonoBehaviour
     {
         foreach (var manager in TurretList)
         {
-            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<isDead>().myAttributes == deadManager.myAttributes)
+            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<Electricity>() != null)
             {
                 Debug.Log("continue");
-                continue;
-            }
-
-            if (manager.GetComponent<isDead>().myAttributes == deadManager.myAttributes)
-            {
-                Debug.Log("myAttributes");
                 continue;
             }
 

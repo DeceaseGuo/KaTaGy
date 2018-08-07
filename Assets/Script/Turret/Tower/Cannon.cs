@@ -10,8 +10,7 @@ public class Cannon : Turret_Manager
     {
         base.Tower_shoot();
         GameObject bulletObj = ObjectPooler.instance.getPoolObject(turretData.bullet_Name, Pos_attack.position, Pos_attack.rotation);
-        Bullet_Normal bullet = bulletObj.GetComponent<Bullet_Normal>();
-        bullet.getTarget(target);
+        bulletObj.GetComponent<Bullet_Normal>().getTarget(target);
     }
     #endregion
 
