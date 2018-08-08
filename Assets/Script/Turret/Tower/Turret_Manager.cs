@@ -45,10 +45,9 @@ namespace AtkTower
             {
                 checkCurrentPlay();
             }
-            else if (!photonView.isMine)
+            else
             {
                 this.enabled = false;
-                return;
             }
         }
 
@@ -64,7 +63,11 @@ namespace AtkTower
                 return;
             }
 
-            overHeat();
+            if (turretData.Fad_thermalEnergy > 0)
+            {
+
+                overHeat();
+            }            
 
             if (turretData.Fad_overHeat) //過熱
                 return;
@@ -72,14 +75,14 @@ namespace AtkTower
             if (target == null)
             {
                 FindEnemy();
-                //print("沒有目標");
+
                 if (nowCD <= 0)
                 {
                     nowCD = turretData.Atk_Gap;
                 }
             }
 
-            if(target != null)
+            if (target != null)
             {
                 nowCD -= Time.deltaTime;
                 DetectTarget();
@@ -111,8 +114,6 @@ namespace AtkTower
             turretData = originalTurretData;
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
             Fad_energyBar.fillAmount = 0.0f;
-            //Net.RPC("showHeatBar", PhotonTargets.All, 0.0f);
-
         }
         #endregion
 
@@ -122,12 +123,12 @@ namespace AtkTower
             if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 30);
-                currentMask = GameManager.instance.getPlayer1_Mask;
+                //currentMask = GameManager.instance.getPlayer1_Mask;
             }
             else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 31);
-                currentMask = GameManager.instance.getPlayer2_Mask;
+                //currentMask = GameManager.instance.getPlayer2_Mask;
             }
         }
         #endregion
@@ -163,10 +164,9 @@ namespace AtkTower
             }
             else
             {
-                Vector3 maxDisGap = target.transform.position - transform.position;
-                float distanceToEnemy = maxDisGap.sqrMagnitude;
+                float distanceToEnemy = Vector3.Distance(target.transform.position, transform.position);
 
-                if (distanceToEnemy > Mathf.Pow(turretData.Atk_Range, 2) || distanceToEnemy < Mathf.Pow(turretData.Atk_MinRange, 2))
+                if (distanceToEnemy > turretData.Atk_Range || distanceToEnemy < turretData.Atk_MinRange)
                 {
                     target = null;
                 }
@@ -177,6 +177,10 @@ namespace AtkTower
         #region 朝向敵方目標
         void LockOnTarget()
         {
+            if (target == null)
+            {
+                return;
+            }
             //砲台與敵人位置方向
             Vector3 dir = target.position - Pos_attack.position;
             //轉向dir
@@ -213,7 +217,6 @@ namespace AtkTower
             addHeat(1.0f);
             float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
             Fad_energyBar.fillAmount = _value;
-            //Net.RPC("showHeatBar", PhotonTargets.All, _value);
         }
         #endregion
 
@@ -222,14 +225,10 @@ namespace AtkTower
         {
             if (!turretData.Fad_overHeat)
             {
-                if (turretData.Fad_thermalEnergy > 0 && turretData.Fad_thermalEnergy < turretData.Fad_maxThermalEnergy)
-                {
-                    reduceHeat(1.0f);
-        
-                    float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-                    Fad_energyBar.fillAmount = _value;
-                    //Net.RPC("showHeatBar", PhotonTargets.All, _value);
-                }
+                reduceHeat(1.0f);
+
+                float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
+                Fad_energyBar.fillAmount = _value;
             }
             else
             {
@@ -237,46 +236,42 @@ namespace AtkTower
 
                 float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
                 Fad_energyBar.fillAmount = _value;
-                //Net.RPC("showHeatBar", PhotonTargets.All, _value);
             }
         }
+        #endregion
 
         #region 增加減少熱能
         //減少
         public void reduceHeat(float _speed)
         {
             float tmpValue = turretData.Fad_decreaseRate * Time.deltaTime * _speed;
-            if (turretData.Fad_thermalEnergy - tmpValue <= 0)
+
+            turretData.Fad_thermalEnergy -= tmpValue;
+
+            if (turretData.Fad_thermalEnergy <= 0)
             {
-                //Net.RPC("changeColor", PhotonTargets.All, 242, 235, 0);
+                turretData.Fad_thermalEnergy = 0;
                 Fad_energyBar.color = new Color(242, 235, 0);
                 turretData.Fad_overHeat = false;
-            }
-            else
-            {
-                turretData.Fad_thermalEnergy -= tmpValue;
             }
         }
         //增加
         public void addHeat(float _speed)
         {
             float tmpValue = turretData.Fad_oneEnergy * _speed;
-            if (turretData.Fad_thermalEnergy + tmpValue >= turretData.Fad_maxThermalEnergy)
+
+            turretData.Fad_thermalEnergy += tmpValue;
+
+            if (turretData.Fad_thermalEnergy >= turretData.Fad_maxThermalEnergy)
             {
                 turretData.Fad_thermalEnergy = turretData.Fad_maxThermalEnergy;
-                //Net.RPC("changeColor", PhotonTargets.All, 255, 142, 81);
                 Fad_energyBar.color = new Color(255, 142, 81);
                 turretData.Fad_overHeat = true;
-            }
-            else
-            {
-                turretData.Fad_thermalEnergy += tmpValue;
             }
         }
         #endregion
 
-        #endregion
-
+        #region 本地傳遞傷害
         /*public void test(float _damage)
         {
             if (deadManager.checkDead)
@@ -305,6 +300,7 @@ namespace AtkTower
 
             openPopupObject(tureDamage);
         }*/
+        #endregion
 
         #region 傷害
         public Image healthBar;
@@ -315,9 +311,8 @@ namespace AtkTower
                 return;
 
             float tureDamage = CalculatorDamage(_damage);
-
-            if (turretData.UI_Hp > 0)
-                turretData.UI_Hp -= tureDamage;
+            turretData.UI_Hp -= tureDamage;
+            openPopupObject(tureDamage);
 
             if (turretData.UI_Hp <= 0)
             {
@@ -334,8 +329,6 @@ namespace AtkTower
                 deadManager.ifDead(true);
                 StartCoroutine(Death());
             }
-
-            openPopupObject(tureDamage);
         }
         #endregion
 

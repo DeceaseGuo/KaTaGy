@@ -28,20 +28,18 @@ public class Building : MonoBehaviour
 
     private void Update()
     {
-        if (buildManager.nowBuilding)
+        if (buildManager.HaveTower)
         {
-            if (buildManager.HaveTower)
+            if (buildManager.nowSelect)
             {
-                if (buildManager.nowSelect)
-                {
-                    findPos();
-                    if (Input.GetMouseButtonDown(1))
-                        buildManager.cancelSelect();
-                }
-                if (!buildManager.nowSelect)
-                {
-                    goBuild();
-                }
+                findPos();
+                if (Input.GetMouseButtonDown(1))
+                    buildManager.cancelSelect();
+            }
+
+            if (!buildManager.nowSelect)
+            {
+                goBuild();
             }
         }
     }
@@ -54,32 +52,34 @@ public class Building : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 100f, canBuild))
+        if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out hit, 100f, canBuild))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (ifCanBuild)
             {
-                if (ifCanBuild)
+                tmpTurretBlueprint = buildManager.GetTurretToBuild();
+                //取得建造位置
+                NodePos = tmpTurretBlueprint.detectObjPrefab.GetComponentInChildren<SnapGrid_Pos>().nodePos();
+                NodePos.y = hit.transform.position.y;
+                
+                buildManager.nowNotSelectSwitch(false);
+
+                if (builderDistance(NodePos, tmpTurretBlueprint.turret_buildDistance))
                 {
-                    tmpTurretBlueprint = buildManager.GetTurretToBuild();
-                    NodePos = tmpTurretBlueprint.detectObjPrefab.GetComponentInChildren<SnapGrid_Pos>().nodePos();
-                    NodePos.y = hit.transform.position.y;
-                    buildManager.creatTmpObj(NodePos);
-                    buildManager.nowNotSelectSwitch(false);
-                    if (builderDistance(NodePos, tmpTurretBlueprint.turret_buildDistance))
+                    if (buildManager.payment(true))
                     {
-                        if (buildManager.payment(true))
-                        {
-                            buildManager.playerScript.stopAnything_Switch(true);
-                            buildManager.openScaffolding(NodePos);
-                            buildManager.closeTmpObj();
-                            StartCoroutine("delayToBuildTurret");
-                        }
+                        buildManager.playerScript.stopAnything_Switch(true);
+                        buildManager.openScaffolding(NodePos);
+                        StartCoroutine("delayToBuildTurret");
                     }
                 }
                 else
                 {
-                    hintManager.CreatHint("此處不能建造");
+                    buildManager.creatTmpObj(NodePos);
                 }
+            }
+            else
+            {
+                hintManager.CreatHint("此處不能建造");
             }
         }
     }
@@ -87,20 +87,14 @@ public class Building : MonoBehaviour
     #region 判斷距離
     bool builderDistance(Vector3 _buildPos, float _distance)
     {
-        float distance = Vector3.Distance(_buildPos, buildManager.builder.transform.position);
-        if (distance < _distance)
+        if (Vector3.Distance(_buildPos, buildManager.builder.transform.position) < _distance)
         {
             return true;
         }
         else
         {
-            if (buildManager.payment(false))
-            {
-                // Vector3 canBuildPos = _buildPos + (builder.transform.position - _buildPos).normalized * (_distance - 1.5f);
-                buildManager.playerScript.getTatgetPoint(_buildPos);
-                //buildManager.playerScript.Net.RPC("getTatgetPoint", PhotonTargets.All, _buildPos);
-                _start = true;
-            }
+            buildManager.playerScript.getTatgetPoint(_buildPos);
+            _start = true;
             Debug.Log("距離過遠");
             return false;
         }
@@ -110,28 +104,29 @@ public class Building : MonoBehaviour
     #region 前往蓋塔防位置
     void goBuild()
     {
-        if (_start)
+        if (!_start)
         {
-            if (CheckStopPos())
-            {
-                if (buildManager.payment(true))
-                {
-                    buildManager.playerScript.stopAnything_Switch(true);
-                    buildManager.openScaffolding(NodePos);
-                    buildManager.closeTmpObj();
-                    StartCoroutine("delayToBuildTurret");
-                    _start = false;
-                }
-            }
+            return;
+        }
 
-            if (Input.GetMouseButtonDown(1))
+        if (CheckStopPos())//抵達建造位置
+        {
+            buildManager.currentPlayerPos = buildManager.builder.transform.position;
+            if (buildManager.payment(true))
             {
-                _start = false;
+                buildManager.playerScript.stopAnything_Switch(true);
+                buildManager.openScaffolding(NodePos);
                 buildManager.closeTmpObj();
-                buildManager.nowNotSelectSwitch(true);
-                //buildManager.closeTurretToBuild();
-                buildManager.cancelSelect();
+                StartCoroutine("delayToBuildTurret");
+                _start = false;
             }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            _start = false;
+            buildManager.closeTmpObj();
+            buildManager.closeTurretToBuild();
         }
     }
     #endregion
@@ -162,7 +157,7 @@ public class Building : MonoBehaviour
     #region 開始建造(延遲)
     IEnumerator delayToBuildTurret()
     {
-        bool suspend = false;
+        //bool suspend = false;
         isDead _dead = buildManager.playerScript.GetComponent<isDead>();
         for (CD = 0; CD < tmpTurretBlueprint.turret_delayTime; CD += Time.deltaTime)
         {
@@ -170,23 +165,21 @@ public class Building : MonoBehaviour
             buildManager.playerScript.switchScaffolding(true);
                 
             #region 按下esc 中斷建造
-            if (Input.GetKeyDown(KeyCode.Escape) || _dead.checkDead)
+            if (buildManager.StopBuild() || Input.GetKeyDown(KeyCode.Escape) || _dead.checkDead)
             {
                 buildManager.playerScript.switchScaffolding(false);
-                suspend = true;
-                CD = tmpTurretBlueprint.turret_delayTime;
                 buildManager.cancelPunish(0.8f);
                 buildManager.closeScaffolding();
-                buildManager.nowNotSelectSwitch(true);
                 buildManager.closeTurretToBuild();
                 buildManager.playerScript.stopAnything_Switch(false);
                 hintManager.CreatHint("中斷建造");
+                break;
             }
             #endregion
             yield return 0;
 
         }
-        if (CD >= tmpTurretBlueprint.turret_delayTime && !suspend)
+        if (CD >= tmpTurretBlueprint.turret_delayTime/* && !suspend*/)
         {
             //Debug.Log("蓋");
             buildManager.playerScript.switchScaffolding(false);
@@ -200,13 +193,11 @@ public class Building : MonoBehaviour
     void BuildTurret(Vector3 _pos)
     {
         buildManager.closeScaffolding();
-        buildManager.nowNotSelectSwitch(true);
 
         GameObject obj = buildManager.creatTower(tmpTurretBlueprint.TurretName, _pos, Quaternion.identity);
-        //obj.name += buildManager.electricityTurrets.Count;
+
         if (tmpTurretBlueprint.TurretName != GameManager.whichObject.Tower_Electricity)
         {
-            Debug.Log("蓋塔防YA");
             Turret_Manager tur_manager = obj.GetComponent<Turret_Manager>();
             buildManager.consumeElectricity(buildManager.SceneManager.myElectricityObjs, tur_manager);
         }
@@ -214,7 +205,6 @@ public class Building : MonoBehaviour
         {
             Electricity e = obj.GetComponent<Electricity>();
             buildManager.FindfirstE(buildManager.SceneManager.myElectricityObjs, e);
-            obj.name += buildManager.SceneManager.myElectricityObjs.Count;
         }
         buildManager.closeTurretToBuild();
     }

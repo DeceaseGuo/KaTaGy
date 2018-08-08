@@ -13,15 +13,17 @@ public class BuildManager : MonoBehaviour
     [SerializeField] Grid_Snap grid_snap;
 
     [Header("鷹架")]
-    [SerializeField] GameObject build_Scaffolding;
+    [SerializeField] PhotonView build_Scaffolding;
     [SerializeField] GameObject build_CD_Obj;
     [SerializeField] Image build_CD_Bar;
 
     [Header("目標")]
     public GameObject builder;
     public Player playerScript;
-
+    [HideInInspector]
+    public Vector3 currentPlayerPos;
     //塔防
+    private TurretData turretData;
     private TurretData.TowerDataBase turretToBuild;
     private GameObject detectObj;
     //偵測
@@ -36,8 +38,9 @@ public class BuildManager : MonoBehaviour
 
     private SceneObjManager sceneObjManager;
     public SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
-
-    TurretData turretData;
+    
+    ObjectPooler objPool;
+    public bool stopBuild = false;//停止建造目前沒用到
 
     private void Awake()
     {
@@ -58,39 +61,8 @@ public class BuildManager : MonoBehaviour
         builder = Creatplayer.instance.MyNowPlayer;
         playerScript = Creatplayer.instance.Player_Script;
         turretData = TurretData.instance;
+        objPool = ObjectPooler.instance;
     }
-
-    [SerializeField] GameObject DestoryObj;
-    private void Update()
-    {
-        if (Input.GetKeyDown("a"))
-        {
-            Testdead(DestoryObj);
-        }
-    }
-
-    #region 測試用死亡方法
-    void Testdead(GameObject _obj)
-    {
-        GameManager.NowTarget _who = _obj.GetComponent<isDead>().myAttributes;
-        switch (_who)
-        {
-            case (GameManager.NowTarget.Soldier):
-                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 0, 1000f);
-                break;
-            case (GameManager.NowTarget.Player):
-                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 1000f, Vector3.zero, false);
-                break;
-            case (GameManager.NowTarget.Tower):
-                _obj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 1000f);
-                break;
-            case (GameManager.NowTarget.Core):
-                break;
-            default:
-                return;
-        }
-    }
-    #endregion
 
     #region 付款
     public bool payment(bool _paid)
@@ -106,38 +78,28 @@ public class BuildManager : MonoBehaviour
     #region 商店選擇的塔防與偵測器
     public void SelectToBuild(TurretData.TowerDataBase turret, GameObject detect)
     {
-        if (nowSelect)
-        {
-            HaveTower = true;
-            turretToBuild = turret;
-            lastDetectObj = detectObjectPrefab;
-            detectObjectPrefab = detect;
-            closeLastDetectObj();
-            //調整位置
-            Vector3 tmpMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            detectObjectPrefab.transform.position = tmpMousePos;
-            detectObjectPrefab.SetActive(true);
+        HaveTower = true;
+        turretToBuild = turret;
 
-            foreach (var item in SceneManager.myElectricityObjs)
-            {
-                item.changeGridColor(turretToBuild.cost_Electricity);
-            }
+        closeNowDetectObj();//關掉原本開啟的
+        detectObjectPrefab = detect;
+        detectObjectPrefab.SetActive(true);
+
+        foreach (var item in SceneManager.myElectricityObjs)
+        {
+            item.changeGridColor(turretToBuild.cost_Electricity);
         }
     }
     #endregion
 
-    #region 關閉選擇塔防功能
+    #region 關閉選擇塔防
     public void nowNotSelectSwitch(bool _switch)
     {
-        if (!_switch)
+        if (!_switch)//執行建造了
         {
-            nowSelect = _switch;
             closeNowDetectObj();
         }
-        else
-        {
-            nowSelect = _switch;
-        }
+        nowSelect = _switch;
     }
     #endregion
 
@@ -154,13 +116,27 @@ public class BuildManager : MonoBehaviour
                 cancelSelect();
                 playerScript.switchWeapon(false);
             }
-            else
+            else//開起建築模式
             {
-                grid_snap.openGrid();
-                uiManager.OpenTowerMenu();
                 nowBuilding = true;
+                uiManager.OpenTowerMenu();
+                grid_snap.openGrid();
                 playerScript.switchWeapon(true);
             }
+        }
+    }
+    #endregion
+
+    #region 是否當前建造
+    public bool StopBuild()
+    {
+        if (currentPlayerPos != builder.transform.position)//目前只有位移會取消建造，之後可以加入狀態
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
     #endregion
@@ -168,8 +144,8 @@ public class BuildManager : MonoBehaviour
     #region 取消目前的選擇
     public void cancelSelect()
     {
-        closeTurretToBuild();
-        closeNowDetectObj();
+        closeTurretToBuild();//清除目前選擇的塔防
+        closeNowDetectObj();//關掉Detect
 
         foreach (var item in SceneManager.myElectricityObjs)
         {
@@ -178,13 +154,7 @@ public class BuildManager : MonoBehaviour
     }
     #endregion
 
-    #region 關閉上一個 和 關閉目前塔防偵測
-    void closeLastDetectObj()
-    {
-        if (lastDetectObj != null)
-            lastDetectObj.SetActive(false);
-    }
-
+    #region 關閉目前塔防偵測
     void closeNowDetectObj()
     {
         if (detectObjectPrefab != null)
@@ -195,25 +165,25 @@ public class BuildManager : MonoBehaviour
     #region 創建 和 關閉蓋塔提示透明物件
     public void creatTmpObj(Vector3 _pos)
     {
-        TmpObj = ObjectPooler.instance.getPoolObject(turretToBuild.tspObject_Name, _pos, Quaternion.identity);
+        TmpObj = objPool.getPoolObject(turretToBuild.tspObject_Name, _pos, Quaternion.identity);
     }
 
     public void closeTmpObj()
     {
-        ObjectPooler.instance.Repool(turretToBuild.tspObject_Name, TmpObj);
+        returnPoolTower(turretToBuild.tspObject_Name, TmpObj);
     }
     #endregion
 
     #region 生成 與 關閉塔防 從物件池
     public GameObject creatTower(GameManager.whichObject _name, Vector3 _pos, Quaternion _rot)
     {
-        GameObject towerObj = ObjectPooler.instance.getPoolObject(_name, _pos, _rot);
+        GameObject towerObj = objPool.getPoolObject(_name, _pos, _rot);
         return towerObj;
     }
 
     public void returnPoolTower(GameManager.whichObject _name,GameObject _tower)
     {
-        ObjectPooler.instance.Repool(_name, _tower);
+        objPool.Repool(_name, _tower);
     }
     #endregion
 
@@ -222,13 +192,11 @@ public class BuildManager : MonoBehaviour
     {
         if (build_Scaffolding == null)
         {
-            build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0);
+            build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0).GetComponent<PhotonView>();
         }
         else
         {
-            build_Scaffolding.transform.position = _pos;
-            build_Scaffolding.SetActive(true);
-            build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.Others, _pos);
+            build_Scaffolding.RPC("SetActiveT", PhotonTargets.All, _pos);
         }
 
         build_CD_Obj.transform.position = _pos + new Vector3(0, 7.5f, 0);
@@ -237,8 +205,7 @@ public class BuildManager : MonoBehaviour
 
     public void closeScaffolding()
     {
-        build_Scaffolding.SetActive(false);
-        build_Scaffolding.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.Others);
+        build_Scaffolding.RPC("SetActiveF", PhotonTargets.All);
         build_CD_Obj.SetActive(false);
     }
     #endregion
@@ -264,6 +231,7 @@ public class BuildManager : MonoBehaviour
     #region 關閉選擇塔防
     public void closeTurretToBuild()
     {
+        nowNotSelectSwitch(true);
         HaveTower = false;
         turretToBuild = new TurretData.TowerDataBase();
     }
@@ -287,7 +255,7 @@ public class BuildManager : MonoBehaviour
                 item.firstE.connectTowers.Add(tur_manager.gameObject);
                 int t = findCost_Electricity(tur_manager.DataName);
                 item.firstE.Use_Electricit(-t);
-                Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
+                //Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
                 return;
             }
             else
@@ -305,7 +273,7 @@ public class BuildManager : MonoBehaviour
         {
             int t = findCost_Electricity(tur_manager.DataName);
             tur_manager.power.firstE.Use_Electricit(t);
-            Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
+            //Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
         }
     }
     #endregion
@@ -323,13 +291,12 @@ public class BuildManager : MonoBehaviour
         if (electricities.Count <= 1)
         {
             _build.firstE = _build;
-            Debug.Log(_build.firstE);
-            Debug.Log(_build.name + "electricities.Count < 1");
+            //Debug.Log(_build.name + "electricities.Count < 1");
             return;
         }
         if (_build == _build.firstE)
         {
-            Debug.Log(_build.name + "_build == _build.firstE");
+            //Debug.Log(_build.name + "_build == _build.firstE");
             return;
         }
 
@@ -338,7 +305,7 @@ public class BuildManager : MonoBehaviour
 
             if (_build == item)
             {
-                Debug.Log(_build.name + "_build == item");
+                //Debug.Log(_build.name + "_build == item");
                 continue;
             }
 
@@ -354,7 +321,7 @@ public class BuildManager : MonoBehaviour
                 {
                     if (_build.firstE == null)
                         _build.firstE = _build;
-                    Debug.Log(_build.name + "item.firstE == null");
+                    //Debug.Log(_build.name + "item.firstE == null");
                     return;
                 }
 
@@ -365,7 +332,7 @@ public class BuildManager : MonoBehaviour
                     _build.firstE.connectElectricitys.Add(_build);
                     _build.firstE.resource_Electricity += _build.resource_Electricity;
 
-                    Debug.Log(_build.name + "_build.firstE == null");
+                    //Debug.Log(_build.name + "_build.firstE == null");
                 }
                 else if (item.firstE != _build.firstE)
                 {
@@ -388,7 +355,7 @@ public class BuildManager : MonoBehaviour
                         item.firstE.firstE = _build.firstE;
 
                     item.firstE = _build.firstE;
-                    Debug.Log(_build.name + "item.firstE != _build.firstE");
+                    //Debug.Log(_build.name + "item.firstE != _build.firstE");
                 }
                 #endregion
             }
