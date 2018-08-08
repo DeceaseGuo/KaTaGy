@@ -658,9 +658,11 @@ public class EnemyControl : Photon.MonoBehaviour
 
     #region 負面效果
     //暈眩
-    protected virtual void GetDeBuff_Stun()
+    protected virtual void GetDeBuff_Stun(float _time)
     {
-
+        nowState = states.Null;
+        ani.SetBool("Stop", false);
+        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
     }
     //緩速
     protected virtual void GetDeBuff_Slow()
@@ -684,6 +686,12 @@ public class EnemyControl : Photon.MonoBehaviour
         this.transform.DOMove(transform.localPosition + _dir.normalized * _dis, .8f).SetEase(Ease.OutBounce);
         Quaternion Rot = Quaternion.LookRotation(-_dir.normalized);
         this.transform.rotation = Rot;
+    }
+
+    void Recover_Stun()
+    {
+        getNextPoint();
+        nowState = states.Move;
     }
     #endregion
 

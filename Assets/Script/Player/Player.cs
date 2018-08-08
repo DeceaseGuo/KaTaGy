@@ -5,8 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(NavMeshAgent))]
+//[RequireComponent(typeof(NavMeshAgent))]
 public class Player : Photon.MonoBehaviour
 {
     private MatchTimer matchTime;
@@ -22,11 +21,9 @@ public class Player : Photon.MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
     private bool canDodge = true;
-    private CharacterController Chara;
+    private CapsuleCollider CharaCollider;
     private NavMeshAgent nav;
 
-    private Vector3 MoveDir = Vector3.zero;  //角色方向
-    [SerializeField] Transform nextTargetRot;
     [SerializeField] GameObject clickPointPos;
     [SerializeField] LayerMask canClickToMove_Layer;
     [SerializeField] LayerMask currentDir_Layer;
@@ -49,7 +46,7 @@ public class Player : Photon.MonoBehaviour
     private Vector3 mousePosition;
     public Transform arrow;
 
-    public UnityEvent skill_Q;
+   // public UnityEvent skill_Q;
     public UnityEvent cancelSkill;
 
     #region 狀態
@@ -90,8 +87,7 @@ public class Player : Photon.MonoBehaviour
 
     private void Awake()
     {
-        Chara = GetComponent<CharacterController>();
-        MoveDir = transform.forward;
+        CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
     }
 
@@ -104,12 +100,12 @@ public class Player : Photon.MonoBehaviour
     private void Start()
     {
         clickPointPos = GameObject.Find("clickPointPos");
-        nextTargetRot = GameObject.Find("Detect").transform;
         hintManager = HintManager.instance;
         buildManager = BuildManager.instance;
         nav = GetComponent<NavMeshAgent>();
         deadManager = GetComponent<isDead>();
         nav.updateRotation = false;
+        nav.speed = playerData.moveSpeed;
         if (photonView.isMine)
         {
             AniControll = Creatplayer.instance.Player_AniScript;
@@ -121,7 +117,7 @@ public class Player : Photon.MonoBehaviour
         }
         else
         {
-            nav.enabled = false;
+            //nav.enabled = false;
             SceneObjManager.Instance.enemy_Player = gameObject;
             this.enabled = false;
         }
@@ -133,31 +129,25 @@ public class Player : Photon.MonoBehaviour
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 30);
-            AniControll.canAtkMask = GameManager.instance.getPlayer1_Mask;
-            AniControll.farDistance += GameManager.instance.getPlayer1_Mask;
             arrow.gameObject.layer = 0;
-            Net.RPC("changeMask_1", PhotonTargets.Others);
+            Net.RPC("changeMask_1", PhotonTargets.All);
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 31);
-            AniControll.canAtkMask = GameManager.instance.getPlayer2_Mask;
-            AniControll.farDistance += GameManager.instance.getPlayer2_Mask;
             arrow.gameObject.layer = 0;
-            Net.RPC("changeMask_2", PhotonTargets.Others);
+            Net.RPC("changeMask_2", PhotonTargets.All);
         }
     }
     [PunRPC]
     public void changeMask_1()
     {
-        AniControll.canAtkMask = GameManager.instance.getPlayer1_Mask;
-        AniControll.farDistance += GameManager.instance.getPlayer1_Mask;
+        GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
     }
     [PunRPC]
     public void changeMask_2()
     {
-        AniControll.canAtkMask = GameManager.instance.getPlayer2_Mask;
-        AniControll.farDistance += GameManager.instance.getPlayer2_Mask;
+        GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
     }
     #endregion
 
@@ -169,19 +159,21 @@ public class Player : Photon.MonoBehaviour
             leftTopPowerBar = GameObject.Find("mpBar_0020").GetComponent<Image>();
         if (buildManager != null && buildManager.nowBuilding)
             buildManager.BuildSwitch();
+        if (nav != null)
+            nav.speed = playerData.moveSpeed;
 
         leftTopPowerBar.fillAmount = 1;
         if (originalData.headImage == null)
             originalData = PlayerData.instance.getPlayerData(GameManager.instance.Meis);
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
-        Chara.enabled = true;
+        CharaCollider.enabled = true;
         Net.RPC("TP_resetHp", PhotonTargets.Others, originalData.Hp_Max);
     }
     [PunRPC]
     public void TP_resetHp(float _hp)
     {
-        Chara.enabled = true;
+        CharaCollider.enabled = true;
         playerData.Hp_original = _hp;
         playerData.Hp_Max = _hp;
     }
@@ -370,15 +362,14 @@ public class Player : Photon.MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F) && AniControll.canClick)
         {
-            getIsRunning = false;
-            nav.ResetPath();
             Vector3 tmpDir = transform.forward;
             if (MyState != statesData.Combo)
             {
+                getIsRunning = false;
+                nav.ResetPath();
                 MyState = statesData.Combo;
                 tmpDir = nowMouseDir();
-                CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
-                transform.rotation = CharacterRot;
+                transform.forward = tmpDir.normalized;
             }
 
             AniControll.TypeCombo(tmpDir);
@@ -397,7 +388,6 @@ public class Player : Photon.MonoBehaviour
             StopAllOnlyDodge();
             transform.forward = arrow.forward;
             Net.RPC("Skill_Q", PhotonTargets.All);
-            //skill_Q.Invoke();
             StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
         }
     }
@@ -417,7 +407,7 @@ public class Player : Photon.MonoBehaviour
             }
         }
     }
-    //combo狀態時偵測滑鼠位置用
+    //無時無刻偵測滑鼠方向
     void CorrectDirection()
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -431,10 +421,10 @@ public class Player : Photon.MonoBehaviour
     //滑鼠目前方向
     public Vector3 nowMouseDir()
     {
+        mousePosition = new Vector3(mousePosition.x, transform.localPosition.y, mousePosition.z);
         Vector3 tmpDir = mousePosition - transform.position;
-        tmpDir.y = transform.localPosition.y;
         arrow.rotation = Quaternion.LookRotation(tmpDir);
-        return tmpDir.normalized;
+        return arrow.forward;
     }
     #endregion
 
@@ -445,6 +435,11 @@ public class Player : Photon.MonoBehaviour
         getIsRunning = true;
         Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);
     }
+    //暫定(玩家面相箭頭方向)
+  /*  public void PlayerChangeDir()
+    {
+        transform.forward = nowMouseDir();
+    }*/
     #endregion
 
     #region 角色移動
@@ -452,20 +447,12 @@ public class Player : Photon.MonoBehaviour
     {
         if (getIsRunning)
         {
-            /*  if (!Chara.isGrounded)
-              {
-                  Debug.Log("不在地板上");
-                  return;
-              }*/
-
             #region 尋找下一個位置方向
             Vector3 tmpNextPos = nav.steeringTarget - transform.localPosition;
             tmpNextPos.y = transform.localPosition.y;
             if (tmpNextPos != Vector3.zero)
             {
                 CharacterRot = Quaternion.LookRotation(tmpNextPos);
-                nextTargetRot.rotation = CharacterRot;
-                MoveDir = nextTargetRot.forward;
             }
             #endregion
 
@@ -479,7 +466,6 @@ public class Player : Photon.MonoBehaviour
             else
             {
                 transform.rotation = Quaternion.Lerp(transform.rotation, CharacterRot, playerData.rotSpeed);
-                Chara.Move(MoveDir * playerData.moveSpeed * Time.deltaTime);
             }
             #endregion
         }
@@ -502,10 +488,10 @@ public class Player : Photon.MonoBehaviour
 
     #region 負面效果
     //暈眩 僵直
-    public void GetDeBuff_Stun()
+    public void GetDeBuff_Stun(float _time)
     {        
         stopAnything_Switch(true);
-        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, 0.75f));
+        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
     }
     //緩速
     protected virtual void GetDeBuff_Slow()
@@ -534,8 +520,6 @@ public class Player : Photon.MonoBehaviour
     void Recover_Stun()
     {
         GoBack_AtkState();
-        //if (!photonView.isMine)
-        //    GetComponent<PhotonTransformView>().enabled = true;
     }
     #endregion
 
@@ -565,30 +549,18 @@ public class Player : Photon.MonoBehaviour
     private void Dodge_FCN(Vector3 _dir)
     {
         canDodge = false;
-        getIsRunning = false;
-        nav.ResetPath();
-        CharacterRot = Quaternion.LookRotation(_dir.normalized);
-        transform.rotation = CharacterRot;
-        Net.RPC("GoDodge", PhotonTargets.All, _dir);
+        isStop();
+        transform.forward = _dir.normalized;
+        Net.RPC("GoDodge", PhotonTargets.All);
         StartCoroutine(MatchTimeManager.SetCountDown(Dodge_End, playerData.Dodget_Delay));
     }
-    //閃避結束執行
+    //閃避cd結束
     void Dodge_End()
     {
         //   MySkill = skillData.None;
         canDodge = true;
     }
 
-    [PunRPC]
-    public void Skill_Q()
-    {
-        Invoke("testCatch", .6f);
-    }
-
-    public void testCatch()
-    {
-        skill_Q.Invoke();
-    }
     //技能Q冷卻時間
     void CountDown_Q()
     {
@@ -665,7 +637,7 @@ public class Player : Photon.MonoBehaviour
     public IEnumerator Death()
     {
         stopAnything_Switch(true);
-        Chara.enabled = false;
+        CharaCollider.enabled = false;
         canDodge = true;
         if (photonView.isMine)
         {

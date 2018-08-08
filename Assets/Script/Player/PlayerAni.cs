@@ -7,10 +7,9 @@ public class PlayerAni : Photon.MonoBehaviour
 {
     protected SmoothFollow cameraControl;
     protected Player player;
-    protected Animator anim;
+    public Animator anim;
 
     [Header("武器")]
-   // public GameObject weapon;
     public MeshRenderer swordRecyclePos;   //回收武器的地方
     public MeshRenderer pullSwordPos;      //拔起武器的地方
     public Transform weapon_Detect;     //武器攻擊判斷中心
@@ -25,21 +24,19 @@ public class PlayerAni : Photon.MonoBehaviour
     protected bool brfore_shaking;
     //後搖點
     protected bool after_shaking;
-    protected bool stop_Ani;
 
     protected bool startDetect_1 = false;
     protected bool startDetect_2 = false;
-    protected bool startDetect_3 = false;
     public GameObject[] swordLight = new GameObject[3];
     public List<GameObject> alreadyDamage;
 
-    protected Vector3 nextAtkPoint;
     protected Vector3 currentAtkDir;
 
     protected int comboIndex;
     protected float beHit_time = 0.25f;
     protected bool canStiffness = true;
 
+    protected bool redressOpen = false;
     protected Tweener myTweener;
 
     private void Start()
@@ -49,11 +46,6 @@ public class PlayerAni : Photon.MonoBehaviour
 
         cameraControl = SmoothFollow.instance;
     }
-
-    /* private void Update()
-     {
-         DetectAtkRanage();
-     }*/
 
     #region 武器切換
     [PunRPC]
@@ -69,20 +61,12 @@ public class PlayerAni : Photon.MonoBehaviour
         {
             //武器回背上
             case (0):
-                /*     weapon.transform.SetParent(swordRecyclePos);
-                     weapon.transform.localPosition = new Vector3(0, 0, 0);
-                     weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-                     weapon.transform.localScale = new Vector3(1, 1, 1);*/
                 swordRecyclePos.enabled = true;
                 pullSwordPos.enabled = false;
 
                 break;
             //武器回手上
             case (1):
-                /* weapon.transform.SetParent(pullSwordPos);
-                 weapon.transform.localPosition = new Vector3(0, 0, 0);
-                 weapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-                 weapon.transform.localScale = new Vector3(1, 1, 1);*/
                 swordRecyclePos.enabled = false;
                 pullSwordPos.enabled = true;
                 break;
@@ -113,25 +97,25 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     void StiffnessEnd()
     {
-        Debug.Log("重製");
+        //anim.SetBool("StunRock", false);
         canStiffness = true;
         player.stopAnything_Switch(false);
     }
     #endregion
 
+    #region 取消動作
     //取消動作Ani
     protected void CancleAllAni()
     {
         ComboAniEnd();
         SwitchAtkRange(8);
-        Ani_Run(false);
     }
 
     public void GoBackIdle_canMove()
     {
         ComboAniEnd();
-        Ani_Run(false);
         player.stopAnything_Switch(false);
+        canStiffness = true;
     }
 
     void ComboAniEnd()
@@ -139,20 +123,21 @@ public class PlayerAni : Photon.MonoBehaviour
         comboIndex = 0;
         anim.SetInteger("comboIndex", 0);
         canClick = true;
+        redressOpen = false;
         nextComboBool = false;
         after_shaking = false;
         brfore_shaking = false;
         if (myTweener != null)
             myTweener.Kill();
     }
+    #endregion
 
     #region 閃避
     [PunRPC]
-    public void GoDodge(Vector3 _dir)
+    public void GoDodge()
     {
         CancleAllAni();
         anim.SetTrigger("Dodge");
-        GoMovePoint(_dir, 18f, .25f, Ease.OutExpo);
     }
     #endregion
 
@@ -166,27 +151,6 @@ public class PlayerAni : Photon.MonoBehaviour
     public virtual void comboCheck(int _n)
     {
 
-    }
-    //角色攻擊位移
-    public virtual void GoMovePos(int _t)
-    {
-
-    }
-
-    protected void GoMovePoint(Vector3 _dir, float _range, float _time, Ease _track)
-    {
-        nextAtkPoint = transform.localPosition + _dir.normalized * _range;
-        nextAtkPoint.y = transform.localPosition.y;
-        myTweener = transform.DOMove(nextAtkPoint, _time).SetEase(_track);
-        myTweener.OnUpdate(stopMove);
-    }
-
-    protected void GoBackPoint(Vector3 _dir, float _range, float _time, Ease _track)
-    {
-        nextAtkPoint = transform.localPosition - _dir.normalized * _range;
-        nextAtkPoint.y = transform.localPosition.y;
-        myTweener = transform.DOMove(nextAtkPoint, _time).SetEase(_track);
-        myTweener.OnUpdate(stopMoveBack);
     }
     #endregion
 
@@ -229,54 +193,37 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     #endregion
 
-    #region 偵測攻擊最遠範圍
-    protected RaycastHit hit;
-    protected void stopMove()
-    {
-      //  if (player.MySkill != Player.skillData.Dodge)
-            RedressDir();
-
-        if (Physics.BoxCast(detectStartPos.position, new Vector3(2f, 4, 0.2f), detectStartPos.forward, out hit, detectStartPos.rotation, 7.0f, farDistance))
-        {
-            myTweener.Kill();
-        }
-    }
-
-    protected void stopMoveBack()
-    {
-        if (Physics.BoxCast(detectStartPos.position, new Vector3(2f, 4, 0.2f), -detectStartPos.forward, out hit, detectStartPos.rotation, 1.5f, farDistance))
-        {
-            myTweener.Kill();
-        }
-    }
+    #region 攻擊矯正方向
+    public float viewRadius;
+    [Range(0, 360)]
+    public int viewAngle;
 
     void RedressDir()
     {
-        Collider[] Enemy = Physics.OverlapSphere(transform.position, viewRadius, canAtkMask);
-        if (Enemy.Length != 0)
+        if (redressOpen)
         {
-            for (int i = 0; i < Enemy.Length; i++)
+            Collider[] Enemy = Physics.OverlapSphere(transform.position, viewRadius, canAtkMask);
+            if (Enemy.Length != 0)
             {
-                Transform target = Enemy[i].transform;
-                Vector3 dirToTarget = (target.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                for (int i = 0; i < Enemy.Length; i++)
                 {
-                    player.CharacterRot = Quaternion.LookRotation(dirToTarget.normalized);
-                    transform.rotation = player.CharacterRot;
-                    currentAtkDir = dirToTarget.normalized;
-                    Debug.Log("矯正結束");
-                    break;
+                    Transform target = Enemy[i].transform;
+                    Vector3 dirToTarget = (target.position - transform.position).normalized;
+                    if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                    {
+                        player.CharacterRot = Quaternion.LookRotation(dirToTarget.normalized);
+                        transform.rotation = player.CharacterRot;
+                        currentAtkDir = dirToTarget.normalized;
+                        Debug.Log("矯正結束");
+                        break;
+                    }
                 }
             }
         }
     }
-    public float viewRadius;
-    [Range(0, 360)]
-    public int viewAngle;
-    public Transform detectStartPos;
-    public LayerMask farDistance;
+
     /// <summary>
-    /// editor觀看用
+    /// editor觀看用矯正區域
     /// </summary>
     public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
@@ -285,6 +232,17 @@ public class PlayerAni : Photon.MonoBehaviour
             angleInDegrees += transform.eulerAngles.y;
         }
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+    }
+    #endregion
+
+    #region 前搖點前可變動方向
+    protected void ChangeNowDir()
+    {
+        if (photonView.isMine && !brfore_shaking)
+        {
+            currentAtkDir = player.nowMouseDir();
+            transform.forward = currentAtkDir.normalized;
+        }
     }
     #endregion
 
@@ -297,7 +255,8 @@ public class PlayerAni : Photon.MonoBehaviour
     //攻擊區間傷害判斷
     public virtual void DetectAtkRanage()
     {
-
+        RedressDir();
+        ChangeNowDir();
     }
     //給予正確目標傷害
     protected virtual void GetCurrentTarget(Collider[] _enemies)
@@ -320,39 +279,11 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     #endregion
 
-    #region 擊退
     [PunRPC]
-    public void pushOtherTarget(Vector3 _dir, float _dis)
+    public void Skill_Q()
     {
-        CancleAllAni();
-        myTweener = transform.DOMove(transform.localPosition + _dir.normalized * _dis, .6f).SetEase(Ease.OutBack);
-        myTweener.OnUpdate(stopMoveBack);
+        anim.SetTrigger("Skill_Q");
     }
-    #endregion
-
-    [Header("觀看傷害碰撞使用")]
-    public GameObject test;
-    public GameObject test2;
-    public GameObject test888;
-    public GameObject testFinal;
-    /*private void OnDrawGizmos()
-    {
-        test.transform.position = weapon_Detect.position;
-        test.transform.rotation = weapon_Detect.rotation;
-
-        testFinal.transform.position = weapon_Detect.position;
-        testFinal.transform.rotation = weapon_Detect.rotation;
-
-        test2.transform.position = weapon_Detect_Hand.position;
-        test2.transform.rotation = weapon_Detect_Hand.rotation;
-
-        test888.transform.position = detectStartPos.position;
-        test888.transform.rotation = detectStartPos.rotation;
-
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawLine(detectStartPos.position, detectStartPos.position+ detectStartPos.forward* maxDistance);
-       
-    }*/
 
     [PunRPC]
     public void Ani_Run(bool isRun)

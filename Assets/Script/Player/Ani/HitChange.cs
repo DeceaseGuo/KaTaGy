@@ -2,11 +2,17 @@
 
 public class HitChange : StateMachineBehaviour
 {
-
+    Player playerScript;
+    PlayerAni ani;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.gameObject.GetComponent<Player>().stopAnything_Switch(true);
+        if (playerScript == null || ani == null)
+        {
+            playerScript = animator.gameObject.GetComponent<Player>();
+            ani = animator.gameObject.GetComponent<PlayerAni>();
+        }
+        playerScript.stopAnything_Switch(true);
         animator.SetBool("PullSword", false);
         Debug.Log("進入");
     }
@@ -18,15 +24,15 @@ public class HitChange : StateMachineBehaviour
         {
             animator.SetBool("PullSword", false);
             animator.SetBool("NowBuild", false);
-            animator.gameObject.GetComponent<Player>().buildManager.nowBuilding = false;
-            animator.gameObject.GetComponent<PlayerAni>().WeaponChangePos(1);
+            playerScript.buildManager.nowBuilding = false;
+            ani.WeaponChangePos(1);
             Debug.Log("中斷");
         }
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.gameObject.GetComponent<PlayerAni>().WeaponChangePos(3);
+        ani.WeaponChangePos(3);
         Debug.Log("離開");
     }
 }
