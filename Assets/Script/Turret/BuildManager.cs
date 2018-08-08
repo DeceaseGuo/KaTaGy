@@ -40,7 +40,6 @@ public class BuildManager : MonoBehaviour
     public SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
     
     ObjectPooler objPool;
-    public bool stopBuild = false;//停止建造目前沒用到
 
     private void Awake()
     {
