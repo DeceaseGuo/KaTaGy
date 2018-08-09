@@ -32,14 +32,12 @@ public class TurretStore : MonoBehaviour
         }
 
         TurretData.TowerDataBase tmpTurret = Data.getTowerData(_name);
-       // TurretBlueprint tmpTurret = SelectTurret.Find(x => x.turret_Name == _name);
 
         if (tmpTurret.TurretName != GameManager.whichObject.None)
         {
             if (playerObtain.Check_OreAmount(tmpTurret.cost_Ore) && playerObtain.Check_MoneyAmount(tmpTurret.cost_Money))
             {
                 buildManager.SelectToBuild(tmpTurret, tmpTurret.detectObjPrefab);
-                Debug.Log("SelectNowTurret" + tmpTurret.TurretName);
             }
             else
             {

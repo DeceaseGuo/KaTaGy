@@ -25,7 +25,7 @@ public class SnapGrid_Pos : MonoBehaviour
 
     public Vector3 nodePos()
     {
-        Vector3 nowNodePos = /*transform.parent.position + offsetPos*/testPos.position;
+        Vector3 nowNodePos = transform.position;
         return nowNodePos;
     }
 
@@ -37,7 +37,7 @@ public class SnapGrid_Pos : MonoBehaviour
 
     private void OnEnable()
     {
-        DetectPos();
+        DetectPos();       
     }
 
     private void Update()
@@ -69,6 +69,7 @@ public class SnapGrid_Pos : MonoBehaviour
     #region 偵測網格正確位子
     void DetectPos()
     {
+        //Debug.Log("偵測網格正確位子");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 500, gridMask))

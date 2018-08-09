@@ -44525,9 +44525,10 @@ MonoBehaviour:
   build_CD_Bar: {fileID: 458021444}
   builder: {fileID: 0}
   playerScript: {fileID: 0}
+  currentPlayerPos: {x: 0, y: 0, z: 0}
   nowBuilding: 0
   nowSelect: 1
-  DestoryObj: {fileID: 0}
+  stopBuild: 0
 --- !u!114 &1592002457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44571,7 +44572,7 @@ MonoBehaviour:
     def_base: 0
     DEF_Level: 0
     bullet_Name: 9
-    bullet_Speed: 20
+    bullet_Speed: 70
     UI_maxHp: 100
     UI_Hp: 100
     Fad_oneEnergy: 30

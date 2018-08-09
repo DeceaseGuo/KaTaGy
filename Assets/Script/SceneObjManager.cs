@@ -54,9 +54,12 @@ public class SceneObjManager : MonoBehaviour
 
         if (canAtkPlay && enemy_Player != null)
         {
-            nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
-            if (nowDis < _dis)
-                tmpObj.Add(enemy_Player);
+            if (!enemy_Player.GetComponent<isDead>().checkDead)//player不會被移出去，所以要判斷死了沒
+            {
+                nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
+                if (nowDis < _dis)
+                    tmpObj.Add(enemy_Player);
+            }           
         }
 
         if (canAtkTower)

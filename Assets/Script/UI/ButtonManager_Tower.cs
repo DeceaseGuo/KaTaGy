@@ -243,18 +243,11 @@ public class ButtonManager_Tower : MonoBehaviour
         if (buildManager.nowSelect)
         {
             switchTowerMenu(true);
-            cancleSelect();
+            buildManager.cancelSelect();
             prompt_localPos.ClearPrompt();
         }
         else
             HintManager.instance.CreatHint("目前正在前往蓋塔防");
-    }
-    #endregion
-
-    #region 取消選擇的塔防
-    public void cancleSelect()
-    {
-        buildManager.cancelSelect();
     }
     #endregion
 
