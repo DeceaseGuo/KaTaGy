@@ -8,39 +8,38 @@ public class test : MonoBehaviour
     public Text num;
     public Coroutine testaaa;
     public float coutnDown;
-    public UnityEvent kkk;
+
+    public List<int> aaa;
 
 
     private void Update()
     {
-       /* if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            kkk.Invoke();
-            Debug.Log("click");
-        }
+        /* if (Input.GetKeyDown(KeyCode.Alpha1))
+         {
+             kkk.Invoke();
+             Debug.Log("click");
+         }*/
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
+         if (Input.GetKeyDown(KeyCode.Alpha2))
+         {
 
-
-        }*/
+            aaaTest();
+         }
 
     }
 
-    void TestA()
+    void aaaTest()
     {
-        if (testaaa != null)
+        foreach (var item in aaa)
         {
-            StopCoroutine(testaaa);
-            testaaa = StartCoroutine(MatchTimer.Instance.SetCountDown(isOk, coutnDown, num, null));
-        }
-        else
-            testaaa = StartCoroutine(MatchTimer.Instance.SetCountDown(isOk, coutnDown, num, null));
-    }
+            if (item == 3)
+            {
+                Debug.Log("中斷?");
+                break;
+            }
 
-    void isOk()
-    {
-        Debug.Log("Test成功");
-        testaaa = null;
+            if (item != 3)
+                Debug.Log("Num  "+item);
+        }
     }
 }

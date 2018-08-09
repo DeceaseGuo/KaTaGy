@@ -10,8 +10,7 @@ public class Queen_Ani : PlayerAni
     {
         if (canClick)
         {
-            if ((anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") ||
-                anim.GetCurrentAnimatorStateInfo(0).IsName("dodge")) && comboIndex == 0)
+            if (comboIndex == 0)
             {
                 canClick = false;
                 comboFirst(1, atkDir);
@@ -31,16 +30,11 @@ public class Queen_Ani : PlayerAni
                 canClick = false;
                 Nextcombo(4);
             }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo4") && comboIndex == 4)
-            {
-                canClick = false;
-                Nextcombo(5);
-            }
         }
     }
     #endregion
 
-    #region 動畫播放間判定
+    #region Combo動畫播放間判定
     public override void comboCheck(int _n)
     {
         switch (_n)
@@ -49,14 +43,10 @@ public class Queen_Ani : PlayerAni
             case (0):
                 if (!photonView.isMine)
                     return;
-
                 canClick = true;
+                redressOpen = true;
                 anim.SetBool("Action", false);
-                break;
-            //閃避取消
-            case (1):
-                GoBackIdle_canMove();
-                SwitchAtkRange(2);
+                ChangeNowDir();
                 break;
             //結束點
             case (2):
@@ -64,14 +54,13 @@ public class Queen_Ani : PlayerAni
                 {
                     anim.SetTrigger("ExitCombo");
                     GoBackIdle_canMove();
-                    SwitchAtkRange(2);
+                    SwitchAtkRange(8);
                 }
                 break;
             //前搖點
             case (3):
-                if (anim.GetCurrentAnimatorStateInfo(0).IsName("dodge") || !photonView.isMine)
+                if (!photonView.isMine)
                     return;
-
                 brfore_shaking = true;
                 if (!nextComboBool)
                     canClick = true;
@@ -80,33 +69,16 @@ public class Queen_Ani : PlayerAni
                 break;
             //後搖點
             case (4):
-                if (anim.GetCurrentAnimatorStateInfo(0).IsName("dodge") || !photonView.isMine)
-                    return;
-
-                after_shaking = true;
-                if (!canClick && nextComboBool && photonView.isMine)
-                {
-                    //player.Net.RPC("goNextCombo", PhotonTargets.All);
-                    goNextCombo();
-                    SwitchAtkRange(2);
-                }
-                break;
-            //確保有回到noCombo
-            /*case (5):
                 if (!photonView.isMine)
                     return;
-
-                if (player.checkCombo)
+                redressOpen = false;
+                after_shaking = true;
+                if (!canClick && nextComboBool)
                 {
-                    comboIndex = 0;
-                    anim.SetInteger("comboIndex", 0);
-                    canClick = true;
-                    player.stopExceptCombo(false);
-                    nextComboBool = false;
-                    after_shaking = false;
-                    brfore_shaking = false;
+                    goNextCombo();
+                    SwitchAtkRange(8);
                 }
-                break;*/
+                break;
             default:
                 break;
         }
@@ -116,27 +88,20 @@ public class Queen_Ani : PlayerAni
     #region 傷害判定
     public override void DetectAtkRanage()
     {
-        if (!photonView.isMine || anim.GetCurrentAnimatorStateInfo(0).IsName("dodge"))
-            return;
+        base.DetectAtkRanage();
 
         //鐮刀本身
        if (startDetect_1)
         {
-            Collider[] enemies = Physics.OverlapBox(weapon_Detect.position, new Vector3(5.0f, 3.2f, 1.2f), weapon_Detect.rotation, canAtkMask);
+            Collider[] enemies = Physics.OverlapBox(weapon_Detect.position, new Vector3(5.0f, 1f, 1.3f), weapon_Detect.rotation, canAtkMask);
             GetCurrentTarget(enemies);
         }
        //轉刀
          if (startDetect_2)
         {
-           // Collider[] enemies = Physics.OverlapBox(weapon_Detect_Hand.position, new Vector3(9.0f, 7.5f, 1.6f), weapon_Detect_Hand.rotation, canAtkMask);
-           // GetCurrentTarget(enemies);
-        }
-
-        /*if (startDetect_3)
-        {
-            Collider[] enemies = Physics.OverlapBox(weapon_Detect.position, new Vector3(2.5f, 8f, 8f), weapon_Detect.rotation, canAtkMask);
+            Collider[] enemies = Physics.OverlapBox(weapon_Detect.position, new Vector3(5.0f, 1f, 4.5f), weapon_Detect.rotation, canAtkMask);
             GetCurrentTarget(enemies);
-        }*/
+        }
     }
     #endregion
 
@@ -148,7 +113,7 @@ public class Queen_Ani : PlayerAni
 
         foreach (Collider beAtk_Obj in _enemies)
         {
-            
+
             if (checkIf(beAtk_Obj.gameObject))
                 return;
 
@@ -171,8 +136,16 @@ public class Queen_Ani : PlayerAni
                     Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                     break;
                 case (GameManager.NowTarget.Player):
-                    Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
-                    Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 3.0f);
+                    if (startDetect_2)
+                    {
+                        Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);
+                        //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
+                        break;
+                    }
+                    else
+                    {
+                        Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
+                    }
                     break;
                 case (GameManager.NowTarget.Core):
                     Debug.Log("還沒寫");
@@ -181,8 +154,7 @@ public class Queen_Ani : PlayerAni
                     Debug.Log("錯誤");
                     break;
             }
-            if (!checkIf(beAtk_Obj.gameObject))
-                alreadyDamage.Add(beAtk_Obj.gameObject);
+            alreadyDamage.Add(beAtk_Obj.gameObject);
         }
     }
     #endregion
@@ -198,11 +170,7 @@ public class Queen_Ani : PlayerAni
             case (1):
                 startDetect_2 = true;
                 break;
-            //關閉目前傷害判斷並清除陣列
             case (2):
-                startDetect_1 = false;
-                startDetect_2 = false;
-                alreadyDamage.Clear();
                 break;
             case (3):
 
@@ -221,6 +189,9 @@ public class Queen_Ani : PlayerAni
                 break;
 
             default:
+                startDetect_1 = false;
+                startDetect_2 = false;
+                alreadyDamage.Clear();
                 break;
         }
     }

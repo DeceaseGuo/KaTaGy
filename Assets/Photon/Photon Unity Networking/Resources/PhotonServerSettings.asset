@@ -60,4 +60,9 @@ MonoBehaviour:
   - TP_stopAni
   - waitBuild
   - weaponOC
+  - GetDeBuff_Stun
+  - Skill_Q_Fun
+  - Skill_W_Fun
+  - Skill_E_Fun
+  - NowShield
   DisableAutoOpenWizard: 1

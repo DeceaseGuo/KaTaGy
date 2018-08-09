@@ -97,7 +97,7 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     void StiffnessEnd()
     {
-        //anim.SetBool("StunRock", false);
+        anim.SetBool("StunRock", false);
         canStiffness = true;
         player.stopAnything_Switch(false);
     }
@@ -280,9 +280,23 @@ public class PlayerAni : Photon.MonoBehaviour
     #endregion
 
     [PunRPC]
-    public void Skill_Q()
+    public void Skill_Q_Fun()
     {
         anim.SetTrigger("Skill_Q");
+    }
+
+    [PunRPC]
+    public void Skill_W_Fun()
+    {
+        anim.SetTrigger("Skill_W");
+        player.skill_W.Invoke();
+    }
+
+    [PunRPC]
+    public void Skill_E_Fun()
+    {
+        anim.SetTrigger("Skill_E");
+        player.skill_E.Invoke();
     }
 
     [PunRPC]
@@ -291,7 +305,6 @@ public class PlayerAni : Photon.MonoBehaviour
         anim.SetBool("Run", isRun);        
     }
 
-    [PunRPC]
     public void Die()
     {
         anim.SetTrigger("Die");

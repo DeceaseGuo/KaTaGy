@@ -46,7 +46,9 @@ public class Player : Photon.MonoBehaviour
     private Vector3 mousePosition;
     public Transform arrow;
 
-   // public UnityEvent skill_Q;
+    public UnityEvent skill_W;
+    public UnityEvent skill_E;
+    public UnityEvent skill_second;
     public UnityEvent cancelSkill;
 
     #region 狀態
@@ -61,29 +63,24 @@ public class Player : Photon.MonoBehaviour
     }
     private statesData myState = statesData.canMove_Atk;
     public statesData MyState { get { return myState; } set { myState = value; } }
-    /*public enum skillData
-    {
-        None,
-        Q,
-        W,
-        E,
-        R
-    }
-    private skillData mySkill = skillData.None;
-    public skillData MySkill { get { return mySkill; } private set { mySkill = value; } }
-    */
+
     public enum buffData
     {
         None,
-        NoDamage,
-        NoCC,
+        NowCC,
         Shield //盾
     }
     private buffData nowBuff = buffData.None;
     public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }
     #endregion
 
+    public BoxCollider shieldCollider;
     private bool canSkill_Q = true;
+    private bool canSkill_W = true;
+    private bool canSkill_E = true;
+    private bool canSkill_R = true;
+    [HideInInspector]
+    public bool skillSecondClick = false;
 
     private void Awake()
     {
@@ -117,6 +114,7 @@ public class Player : Photon.MonoBehaviour
         }
         else
         {
+            AniControll = GetComponent<PlayerAni>();
             //nav.enabled = false;
             SceneObjManager.Instance.enemy_Player = gameObject;
             this.enabled = false;
@@ -143,11 +141,13 @@ public class Player : Photon.MonoBehaviour
     public void changeMask_1()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
+        shieldCollider.gameObject.layer = 30;
     }
     [PunRPC]
     public void changeMask_2()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
+        shieldCollider.gameObject.layer = 31;
     }
     #endregion
 
@@ -342,7 +342,6 @@ public class Player : Photon.MonoBehaviour
         {
             if (ConsumeAP(20f))
             {
-                // MySkill = skillData.Dodge;
                 MyState = statesData.canMove_Atk;
                 Dodge_FCN(nowMouseDir());
             }
@@ -379,16 +378,52 @@ public class Player : Photon.MonoBehaviour
     private void DetectSkillBtn()
     {
         Character_Skill_Q();
+        Character_Skill_W();
+        Character_Skill_E();
     }
     private void Character_Skill_Q()
     {
         if (Input.GetKeyDown(KeyCode.Q) && canSkill_Q)
         {
-            canSkill_Q = false;
-            StopAllOnlyDodge();
-            transform.forward = arrow.forward;
-            Net.RPC("Skill_Q", PhotonTargets.All);
-            StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
+            if (ConsumeAP(1f))
+            {
+                canSkill_Q = false;
+                StopAllOnlyDodge();
+                transform.forward = arrow.forward;
+                Net.RPC("Skill_Q_Fun", PhotonTargets.All);
+                StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
+            }
+        }
+    }
+    private void Character_Skill_W()
+    {
+        if (Input.GetKeyDown(KeyCode.W) && canSkill_W)
+        {
+            if (ConsumeAP(1f))
+            {
+                canSkill_W = false;
+                StopAllOnlyDodge();
+                transform.forward = arrow.forward;
+                Net.RPC("Skill_W_Fun", PhotonTargets.All);
+                StartCoroutine(MatchTimeManager.SetCountDown(CountDown_W, playerData.skillCD_W));
+            }
+        }
+    }
+    private void Character_Skill_E()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && skillSecondClick)
+        {
+            skill_second.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && canSkill_E)
+        {
+            if (ConsumeAP(1f))
+            {
+                canSkill_E = false;
+                skillSecondClick = true;                
+                Net.RPC("Skill_E_Fun", PhotonTargets.All);
+            }
         }
     }
     #endregion
@@ -477,17 +512,14 @@ public class Player : Photon.MonoBehaviour
     {
         CharacterRot = Quaternion.LookRotation(-_dir.normalized);
         transform.rotation = CharacterRot;
-
-        if (photonView.isMine)
-        {
-            AniControll.beOtherHit();
-            MyState = statesData.notMove;
-        }
+        AniControll.beOtherHit();
+        MyState = statesData.notMove;
     }
     #endregion
 
     #region 負面效果
     //暈眩 僵直
+    [PunRPC]
     public void GetDeBuff_Stun(float _time)
     {        
         stopAnything_Switch(true);
@@ -508,14 +540,14 @@ public class Player : Photon.MonoBehaviour
     {
 
     }
-    //擊退
-    /*[PunRPC]
-    protected virtual void pushOtherTarget(Vector3 _dir, float _dis)
+    //擊飛
+    [PunRPC]
+    public void pushOtherTarget(/*Vector3 _dir*/)
     {
-        this.transform.DOMove(transform.localPosition + _dir.normalized * _dis, .8f).SetEase(Ease.OutBounce);
-        Quaternion Rot = Quaternion.LookRotation(-_dir.normalized);
-        this.transform.rotation = Rot;
-    }*/
+        stopAnything_Switch(true);
+        //transform.forward = _dir.normalized;
+        AniControll.anim.SetTrigger("HitFly");
+    }
 
     void Recover_Stun()
     {
@@ -561,15 +593,31 @@ public class Player : Photon.MonoBehaviour
         canDodge = true;
     }
 
-    //技能Q冷卻時間
+    #region 技能相關
+    //技能冷卻時間
     void CountDown_Q()
     {
         canSkill_Q = true;
+    }
+    void CountDown_W()
+    {
+        canSkill_W = true;
+    }
+
+    public void GoCountDownE()
+    {
+        StartCoroutine(MatchTimeManager.SetCountDown(CountDown_E, playerData.skillCD_E));
+    }
+    void CountDown_E()
+    {
+        canSkill_E = true;
+        Debug.Log("技能E  " + "cd完成");
     }
     public void KillAllSkill()
     {
         cancelSkill.Invoke();
     }
+    #endregion
     #endregion
 
     #region 其他腳本需求
@@ -606,7 +654,6 @@ public class Player : Photon.MonoBehaviour
     //回攻擊狀態
     public void GoBack_AtkState()
     {
-        print("atkover");
         MyState = statesData.canMove_Atk;
     }
 
@@ -639,10 +686,10 @@ public class Player : Photon.MonoBehaviour
         stopAnything_Switch(true);
         CharaCollider.enabled = false;
         canDodge = true;
+        AniControll.Die();
         if (photonView.isMine)
         {
             CameraEffect.instance.nowDie(true);
-            Net.RPC("Die", PhotonTargets.All);
             Creatplayer.instance.player_ReBorn(playerData.ReBorn_CountDown);
         }
         yield return new WaitForSeconds(3f);

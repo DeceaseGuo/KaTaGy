@@ -120,7 +120,7 @@ public class Attribute_HP : Photon.MonoBehaviour
             if (ifHit && !player.deadManager.checkDead)
             {
                 ani.SetTrigger("Hit");
-                //ani.SetBool("StunRock", true);
+                ani.SetBool("StunRock", true);
                 player.beHit(_dir);
             }
         }

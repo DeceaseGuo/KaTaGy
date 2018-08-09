@@ -37,7 +37,7 @@ public class Allen_Ani : PlayerAni
     }
     #endregion
 
-    #region 動畫播放間判定
+    #region Combo動畫播放間判定
     public override void comboCheck(int _n)
     {
         switch (_n)
@@ -87,7 +87,6 @@ public class Allen_Ani : PlayerAni
         }
     }
     #endregion
-
     #endregion
 
     #region 傷害判定
@@ -97,6 +96,7 @@ public class Allen_Ani : PlayerAni
 
         if (startDetect_1)
         {
+            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
           ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
         }
         if (startDetect_2)
@@ -124,9 +124,14 @@ public class Allen_Ani : PlayerAni
                 return;
 
             isDead checkTag = beAtk_Obj.GetComponent<isDead>();
+            if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
+            {
+                SwitchAtkRange(8);
+                return;
+            }
             PhotonView Net = beAtk_Obj.GetComponent<PhotonView>();
             switch (checkTag.myAttributes)
-            {
+            {                 
                 case (GameManager.NowTarget.Soldier):
                     if (startDetect_1)
                     {
@@ -144,18 +149,18 @@ public class Allen_Ani : PlayerAni
                 case (GameManager.NowTarget.Player):
                     if (startDetect_2)
                     {
-                        Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);
+                        Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);
                         //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
                         break;
                     }
                     else
                     {
-                        Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
+                        Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
                     }
                     break;
                 case (GameManager.NowTarget.Core):
                     Debug.Log("還沒寫");
-                    break;
+                    break;             
                 default:
                     Debug.Log("錯誤");
                     break;
@@ -197,8 +202,7 @@ public class Allen_Ani : PlayerAni
                 swordLight[0].SetActive(false);
                 swordLight[1].SetActive(false);
                 swordLight[2].SetActive(false);
-                if (photonView.isMine)
-                    alreadyDamage.Clear();
+                alreadyDamage.Clear();
                 break;
         }
     }
