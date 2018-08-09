@@ -78,7 +78,7 @@ public class Player : Photon.MonoBehaviour
     private bool canSkill_Q = true;
     private bool canSkill_W = true;
     private bool canSkill_E = true;
-    private bool canSkill_R = true;
+    //private bool canSkill_R = true;
     [HideInInspector]
     public bool skillSecondClick = false;
 
