@@ -218,8 +218,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     {
         if (shieldNum > 0 && canShield)
         {
-            canShield = false;
-            playerScript.ChangeMyCollider(false);
+            canShield = false;            
             playerScript.StopAllOnlyDodge();
             transform.forward = playerScript.arrow.forward;
             playerScript.skillSecondClick = false;
@@ -257,6 +256,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     public void NowShield()
     {
         aniScript.anim.SetTrigger("Shield");
+        playerScript.ChangeMyCollider(false);
     }
     #endregion
 }
