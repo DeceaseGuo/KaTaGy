@@ -1247,7 +1247,15 @@ ModelImporter:
           preInfinity: 2
           postInfinity: 2
           rotationOrder: 4
-      events: []
+      events:
+      - time: 0.70494324
+        functionName: StopAllOnlyDodge
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -1807,7 +1815,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.5840553
+        functionName: GoBack_AtkState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1

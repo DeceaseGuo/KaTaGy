@@ -26,6 +26,7 @@ public class Allen_Skill : Photon.MonoBehaviour
 
     //盾減商協成
     Coroutine shieldCoroutine;
+    private bool canShield = false;
     [Tooltip("格檔次數")]
     [SerializeField] int shieldNum = 3;
     /*private void Update()
@@ -81,7 +82,7 @@ public class Allen_Skill : Photon.MonoBehaviour
                             if (!photonView.isMine)
                             {
                                 catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 5.5f, Vector3.zero, false);
-                                catchObj.GetComponent<PhotonView>().RPC("GetDeBuff_Stun", PhotonTargets.All, .8f);
+                                catchObj.GetComponent<PhotonView>().RPC("GetDeBuff_Stun", PhotonTargets.All, 1f);
                             }
                             break;
                         case GameManager.NowTarget.Soldier:
@@ -94,9 +95,9 @@ public class Allen_Skill : Photon.MonoBehaviour
                         case GameManager.NowTarget.Core:
                             break;
                         case GameManager.NowTarget.NoChange:
-                            //傳送一個值給無傷害
-                            catchObj = null;
-                            break;
+                            playerScript.Net.RPC("HitNull", PhotonTargets.All);
+                            ResetAllData_Grab();
+                            return;
                         default:
                             break;
                     }
@@ -191,8 +192,9 @@ public class Allen_Skill : Photon.MonoBehaviour
                         case GameManager.NowTarget.Core:
                             break;
                         case GameManager.NowTarget.NoChange:
-                            //傳送一個值給無傷害
-                            break;
+                           // playerScript.Net.RPC("HitNull", PhotonTargets.All);
+                            //ResetAllData_Grab();
+                            return;
                         default:
                             break;
                     }
@@ -205,16 +207,18 @@ public class Allen_Skill : Photon.MonoBehaviour
     #region E減傷 盾
     public void ReduceDamage()
     {
-        playerScript.StopAllOnlyDodge();
+        playerScript.stopAnything_Switch(true);
         shieldCoroutine = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f));
         shieldNum = 3;
+        canShield = true;
         Debug.Log("技能E  " + "開始減商");
     }
 
     public void Shield()
     {
-        if (shieldNum > 0)
+        if (shieldNum > 0 && canShield)
         {
+            canShield = false;
             playerScript.StopAllOnlyDodge();
             transform.forward = playerScript.arrow.forward;
             playerScript.shieldCollider.enabled = true;
@@ -231,6 +235,8 @@ public class Allen_Skill : Photon.MonoBehaviour
     {
         playerScript.skillSecondClick = true;
         playerScript.shieldCollider.enabled = false;
+        if (shieldNum != 0)
+            canShield = true;
     }
 
     public void CancelShield()
@@ -241,6 +247,7 @@ public class Allen_Skill : Photon.MonoBehaviour
             StopCoroutine(shieldCoroutine);
             shieldCoroutine = null;
         }
+        canShield = false;
         playerScript.skillSecondClick = false;
         playerScript.GoCountDownE();
 

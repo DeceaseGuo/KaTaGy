@@ -11,7 +11,7 @@ public class test : MonoBehaviour
 
     public List<int> aaa;
 
-
+    [SerializeField] int a;
     private void Update()
     {
         /* if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -23,23 +23,30 @@ public class test : MonoBehaviour
          if (Input.GetKeyDown(KeyCode.Alpha2))
          {
 
-            aaaTest();
+            aaaTest(a, true);
          }
 
     }
 
-    void aaaTest()
+    void aaaTest(int _a, bool _T)
     {
-        foreach (var item in aaa)
-        {
-            if (item == 3)
-            {
-                Debug.Log("中斷?");
-                break;
-            }
 
-            if (item != 3)
-                Debug.Log("Num  "+item);
+        switch (_a)
+        {
+            case (0):
+                Debug.Log("0");
+                break;
+            case (1):
+                if (_T)
+                {
+                    Debug.Log(1);
+                }
+                return;
+
+            default:
+                break;
         }
+        Debug.Log("fuck");
+
     }
 }

@@ -65,4 +65,5 @@ MonoBehaviour:
   - Skill_W_Fun
   - Skill_E_Fun
   - NowShield
+  - HitNull
   DisableAutoOpenWizard: 1

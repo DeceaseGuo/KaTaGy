@@ -396,7 +396,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 8
         messageOptions: 0
-      - time: 0.8242773
+      - time: 0.7984346
         functionName: comboCheck
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
@@ -404,7 +404,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 4
         messageOptions: 0
-      - time: 0.9795464
+      - time: 0.991906
         functionName: comboCheck
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
@@ -661,7 +661,41 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
+      curves:
+      - name: Curve
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: -0.5182015
+            value: 0.0018557906
+            inSlope: 7.1900434
+            outSlope: 7.1900434
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.48904055
+          - serializedVersion: 3
+            time: -0.37393165
+            value: 0.6732014
+            inSlope: 1.7492162
+            outSlope: 1.7492162
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.18242015
+          - serializedVersion: 3
+            time: 0.9833374
+            value: 1.1974831
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          preInfinity: 2
+          postInfinity: 2
+          rotationOrder: 4
       events:
       - time: 0.8309934
         functionName: GoBack_AtkState

@@ -88,12 +88,6 @@ public class Player : Photon.MonoBehaviour
         Net = GetComponent<PhotonView>();
     }
 
-    private void OnEnable()
-    {
-        if (photonView.isMine)
-            formatData();
-    }
-
     private void Start()
     {
         clickPointPos = GameObject.Find("clickPointPos");
@@ -168,14 +162,6 @@ public class Player : Photon.MonoBehaviour
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
         CharaCollider.enabled = true;
-        Net.RPC("TP_resetHp", PhotonTargets.Others, originalData.Hp_Max);
-    }
-    [PunRPC]
-    public void TP_resetHp(float _hp)
-    {
-        CharaCollider.enabled = true;
-        playerData.Hp_original = _hp;
-        playerData.Hp_Max = _hp;
     }
     #endregion
 
@@ -258,18 +244,23 @@ public class Player : Photon.MonoBehaviour
 
     private void Update()
     {
-        if (!photonView.isMine || deadManager.checkDead || MyState == statesData.None)
+        if (!photonView.isMine || deadManager.checkDead)
             return;
 
         if (leftTopPowerBar.fillAmount != 1)
             AddPower();
 
-        nowCanDo();
         CorrectDirection();
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
 
-            transform.position = mousePosition;
+        if (MyState != statesData.None)
+        {
+            nowCanDo();
+            ///
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+
+                transform.position = mousePosition;
+            }
         }
     }
 
@@ -289,7 +280,7 @@ public class Player : Photon.MonoBehaviour
             case statesData.canMove_Atk:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
-                UAV_Btn(statesData.UAV);
+                //UAV_Btn(statesData.UAV);
                 DetectSkillBtn();
                 CharacterAtk_F();
                 Dodge_Btn();
@@ -298,7 +289,7 @@ public class Player : Photon.MonoBehaviour
             case statesData.canMvoe_Build:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
-                UAV_Btn(statesData.UAV);
+              //  UAV_Btn(statesData.UAV);
                 ATK_Build_Btn();
                 break;
             case statesData.UAV:
@@ -342,7 +333,7 @@ public class Player : Photon.MonoBehaviour
         {
             if (ConsumeAP(20f))
             {
-                MyState = statesData.canMove_Atk;
+                stopAnything_Switch(true);
                 Dodge_FCN(nowMouseDir());
             }
         }
@@ -388,7 +379,7 @@ public class Player : Photon.MonoBehaviour
             if (ConsumeAP(1f))
             {
                 canSkill_Q = false;
-                StopAllOnlyDodge();
+                stopAnything_Switch(true);
                 transform.forward = arrow.forward;
                 Net.RPC("Skill_Q_Fun", PhotonTargets.All);
                 StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
@@ -402,7 +393,7 @@ public class Player : Photon.MonoBehaviour
             if (ConsumeAP(1f))
             {
                 canSkill_W = false;
-                StopAllOnlyDodge();
+                stopAnything_Switch(true);
                 transform.forward = arrow.forward;
                 Net.RPC("Skill_W_Fun", PhotonTargets.All);
                 StartCoroutine(MatchTimeManager.SetCountDown(CountDown_W, playerData.skillCD_W));
@@ -470,11 +461,6 @@ public class Player : Photon.MonoBehaviour
         getIsRunning = true;
         Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);
     }
-    //暫定(玩家面相箭頭方向)
-  /*  public void PlayerChangeDir()
-    {
-        transform.forward = nowMouseDir();
-    }*/
     #endregion
 
     #region 角色移動
@@ -512,8 +498,11 @@ public class Player : Photon.MonoBehaviour
     {
         CharacterRot = Quaternion.LookRotation(-_dir.normalized);
         transform.rotation = CharacterRot;
-        AniControll.beOtherHit();
-        MyState = statesData.notMove;
+        if (photonView.isMine)
+        {
+            AniControll.beOtherHit();
+            MyState = statesData.notMove;
+        }
     }
     #endregion
 
@@ -523,6 +512,7 @@ public class Player : Photon.MonoBehaviour
     public void GetDeBuff_Stun(float _time)
     {        
         stopAnything_Switch(true);
+        AniControll.anim.SetBool("StunRock", true);
         StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
     }
     //緩速
@@ -544,14 +534,17 @@ public class Player : Photon.MonoBehaviour
     [PunRPC]
     public void pushOtherTarget(/*Vector3 _dir*/)
     {
-        stopAnything_Switch(true);
-        //transform.forward = _dir.normalized;
-        AniControll.anim.SetTrigger("HitFly");
+        if (!deadManager.checkDead)
+        {
+            stopAnything_Switch(true);
+            AniControll.anim.SetTrigger("HitFly");
+        }
     }
 
     void Recover_Stun()
     {
         GoBack_AtkState();
+        AniControll.anim.SetBool("StunRock", false);
     }
     #endregion
 
@@ -581,7 +574,6 @@ public class Player : Photon.MonoBehaviour
     private void Dodge_FCN(Vector3 _dir)
     {
         canDodge = false;
-        isStop();
         transform.forward = _dir.normalized;
         Net.RPC("GoDodge", PhotonTargets.All);
         StartCoroutine(MatchTimeManager.SetCountDown(Dodge_End, playerData.Dodget_Delay));
@@ -680,12 +672,30 @@ public class Player : Photon.MonoBehaviour
     }
     #endregion
 
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            stream.SendNext(playerData.Hp_original);
+            stream.SendNext(playerData.Hp_Max);
+            stream.SendNext(playerData.Atk_Damage);
+        }
+        else
+        {
+            playerData.Hp_original = (float)stream.ReceiveNext();
+            playerData.Hp_Max = (float)stream.ReceiveNext();
+            playerData.Atk_Damage = (float)stream.ReceiveNext();
+            if (playerData.Hp_Max != originalData.Hp_Max)
+                GetComponent<Attribute_HP>().UI_HpBar.fillAmount = playerData.Hp_original / playerData.Hp_Max;
+        }
+    }
+
+
     #region 死亡
     public IEnumerator Death()
     {
         stopAnything_Switch(true);
         CharaCollider.enabled = false;
-        canDodge = true;
         AniControll.Die();
         if (photonView.isMine)
         {

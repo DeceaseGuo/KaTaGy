@@ -15,7 +15,15 @@ public class Attribute_HP : Photon.MonoBehaviour
     private Animator ani;
     [Header("改變顏色")]
     private float maxValue;
-    [SerializeField] Renderer myRender;  
+    [SerializeField] Renderer myRender;
+
+    private void Awake()
+    {
+        player = GetComponent<Player>();
+        displayHpBarPos = GameObject.Find("Display_HpBarPos");
+        UI_HpObj.transform.SetParent(displayHpBarPos.transform, false);
+        ani = GetComponent<Animator>();
+    }
 
     private void OnEnable()
     {
@@ -25,20 +33,15 @@ public class Attribute_HP : Photon.MonoBehaviour
         UI_HpBar.fillAmount = 1;
         if (photonView.isMine)
         {
-            if (leftTopHpBar == null)            
+            if (leftTopHpBar == null)
                 leftTopHpBar = GameObject.Find("hpBar_0022").GetComponent<Image>();
 
             leftTopHpBar.fillAmount = 1;
         }
-        UI_HpObj.SetActive(true);
-    }
+        if (player != null)
+            player.formatData();
 
-    private void Start()
-    {
-        player = GetComponent<Player>();
-        displayHpBarPos = GameObject.Find("Display_HpBarPos");
-        UI_HpObj.transform.SetParent(displayHpBarPos.transform, false);
-        ani = GetComponent<Animator>();
+        UI_HpObj.SetActive(true);
     }
 
     private void LateUpdate()
@@ -47,7 +50,7 @@ public class Attribute_HP : Photon.MonoBehaviour
 
         if (Input.GetKeyDown("z"))
         {
-            takeDamage(5f, Vector3.zero, true);
+            takeDamage(15f, Vector3.zero, true);
         }
     }
 
@@ -105,9 +108,10 @@ public class Attribute_HP : Photon.MonoBehaviour
 
         float tureDamage = CalculatorDamage(_damage);
 
-        if (player.playerData.Hp_original > 0 && !ani.GetCurrentAnimatorStateInfo(0).IsName("dodoge"))
+        if (player.playerData.Hp_original > 0)
         {
-            player.playerData.Hp_original -= tureDamage;
+         //   if (photonView.isMine)
+                player.playerData.Hp_original -= tureDamage;
             BeHitChangeColor();
             ani.SetBool("PullSword", true);
             if (player.playerData.Hp_original <= 0)
@@ -120,7 +124,6 @@ public class Attribute_HP : Photon.MonoBehaviour
             if (ifHit && !player.deadManager.checkDead)
             {
                 ani.SetTrigger("Hit");
-                ani.SetBool("StunRock", true);
                 player.beHit(_dir);
             }
         }

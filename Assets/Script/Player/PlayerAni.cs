@@ -25,19 +25,23 @@ public class PlayerAni : Photon.MonoBehaviour
     //後搖點
     protected bool after_shaking;
 
+    //攻擊判定用
     protected bool startDetect_1 = false;
     protected bool startDetect_2 = false;
     public GameObject[] swordLight = new GameObject[3];
     public List<GameObject> alreadyDamage;
 
     protected Vector3 currentAtkDir;
-
+    //combo
     protected int comboIndex;
     protected float beHit_time = 0.25f;
     protected bool canStiffness = true;
-
+    //攻擊矯正
     protected bool redressOpen = false;
     protected Tweener myTweener;
+
+    //武器打中防禦特效
+    [SerializeField] ParticleSystem hitNullEffect;
 
     private void Start()
     {
@@ -97,7 +101,6 @@ public class PlayerAni : Photon.MonoBehaviour
     }
     void StiffnessEnd()
     {
-        anim.SetBool("StunRock", false);
         canStiffness = true;
         player.stopAnything_Switch(false);
     }
@@ -278,6 +281,12 @@ public class PlayerAni : Photon.MonoBehaviour
             return false;
     }
     #endregion
+
+    [PunRPC]
+    public void HitNull()
+    {
+        hitNullEffect.Play();
+    }
 
     [PunRPC]
     public void Skill_Q_Fun()

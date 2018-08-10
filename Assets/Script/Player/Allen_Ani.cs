@@ -96,7 +96,6 @@ public class Allen_Ani : PlayerAni
 
         if (startDetect_1)
         {
-            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
           ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
         }
         if (startDetect_2)
@@ -127,6 +126,7 @@ public class Allen_Ani : PlayerAni
             if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
             {
                 SwitchAtkRange(8);
+                player.Net.RPC("HitNull", PhotonTargets.All);
                 return;
             }
             PhotonView Net = beAtk_Obj.GetComponent<PhotonView>();
