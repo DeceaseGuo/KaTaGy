@@ -705,7 +705,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.8843345
+      - time: 0.92081517
         functionName: EndShield
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 504df5cc5c3ac774a9edeb9c3b2c145c,

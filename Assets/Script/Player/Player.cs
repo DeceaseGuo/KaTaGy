@@ -21,7 +21,7 @@ public class Player : Photon.MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
     private bool canDodge = true;
-    private CapsuleCollider CharaCollider;
+    
     private NavMeshAgent nav;
 
     [SerializeField] GameObject clickPointPos;
@@ -73,7 +73,8 @@ public class Player : Photon.MonoBehaviour
     private buffData nowBuff = buffData.None;
     public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }
     #endregion
-
+    private CapsuleCollider CharaCollider;
+    public BoxCollider shieldCollider;
     private bool canSkill_Q = true;
     private bool canSkill_W = true;
     private bool canSkill_E = true;
@@ -134,11 +135,13 @@ public class Player : Photon.MonoBehaviour
     public void changeMask_1()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
+        shieldCollider.gameObject.layer = 30;
     }
     [PunRPC]
     public void changeMask_2()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
+        shieldCollider.gameObject.layer = 31;
     }
     #endregion
 
@@ -659,6 +662,13 @@ public class Player : Photon.MonoBehaviour
     {
         if (photonView.isMine)
             Net.RPC("waitBuild", PhotonTargets.All, _t);
+    }
+
+    //改變碰撞
+    public void ChangeMyCollider(bool _myCollider)
+    {
+        CharaCollider.enabled = _myCollider;
+        shieldCollider.enabled = !_myCollider;
     }
     #endregion
 
