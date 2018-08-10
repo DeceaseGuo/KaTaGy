@@ -696,23 +696,7 @@ ModelImporter:
           preInfinity: 2
           postInfinity: 2
           rotationOrder: 4
-      events:
-      - time: 0.8309934
-        functionName: GoBack_AtkState
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.92081517
-        functionName: EndShield
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 504df5cc5c3ac774a9edeb9c3b2c145c,
-          type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

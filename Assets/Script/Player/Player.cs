@@ -161,7 +161,7 @@ public class Player : Photon.MonoBehaviour
             originalData = PlayerData.instance.getPlayerData(GameManager.instance.Meis);
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
-        CharaCollider.enabled = true;
+        ChangeMyCollider(true);
     }
     #endregion
 

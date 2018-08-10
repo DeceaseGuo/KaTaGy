@@ -218,15 +218,20 @@ public class Allen_Skill : Photon.MonoBehaviour
     {
         if (shieldNum > 0 && canShield)
         {
-            canShield = false;            
-            playerScript.StopAllOnlyDodge();
-            transform.forward = playerScript.arrow.forward;
+            canShield = false;
             playerScript.skillSecondClick = false;
             shieldNum--;
             playerScript.Net.RPC("NowShield", PhotonTargets.All);
+            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.8f));
             Debug.Log("技能E  " + "減少次數" + shieldNum);
             if (shieldNum == 0)
-                CancelShield();
+            {
+                if (shieldCoroutine != null)
+                {
+                    StopCoroutine(shieldCoroutine);
+                    shieldCoroutine = null;
+                }
+            }
         }
     }
 
@@ -236,26 +241,23 @@ public class Allen_Skill : Photon.MonoBehaviour
         playerScript.ChangeMyCollider(true);
         if (shieldNum != 0)
             canShield = true;
+        else
+            CancelShield();
     }
 
     public void CancelShield()
     {
         Debug.Log("技能E  " + "結束");
-        if (shieldCoroutine != null)
-        {
-            StopCoroutine(shieldCoroutine);
-            shieldCoroutine = null;
-        }
+        shieldNum = 0;
+        playerScript.ChangeMyCollider(true);
         canShield = false;
         playerScript.skillSecondClick = false;
         playerScript.GoCountDownE();
-
     }
 
     [PunRPC]
     public void NowShield()
     {
-        aniScript.anim.SetTrigger("Shield");
         playerScript.ChangeMyCollider(false);
     }
     #endregion
