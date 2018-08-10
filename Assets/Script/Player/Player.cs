@@ -74,7 +74,6 @@ public class Player : Photon.MonoBehaviour
     public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }
     #endregion
 
-    public BoxCollider shieldCollider;
     private bool canSkill_Q = true;
     private bool canSkill_W = true;
     private bool canSkill_E = true;
@@ -135,13 +134,11 @@ public class Player : Photon.MonoBehaviour
     public void changeMask_1()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
-        shieldCollider.gameObject.layer = 30;
     }
     [PunRPC]
     public void changeMask_2()
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
-        shieldCollider.gameObject.layer = 31;
     }
     #endregion
 

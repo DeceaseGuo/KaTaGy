@@ -219,9 +219,9 @@ public class Allen_Skill : Photon.MonoBehaviour
         if (shieldNum > 0 && canShield)
         {
             canShield = false;
+            playerScript.deadManager.myAttributes = GameManager.NowTarget.NoChange;
             playerScript.StopAllOnlyDodge();
             transform.forward = playerScript.arrow.forward;
-            playerScript.shieldCollider.enabled = true;
             playerScript.skillSecondClick = false;
             shieldNum--;
             playerScript.Net.RPC("NowShield", PhotonTargets.All);
@@ -234,7 +234,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     public void EndShield()
     {
         playerScript.skillSecondClick = true;
-        playerScript.shieldCollider.enabled = false;
+        playerScript.deadManager.myAttributes = GameManager.NowTarget.Player;
         if (shieldNum != 0)
             canShield = true;
     }

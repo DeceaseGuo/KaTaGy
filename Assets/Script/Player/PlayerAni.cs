@@ -316,6 +316,7 @@ public class PlayerAni : Photon.MonoBehaviour
 
     public void Die()
     {
+        anim.SetBool("CanSkill", false);
         anim.SetTrigger("Die");
     }
 }
