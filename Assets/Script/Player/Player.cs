@@ -46,9 +46,11 @@ public class Player : Photon.MonoBehaviour
     private Vector3 mousePosition;
     public Transform arrow;
 
+    public UnityEvent skill_Q;
     public UnityEvent skill_W;
     public UnityEvent skill_E;
-    public UnityEvent skill_second;
+    public UnityEvent skill_R;
+
     public UnityEvent cancelSkill;
 
     #region 狀態
@@ -64,6 +66,17 @@ public class Player : Photon.MonoBehaviour
     private statesData myState = statesData.canMove_Atk;
     public statesData MyState { get { return myState; } set { myState = value; } }
 
+    public enum SkillData
+    {
+        None,
+        skill_Q,
+        skill_W,
+        skill_E,
+        skill_R
+    }
+    private SkillData skillState = SkillData.None;
+    public SkillData SkillState { get { return skillState; } set { skillState = value; } }
+
     public enum buffData
     {
         None,
@@ -75,10 +88,21 @@ public class Player : Photon.MonoBehaviour
     #endregion
     private CapsuleCollider CharaCollider;
     public BoxCollider shieldCollider;
-    private bool canSkill_Q = true;
-    private bool canSkill_W = true;
-    private bool canSkill_E = true;
-    //private bool canSkill_R = true;
+    //技能
+    private SkillBase skillManager;
+    [HideInInspector]
+    public bool canSkill_Q = true;
+    [HideInInspector]
+    public bool canSkill_W = true;
+    [HideInInspector]
+    public bool canSkill_E = true;
+    [HideInInspector]
+    public bool canSkill_R = true;
+
+    [Tooltip("抓取顯示提示的範圍")]
+    public Projector projector;
+
+
     [HideInInspector]
     public bool skillSecondClick = false;
 
@@ -90,6 +114,7 @@ public class Player : Photon.MonoBehaviour
 
     private void Start()
     {
+        skillManager = GetComponent<SkillBase>();
         clickPointPos = GameObject.Find("clickPointPos");
         hintManager = HintManager.instance;
         buildManager = BuildManager.instance;
@@ -321,6 +346,9 @@ public class Player : Photon.MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
+
                 buildManager.BuildSwitch();
                 StopClick = true;
             }
@@ -331,6 +359,9 @@ public class Player : Photon.MonoBehaviour
     {
         if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt)))
         {
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+
             if (ConsumeAP(20f))
             {
                 stopAnything_Switch(true);
@@ -352,6 +383,9 @@ public class Player : Photon.MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F) && AniControll.canClick)
         {
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+
             Vector3 tmpDir = transform.forward;
             if (MyState != statesData.Combo)
             {
@@ -365,57 +399,74 @@ public class Player : Photon.MonoBehaviour
             AniControll.TypeCombo(tmpDir);
         }
     }
-    //技能
+    #endregion
+
+    #region 玩家技能
     private void DetectSkillBtn()
     {
         Character_Skill_Q();
         Character_Skill_W();
         Character_Skill_E();
+        Character_Skill_R();
     }
+    //Q
     private void Character_Skill_Q()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && canSkill_Q)
+        if (SkillState != SkillData.skill_Q && canSkill_Q && Input.GetKeyDown(KeyCode.Q))
         {
-            if (ConsumeAP(1f))
-            {
-                canSkill_Q = false;
-                stopAnything_Switch(true);
-                transform.forward = arrow.forward;
-                Net.RPC("Skill_Q_Fun", PhotonTargets.All);
-                StartCoroutine(MatchTimeManager.SetCountDown(CountDown_Q, playerData.skillCD_Q));
-            }
-        }
-    }
-    private void Character_Skill_W()
-    {
-        if (Input.GetKeyDown(KeyCode.W) && canSkill_W)
-        {
-            if (ConsumeAP(1f))
-            {
-                canSkill_W = false;
-                stopAnything_Switch(true);
-                transform.forward = arrow.forward;
-                Net.RPC("Skill_W_Fun", PhotonTargets.All);
-                StartCoroutine(MatchTimeManager.SetCountDown(CountDown_W, playerData.skillCD_W));
-            }
-        }
-    }
-    private void Character_Skill_E()
-    {
-        if (Input.GetKeyDown(KeyCode.E) && skillSecondClick)
-        {
-            skill_second.Invoke();
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+
+            skillManager.Skill_Q_Click();
         }
 
-        if (Input.GetKeyDown(KeyCode.E) && canSkill_E)
+        if (SkillState == SkillData.skill_Q)
+            skillManager.In_Skill_Q();
+    }
+    //W
+    private void Character_Skill_W()
+    {
+        if (SkillState != SkillData.skill_W && canSkill_W && Input.GetKeyDown(KeyCode.W))
         {
-            if (ConsumeAP(1f))
-            {
-                canSkill_E = false;
-                skillSecondClick = true;                
-                Net.RPC("Skill_E_Fun", PhotonTargets.All);
-            }
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+            skillManager.Skill_W_Click();
         }
+
+        if (SkillState == SkillData.skill_W)
+            skillManager.In_Skill_W();
+    }
+    //E
+    private void Character_Skill_E()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+
+            //detect_Skill_E.Invoke();
+        }
+
+        if (SkillState != SkillData.skill_E && canSkill_E && Input.GetKeyDown(KeyCode.E))
+        {
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+            skillManager.Skill_E_Click();
+        }
+
+        if (SkillState == SkillData.skill_E)
+            skillManager.In_Skill_E();
+    }
+    //R
+    private void Character_Skill_R()
+    {
+        if (SkillState != SkillData.skill_R && canSkill_R && Input.GetKeyDown(KeyCode.R))
+        {
+            if (SkillState != SkillData.None)
+                CancelNowSkill();
+            skillManager.Skill_R_Click();
+        }
+
+        if (SkillState == SkillData.skill_R)
+            skillManager.In_Skill_R();
     }
     #endregion
 
@@ -550,7 +601,7 @@ public class Player : Photon.MonoBehaviour
 
     #region 功能
     //消耗能量
-    private bool ConsumeAP(float _value)
+    public bool ConsumeAP(float _value)
     {
         if (playerData.Ap_original - _value >= 0)
         {
@@ -581,30 +632,61 @@ public class Player : Photon.MonoBehaviour
     //閃避cd結束
     void Dodge_End()
     {
-        //   MySkill = skillData.None;
         canDodge = true;
     }
 
     #region 技能相關
     //技能冷卻時間
-    void CountDown_Q()
+    public void CountDown_Q()
     {
         canSkill_Q = true;
     }
-    void CountDown_W()
+    public void CountDown_W()
     {
         canSkill_W = true;
+    }
+
+    void CancelNowSkill()
+    {
+        switch (SkillState)
+        {
+            case SkillData.skill_Q:
+                canSkill_Q = true;
+                SkillState = SkillData.None;
+                projector.enabled = false;
+                break;
+            case SkillData.skill_W:
+                canSkill_W = true;
+                SkillState = SkillData.None;
+                projector.enabled = false;
+                break;
+            case SkillData.skill_E:
+                canSkill_E = true;
+                SkillState = SkillData.None;
+                projector.enabled = false;
+                break;
+            case SkillData.skill_R:
+                canSkill_R = true;
+                SkillState = SkillData.None;
+                projector.enabled = false;
+                break;
+            default:
+                SkillState = SkillData.None;
+                projector.enabled = false;
+                break;
+        }
     }
 
     public void GoCountDownE()
     {
         StartCoroutine(MatchTimeManager.SetCountDown(CountDown_E, playerData.skillCD_E));
     }
-    void CountDown_E()
+    public void CountDown_E()
     {
         canSkill_E = true;
         Debug.Log("技能E  " + "cd完成");
     }
+
     public void KillAllSkill()
     {
         cancelSkill.Invoke();
@@ -706,6 +788,7 @@ public class Player : Photon.MonoBehaviour
         AniControll.Die();
         if (photonView.isMine)
         {
+            CancelNowSkill();
             CameraEffect.instance.nowDie(true);
             Creatplayer.instance.player_ReBorn(playerData.ReBorn_CountDown);
         }

@@ -5468,7 +5468,7 @@ ModelImporter:
       name: Skill4
       takeName: Take 001
       firstFrame: 705
-      lastFrame: 755
+      lastFrame: 750
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -5741,7 +5741,7 @@ ModelImporter:
         weight: 0
       - path: hand
         weight: 0
-      maskType: 3
+      maskType: 1
       maskSource: {fileID: 31900000, guid: b7c2acf36264f0d42aa44a4cd1ebc733, type: 2}
       additiveReferencePoseFrame: 0
     isReadable: 1

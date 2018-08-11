@@ -8,7 +8,7 @@ public class PlayerAni : Photon.MonoBehaviour
     protected SmoothFollow cameraControl;
     protected Player player;
     public Animator anim;
-
+    
     [Header("武器")]
     public MeshRenderer swordRecyclePos;   //回收武器的地方
     public MeshRenderer pullSwordPos;      //拔起武器的地方

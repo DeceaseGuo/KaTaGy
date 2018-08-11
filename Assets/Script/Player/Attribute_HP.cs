@@ -110,8 +110,7 @@ public class Attribute_HP : Photon.MonoBehaviour
 
         if (player.playerData.Hp_original > 0)
         {
-         //   if (photonView.isMine)
-                player.playerData.Hp_original -= tureDamage;
+            player.playerData.Hp_original -= tureDamage;
             BeHitChangeColor();
             ani.SetBool("PullSword", true);
             if (player.playerData.Hp_original <= 0)

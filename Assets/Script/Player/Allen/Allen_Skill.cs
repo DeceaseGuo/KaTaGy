@@ -3,7 +3,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class Allen_Skill : Photon.MonoBehaviour
+public class Allen_Skill : SkillBase
 {
     private Player playerScript;
     private PlayerAni aniScript;
@@ -21,8 +21,17 @@ public class Allen_Skill : Photon.MonoBehaviour
     [SerializeField] MeshRenderer handBig;
     private bool isForward = false;
     private GameObject catchObj = null;
+    //[Tooltip("抓取範圍")]
+   // [SerializeField] Projector projector;
+    [SerializeField] Material material_Q;
+    /// <summary>
+    /// ////////////////
+    /// </summary>
     [Tooltip("W技能偵測位子")]
     [SerializeField] Transform whirlwindPos;
+
+
+    //////
 
     //盾減商協成
     Coroutine shieldCoroutine;
@@ -47,6 +56,79 @@ public class Allen_Skill : Photon.MonoBehaviour
      {
          Gizmos.DrawWireSphere(grab_MovePos.position, handRadiu);
      }*/
+
+    #region 技能Event
+    //Q按下
+    public override void Skill_Q_Click()
+    {
+        //消耗不足
+        if (!playerScript.ConsumeAP(1f))
+            return;
+
+        playerScript.canSkill_Q = false;
+        playerScript.SkillState = Player.SkillData.skill_Q;
+        //顯示範圍
+        playerScript.projector.enabled = true;
+        playerScript.projector.material = material_Q;
+    }
+    //Q偵測
+    public override void In_Skill_Q()
+    {        
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (playerScript.ConsumeAP(1f))
+            {
+                playerScript.SkillState = Player.SkillData.None;
+                playerScript.projector.enabled = false;
+                //關閉顯示範圍
+                
+                transform.forward = playerScript.arrow.forward;
+                playerScript.stopAnything_Switch(true);
+                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.All);
+                StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q));
+            }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            playerScript.canSkill_Q = true;
+            playerScript.SkillState = Player.SkillData.None;
+            //關閉顯示範圍
+            playerScript.projector.enabled = false;
+        }
+    }
+    //W按下
+    public override void Skill_W_Click()
+    {
+        if (playerScript.ConsumeAP(1f))
+        {
+            playerScript.canSkill_W = false;
+            playerScript.SkillState = Player.SkillData.None;
+            playerScript.canSkill_W = false;
+            playerScript.stopAnything_Switch(true);
+            transform.forward = playerScript.arrow.forward;
+            playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
+            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W));
+        }
+    }
+
+    //E按下
+    public override void Skill_E_Click()
+    {
+        if (playerScript.ConsumeAP(1f))
+        {
+            playerScript.canSkill_E = false;
+            //playerScript.skillSecondClick = true;
+            playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
+        }   
+    }
+    //E偵測
+    public override void In_Skill_E()
+    {
+        if (canShield)
+            Shield();
+    }
+
+    #endregion
 
     #region Q抓取
     public void Q_GoGrab()
@@ -86,7 +168,6 @@ public class Allen_Skill : Photon.MonoBehaviour
                             }
                             break;
                         case GameManager.NowTarget.Soldier:
-                            //  catchObj.SendMessage("GetDeBuff_Stun", 1f);
                             if (!photonView.isMine)
                                 catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
                             break;
@@ -96,8 +177,7 @@ public class Allen_Skill : Photon.MonoBehaviour
                             break;
                         case GameManager.NowTarget.NoChange:
                             playerScript.Net.RPC("HitNull", PhotonTargets.All);
-                            ResetAllData_Grab();
-                            return;
+                            break;
                         default:
                             break;
                     }
@@ -221,8 +301,7 @@ public class Allen_Skill : Photon.MonoBehaviour
             canShield = false;
             playerScript.skillSecondClick = false;
             shieldNum--;
-            playerScript.Net.RPC("NowShield", PhotonTargets.All);
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.8f));
+            playerScript.Net.RPC("NowShield", PhotonTargets.All);            
             Debug.Log("技能E  " + "減少次數" + shieldNum);
             if (shieldNum == 0)
             {
@@ -248,6 +327,11 @@ public class Allen_Skill : Photon.MonoBehaviour
     public void CancelShield()
     {
         Debug.Log("技能E  " + "結束");
+        if (shieldCoroutine != null)
+        {
+            StopCoroutine(shieldCoroutine);
+            shieldCoroutine = null;
+        }
         shieldNum = 0;
         playerScript.ChangeMyCollider(true);
         canShield = false;
@@ -259,6 +343,7 @@ public class Allen_Skill : Photon.MonoBehaviour
     public void NowShield()
     {
         playerScript.ChangeMyCollider(false);
+        StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.8f));
     }
     #endregion
 }
