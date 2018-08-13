@@ -5,18 +5,20 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-//[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class Player : Photon.MonoBehaviour
 {
     private MatchTimer matchTime;
     public MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+
+    private HintManager hintManager;
+    public HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
 
     public PlayerData.PlayerDataBase playerData;
     public PlayerData.PlayerDataBase originalData;
     public PlayerAni AniControll;
     [HideInInspector]
     public BuildManager buildManager;
-    private HintManager hintManager;
     [HideInInspector] public isDead deadManager;
     private Ray ray;
     private RaycastHit hit;
@@ -77,14 +79,14 @@ public class Player : Photon.MonoBehaviour
     private SkillData skillState = SkillData.None;
     public SkillData SkillState { get { return skillState; } set { skillState = value; } }
 
-    public enum buffData
+   /* public enum buffData
     {
         None,
         NowCC,
         Shield //盾
     }
     private buffData nowBuff = buffData.None;
-    public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }
+    public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }*/
     #endregion
     private CapsuleCollider CharaCollider;
     public BoxCollider shieldCollider;
@@ -99,13 +101,6 @@ public class Player : Photon.MonoBehaviour
     [HideInInspector]
     public bool canSkill_R = true;
 
-    [Tooltip("抓取顯示提示的範圍")]
-    public Projector projector;
-
-
-    [HideInInspector]
-    public bool skillSecondClick = false;
-
     private void Awake()
     {
         CharaCollider = GetComponent<CapsuleCollider>();
@@ -116,7 +111,6 @@ public class Player : Photon.MonoBehaviour
     {
         skillManager = GetComponent<SkillBase>();
         clickPointPos = GameObject.Find("clickPointPos");
-        hintManager = HintManager.instance;
         buildManager = BuildManager.instance;
         nav = GetComponent<NavMeshAgent>();
         deadManager = GetComponent<isDead>();
@@ -174,18 +168,22 @@ public class Player : Photon.MonoBehaviour
     public void formatData()
     {
         Debug.Log("初始數據");
-        if (leftTopPowerBar == null)
-            leftTopPowerBar = GameObject.Find("mpBar_0020").GetComponent<Image>();
-        if (buildManager != null && buildManager.nowBuilding)
-            buildManager.BuildSwitch();
-        if (nav != null)
-            nav.speed = playerData.moveSpeed;
+        if (photonView.isMine)
+        {
+            if (leftTopPowerBar == null)
+                leftTopPowerBar = GameObject.Find("mpBar_0020").GetComponent<Image>();
+            if (buildManager != null && buildManager.nowBuilding)
+                buildManager.BuildSwitch();
+            if (nav != null)
+                nav.speed = playerData.moveSpeed;
 
-        leftTopPowerBar.fillAmount = 1;
+            leftTopPowerBar.fillAmount = 1;
+        }
         if (originalData.headImage == null)
             originalData = PlayerData.instance.getPlayerData(GameManager.instance.Meis);
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
+        playerData.Hp_original = playerData.Hp_Max;
         ChangeMyCollider(true);
     }
     #endregion
@@ -362,7 +360,7 @@ public class Player : Photon.MonoBehaviour
             if (SkillState != SkillData.None)
                 CancelNowSkill();
 
-            if (ConsumeAP(20f))
+            if (ConsumeAP(10f, true))
             {
                 stopAnything_Switch(true);
                 Dodge_FCN(nowMouseDir());
@@ -439,12 +437,6 @@ public class Player : Photon.MonoBehaviour
     //E
     private void Character_Skill_E()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-
-            //detect_Skill_E.Invoke();
-        }
-
         if (SkillState != SkillData.skill_E && canSkill_E && Input.GetKeyDown(KeyCode.E))
         {
             if (SkillState != SkillData.None)
@@ -563,6 +555,8 @@ public class Player : Photon.MonoBehaviour
     public void GetDeBuff_Stun(float _time)
     {        
         stopAnything_Switch(true);
+        CancelNowSkill();
+        AniControll.anim.SetTrigger("Stun");
         AniControll.anim.SetBool("StunRock", true);
         StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
     }
@@ -583,10 +577,11 @@ public class Player : Photon.MonoBehaviour
     }
     //擊飛
     [PunRPC]
-    public void pushOtherTarget(/*Vector3 _dir*/)
+    public void pushOtherTarget()
     {
         if (!deadManager.checkDead)
         {
+            CancelNowSkill();
             stopAnything_Switch(true);
             AniControll.anim.SetTrigger("HitFly");
         }
@@ -601,17 +596,20 @@ public class Player : Photon.MonoBehaviour
 
     #region 功能
     //消耗能量
-    public bool ConsumeAP(float _value)
+    public bool ConsumeAP(float _value, bool _nowConsumer)
     {
         if (playerData.Ap_original - _value >= 0)
         {
-            playerData.Ap_original -= _value;
-            leftTopPowerBar.fillAmount = playerData.Ap_original / playerData.Ap_Max;
+            if (_nowConsumer)
+            {
+                playerData.Ap_original -= _value;
+                leftTopPowerBar.fillAmount = playerData.Ap_original / playerData.Ap_Max;
+            }
             return true;
         }
         else
         {
-            hintManager.CreatHint("能量不足");
+            HintScript.CreatHint("能量不足");
             return false;
         }
     }
@@ -645,46 +643,36 @@ public class Player : Photon.MonoBehaviour
     {
         canSkill_W = true;
     }
+    public void CountDown_E()
+    {
+        canSkill_E = true;
+    }
+    public void CountDown_R()
+    {
+        canSkill_R = true;
+    }
 
-    void CancelNowSkill()
+    public void CancelNowSkill()
     {
         switch (SkillState)
         {
             case SkillData.skill_Q:
-                canSkill_Q = true;
-                SkillState = SkillData.None;
-                projector.enabled = false;
+                canSkill_Q = true;               
                 break;
             case SkillData.skill_W:
                 canSkill_W = true;
-                SkillState = SkillData.None;
-                projector.enabled = false;
                 break;
             case SkillData.skill_E:
-                canSkill_E = true;
-                SkillState = SkillData.None;
-                projector.enabled = false;
+                canSkill_E = true;                
                 break;
             case SkillData.skill_R:
                 canSkill_R = true;
-                SkillState = SkillData.None;
-                projector.enabled = false;
                 break;
             default:
-                SkillState = SkillData.None;
-                projector.enabled = false;
                 break;
         }
-    }
-
-    public void GoCountDownE()
-    {
-        StartCoroutine(MatchTimeManager.SetCountDown(CountDown_E, playerData.skillCD_E));
-    }
-    public void CountDown_E()
-    {
-        canSkill_E = true;
-        Debug.Log("技能E  " + "cd完成");
+        skillManager.CancelDetectSkill(SkillState);
+        SkillState = SkillData.None;
     }
 
     public void KillAllSkill()

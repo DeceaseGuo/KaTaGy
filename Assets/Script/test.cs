@@ -11,9 +11,12 @@ namespace Mytest
         public Coroutine testaaa;
         public float coutnDown;
 
-        public List<int> aaa;
 
-        public int a;
+        public float A1;
+        public float A2 = 1;
+        public float width;
+        [SerializeField] Projector kkk;
+
         private void Update()
         {
             /* if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -21,68 +24,27 @@ namespace Mytest
                  kkk.Invoke();
                  Debug.Log("click");
              }*/
+            kkk.orthographicSize = A1;
+            kkk.aspectRatio = width / A1;
 
-            /*   if (Input.GetKeyDown(KeyCode.Alpha2))
-               {
-
-                   aaaTest(a, true);
-               }*/
-        /*    if (Input.any)
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                Event e = Event.current;
-                if (e.isMouse)
-                {
-                    Debug.Log("滑鼠");
-                }
-                if (e.isKey)
-                {
-                    if (e.keyCode == KeyCode.None)
-                        return;
-                    Debug.Log("鍵盤");
+               
+                kkk.orthographicSize = A1 / 2;
 
-                }
-            }*/
-
-        }
-
-        void OnGUI()
-        {
-            if (Input.anyKeyDown)
-            {
-                Event e = Event.current;
-                if (e.isMouse)
-                {
-                    Debug.Log(e.button);
-                }
-                if (e.isKey)
-                {
-                    if (e.keyCode == KeyCode.None)
-                        return;
-                    Debug.Log(e.keyCode);
-
-                }
             }
-        }
-
-        public void aaaTest(int _a, bool _T)
-        {
-
-            switch (_a)
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                case (0):
-                    Debug.Log("0");
-                    break;
-                case (1):
-                    if (_T)
-                    {
-                        Debug.Log(1);
-                    }
-                    return;
 
-                default:
-                    break;
+                kkk.aspectRatio = A2;
+
             }
-            Debug.Log("fuck");
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+
+                kkk.aspectRatio = width / A1;
+
+            }
 
         }
     }

@@ -42,4 +42,8 @@ public class SkillBase : Photon.MonoBehaviour
 
     }
     #endregion
+
+    public virtual void CancelDetectSkill(Player.SkillData _nowSkill)
+    {
+    }
 }

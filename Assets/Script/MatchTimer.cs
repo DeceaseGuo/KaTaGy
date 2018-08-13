@@ -168,7 +168,7 @@ public class MatchTimer : PunBehaviour
             if (nowTime <= 0)
             {
                 if (_text != null)
-                    _text.text = 0.ToString("0.0");
+                    _text.text = ""/*0.ToString("0")*/;
                 if (_function != null)
                     _function();
                 if (_img != null)
@@ -178,7 +178,7 @@ public class MatchTimer : PunBehaviour
             else
             {
                 if (_text != null)
-                    _text.text = nowTime.ToString("0.0");
+                    _text.text = nowTime.ToString("0");
                 if (_img != null)
                     _img.fillAmount = nowTime / a;
             }

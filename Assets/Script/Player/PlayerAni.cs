@@ -292,20 +292,32 @@ public class PlayerAni : Photon.MonoBehaviour
     public void Skill_Q_Fun()
     {
         anim.SetTrigger("Skill_Q");
+        if (player.skill_Q != null)
+            player.skill_Q.Invoke();
     }
 
     [PunRPC]
     public void Skill_W_Fun()
     {
         anim.SetTrigger("Skill_W");
-        player.skill_W.Invoke();
+        if (player.skill_W != null)
+            player.skill_W.Invoke();
     }
 
     [PunRPC]
     public void Skill_E_Fun()
     {
         anim.SetTrigger("Skill_E");
-        player.skill_E.Invoke();
+        if (player.skill_E != null)
+            player.skill_E.Invoke();
+    }
+
+    [PunRPC]
+    public void Skill_R_Fun()
+    {
+        anim.SetTrigger("Skill_R");
+        if (player.skill_R != null)
+            player.skill_R.Invoke();
     }
 
     [PunRPC]
@@ -315,8 +327,7 @@ public class PlayerAni : Photon.MonoBehaviour
     }
 
     public void Die()
-    {
-        anim.SetBool("CanSkill", false);
+    {        
         anim.SetTrigger("Die");
     }
 }

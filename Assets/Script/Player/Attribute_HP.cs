@@ -116,12 +116,14 @@ public class Attribute_HP : Photon.MonoBehaviour
             if (player.playerData.Hp_original <= 0)
             {
                 player.deadManager.ifDead(true);
+                ani.SetBool("CanSkill", false);
                 StartCoroutine(player.Death());
                 UI_HpObj.SetActive(false);
             }
             openPopupObject(tureDamage);
             if (ifHit && !player.deadManager.checkDead)
             {
+                player.CancelNowSkill();
                 ani.SetTrigger("Hit");
                 player.beHit(_dir);
             }
