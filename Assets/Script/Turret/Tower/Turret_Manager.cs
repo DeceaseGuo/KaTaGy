@@ -65,7 +65,6 @@ namespace AtkTower
 
             if (turretData.Fad_thermalEnergy > 0)
             {
-
                 overHeat();
             }            
 
@@ -75,8 +74,7 @@ namespace AtkTower
             if (target == null)
             {
                 FindEnemy();
-
-                if (nowCD <= 0)
+                if (nowCD != turretData.Atk_Gap)
                 {
                     nowCD = turretData.Atk_Gap;
                 }
@@ -110,8 +108,8 @@ namespace AtkTower
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
                 }
             }
-
             turretData = originalTurretData;
+            turretData.UI_Hp = turretData.UI_maxHp;
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
             Fad_energyBar.fillAmount = 0.0f;
         }
@@ -123,12 +121,12 @@ namespace AtkTower
             if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 30);
-                //currentMask = GameManager.instance.getPlayer1_Mask;
+                currentMask = GameManager.instance.getPlayer1_Mask;
             }
             else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 31);
-                //currentMask = GameManager.instance.getPlayer2_Mask;
+                currentMask = GameManager.instance.getPlayer2_Mask;
             }
         }
         #endregion
@@ -151,7 +149,7 @@ namespace AtkTower
             if (_target != null)
             {
                 target = _target.transform;
-            }           
+            }
         }
         #endregion
 
@@ -202,7 +200,7 @@ namespace AtkTower
         {
             if (target != null && !turretData.Fad_overHeat)
             {
-                if (nowCD < 0 && photonView.isMine)
+                if (nowCD <= 0 && photonView.isMine)
                 {
                     Tower_shoot();
                     nowCD = turretData.Atk_Gap;
@@ -212,7 +210,7 @@ namespace AtkTower
         #endregion
 
         #region 攻擊函式_覆蓋區
-        public virtual void Tower_shoot()
+        protected virtual void Tower_shoot()
         {
             addHeat(1.0f);
             float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
@@ -251,8 +249,8 @@ namespace AtkTower
             if (turretData.Fad_thermalEnergy <= 0)
             {
                 turretData.Fad_thermalEnergy = 0;
-                Fad_energyBar.color = new Color(242, 235, 0);
                 turretData.Fad_overHeat = false;
+                Fad_energyBar.color = new Color(242, 235, 0);
             }
         }
         //增加
@@ -265,41 +263,10 @@ namespace AtkTower
             if (turretData.Fad_thermalEnergy >= turretData.Fad_maxThermalEnergy)
             {
                 turretData.Fad_thermalEnergy = turretData.Fad_maxThermalEnergy;
-                Fad_energyBar.color = new Color(255, 142, 81);
                 turretData.Fad_overHeat = true;
+                Fad_energyBar.color = new Color(255, 142, 81);
             }
         }
-        #endregion
-
-        #region 本地傳遞傷害
-        /*public void test(float _damage)
-        {
-            if (deadManager.checkDead)
-                return;
-
-            float tureDamage = CalculatorDamage(_damage);
-
-            if (turretData.UI_Hp > 0)
-                turretData.UI_Hp -= tureDamage;
-
-            if (turretData.UI_Hp <= 0)
-            {
-                if (photonView.isMine)
-                {
-                    SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
-                    BuildManager.instance.obtaniElectricity(this);
-                }
-                else
-                {
-                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
-                }
-
-                deadManager.ifDead(true);
-                StartCoroutine(Death());
-            }
-
-            openPopupObject(tureDamage);
-        }*/
         #endregion
 
         #region 傷害
@@ -363,11 +330,13 @@ namespace AtkTower
         }
         #endregion
 
-        #region 過熱和顏色同步
+        #region 血量、過熱和顏色同步
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.isWriting)
             {
+                stream.SendNext(turretData.UI_Hp);
+                stream.SendNext(turretData.UI_maxHp);
                 stream.SendNext(Fad_energyBar.fillAmount);
                 stream.SendNext(Fad_energyBar.color.r);
                 stream.SendNext(Fad_energyBar.color.g);
@@ -375,12 +344,24 @@ namespace AtkTower
             }
             else
             {
+                turretData.UI_Hp = (float)stream.ReceiveNext();
+                turretData.UI_maxHp = (float)stream.ReceiveNext();
                 Fad_energyBar.fillAmount = (float)stream.ReceiveNext();
                 float _r = (float)stream.ReceiveNext();
                 float _g = (float)stream.ReceiveNext();
                 float _b = (float)stream.ReceiveNext();
 
-                Fad_energyBar.color = new Color(_r, _g, _b);
+                if (Fad_energyBar.color.r != _r)
+                {
+                    Fad_energyBar.color = new Color(_r, _g, _b);
+                }
+
+                if (turretData.UI_maxHp != originalTurretData.UI_maxHp)
+                {
+                    originalTurretData.UI_maxHp = turretData.UI_maxHp;
+                    print("升級血量變動");
+                    healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
+                }
             }
         }
         #endregion

@@ -6,11 +6,12 @@ using AtkTower;
 public class Cannon : Turret_Manager
 {
     #region 攻擊
-    public override void Tower_shoot()
+    protected override void Tower_shoot()
     {
         base.Tower_shoot();
         GameObject bulletObj = ObjectPooler.instance.getPoolObject(turretData.bullet_Name, Pos_attack.position, Pos_attack.rotation);
-        bulletObj.GetComponent<Bullet_Normal>().getTarget(target);
+        Bullet_Normal bullet = bulletObj.GetComponent<Bullet_Normal>();
+        bullet.getTarget(target);
     }
     #endregion
 

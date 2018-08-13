@@ -63,18 +63,24 @@ public class Building : MonoBehaviour
                 
                 buildManager.nowNotSelectSwitch(false);
 
-                if (builderDistance(NodePos, tmpTurretBlueprint.turret_buildDistance))
+                if (builderDistance())
                 {
+                    _pos = buildManager.builder.transform.position;
                     if (buildManager.payment(true))
                     {
                         buildManager.playerScript.stopAnything_Switch(true);
                         buildManager.openScaffolding(NodePos);
+                        buildManager.playerScript.switchScaffolding(true);
                         StartCoroutine("delayToBuildTurret");
                     }
                 }
                 else
                 {
                     buildManager.creatTmpObj(NodePos);
+                    buildManager.playerScript.getTatgetPoint(NodePos);
+                    _start = true;
+
+                    Debug.Log("距離過遠");
                 }
             }
             else
@@ -85,23 +91,21 @@ public class Building : MonoBehaviour
     }
 
     #region 判斷距離
-    bool builderDistance(Vector3 _buildPos, float _distance)
+    bool builderDistance()
     {
-        if (Vector3.Distance(_buildPos, buildManager.builder.transform.position) < _distance)
+        if (Vector3.Distance(NodePos, buildManager.builder.transform.position) <= tmpTurretBlueprint.turret_buildDistance)
         {
             return true;
         }
         else
         {
-            buildManager.playerScript.getTatgetPoint(_buildPos);
-            _start = true;
-            Debug.Log("距離過遠");
             return false;
         }
     }
     #endregion
 
     #region 前往蓋塔防位置
+    public Vector3 _pos;
     void goBuild()
     {
         if (!_start)
@@ -109,14 +113,15 @@ public class Building : MonoBehaviour
             return;
         }
 
-        if (CheckStopPos())//抵達建造位置
+        if (CheckStopPos())
         {
-            buildManager.currentPlayerPos = buildManager.builder.transform.position;
+
             if (buildManager.payment(true))
             {
                 buildManager.playerScript.stopAnything_Switch(true);
                 buildManager.openScaffolding(NodePos);
                 buildManager.closeTmpObj();
+                buildManager.playerScript.switchScaffolding(true);
                 StartCoroutine("delayToBuildTurret");
                 _start = false;
             }
@@ -134,9 +139,11 @@ public class Building : MonoBehaviour
     #region 確認是否到達目標位置了
     bool CheckStopPos()
     {
-        if (Physics.Linecast(buildManager.builder.transform.position + buildManager.builder.transform.up * 2f, buildManager.builder.transform.position + buildManager.builder.transform.forward * 3f + buildManager.builder.transform.up * 2f, stopMask))
+        Vector3 d = buildManager.builder.transform.position + buildManager.builder.transform.up * 2f;
+        if (Physics.Linecast(d, d + buildManager.builder.transform.forward * 5f, stopMask))
         {
             buildManager.playerScript.isStop();
+            _pos = buildManager.builder.transform.position;
             return true;
         }
         else
@@ -148,11 +155,11 @@ public class Building : MonoBehaviour
     }
     #endregion
 
-   /* private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(builder.transform.position + builder.transform.up * 2f, builder.transform.position + builder.transform.forward * 3f + builder.transform.up * 2f);
-    }*/
+    /* private void OnDrawGizmosSelected()
+     {
+         Gizmos.color = Color.red;
+         Gizmos.DrawLine(builder.transform.position + builder.transform.up * 2f, builder.transform.position + builder.transform.forward * 3f + builder.transform.up * 2f);
+     }*/
 
     #region 開始建造(延遲)
     IEnumerator delayToBuildTurret()
@@ -162,10 +169,14 @@ public class Building : MonoBehaviour
         for (CD = 0; CD < tmpTurretBlueprint.turret_delayTime; CD += Time.deltaTime)
         {
             buildManager.build_countDown(CD);
-            buildManager.playerScript.switchScaffolding(true);
-                
+            //buildManager.playerScript.switchScaffolding(true);
+
             #region 按下esc 中斷建造
-            if (buildManager.StopBuild() || Input.GetKeyDown(KeyCode.Escape) || _dead.checkDead)
+            float d = Vector3.Distance(_pos, buildManager.builder.transform.position);
+            //print("d" + d);
+            //print("_pos" + _pos);
+            //print("builder" + buildManager.builder.transform.position);
+            if (buildManager.stopBuild || d > 1.5f || Input.GetKeyDown(KeyCode.Escape) || _dead.checkDead)
             {
                 buildManager.playerScript.switchScaffolding(false);
                 buildManager.cancelPunish(0.8f);

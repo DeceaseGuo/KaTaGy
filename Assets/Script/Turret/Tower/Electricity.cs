@@ -69,7 +69,18 @@ public class Electricity : Photon.MonoBehaviour
         formatData();
         if (photonView.isMine)
         {
-            ShowElectricitRange(true);
+            Collider[] ColliderGrids = Physics.OverlapSphere(transform.position, range, GridMask);
+
+            foreach (var grid in ColliderGrids)
+            {
+                if (Vector3.Distance(grid.transform.position, transform.position) <= range)
+                {
+                    gridparent = grid.transform.parent;
+                    gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
+                    grid.gameObject.layer = 25;
+                    gridList.Add(grid);
+                }
+            }
         }
     }
 
@@ -192,7 +203,7 @@ public class Electricity : Photon.MonoBehaviour
         connectElectricitys.Clear();
         connectTowers.Clear();
         myTouch.Clear();
-
+        gridList.Clear();
         returnBulletPool();
     }
     #endregion
@@ -206,35 +217,29 @@ public class Electricity : Photon.MonoBehaviour
     #endregion
 
     #region 電力範圍
-    [SerializeField] List<Collider> gridList;
-    [SerializeField] Collider[] ColliderGrids;
+    [SerializeField] List<Collider> gridList = new List<Collider>();
     Transform gridparent = null;
     void ShowElectricitRange(bool _open)
     {
-        ColliderGrids = Physics.OverlapSphere(transform.position, range, GridMask);
-
-        foreach (var grid in ColliderGrids)
+        if (_open)
         {
-            if (Vector3.Distance(grid.transform.position, transform.position) <= range)
+            foreach (var grid in gridList)
             {
-                gridparent = grid.transform.parent;
-                if (_open)
-                {
-                    gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
-                    grid.gameObject.layer = 25;
-                    gridList.Add(grid);
-                }
-                else
-                {
-                    gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = false;
-                    grid.gameObject.layer = 10;
-                    gridList.Remove(grid);
-                }
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
+                grid.gameObject.layer = 25;
+            }
+        }
+        else
+        {
+            foreach (var grid in gridList)
+            {
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = false;
+                grid.gameObject.layer = 10;
             }
         }
     }
     #endregion
-    
+
     #region 找塔防
     void FindTower(List<GameObject> TurretList, Electricity _electricity)
     {

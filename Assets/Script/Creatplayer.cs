@@ -121,7 +121,7 @@ public class Creatplayer : Photon.MonoBehaviour
         MyNowPlayer = PhotonNetwork.Instantiate("Prefabs/Player/" + player, _pos.localPosition, Quaternion.identity, 0);
         Instantiate(Resources.Load("Prefabs/ObjectPool/" + poolNumber), Vector3.zero, Quaternion.identity);
         MyNowPlayer.transform.SetParent(MyPlayer);
-        GameManager.instance.changeNowMask();
+        //GameManager.instance.changeNowMask();
         Player_Script = myNowPlayer.GetComponent<Player>();
 
         switch (GameManager.instance.Meis)
