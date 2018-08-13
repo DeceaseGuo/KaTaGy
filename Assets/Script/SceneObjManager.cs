@@ -23,7 +23,8 @@ public class SceneObjManager : MonoBehaviour
         }
     }
     #endregion
-
+    [HideInInspector]
+    public MinMapSyn minmap;
     //塔
     public List<Electricity> myElectricityObjs = new List<Electricity>();
     public List<GameObject> myTowerObjs = new List<GameObject>();
@@ -85,12 +86,16 @@ public class SceneObjManager : MonoBehaviour
     #region 增加
     public void AddMyList(GameObject _obj,GameManager.NowTarget _whoIs)
     {
-        Debug.Log("AddMyList " + _obj.name);
-        
+        RectTransform r = null;
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
-                mySoldierObjs.Add(_obj);
+                {
+                    mySoldierObjs.Add(_obj);
+                    r = Instantiate(minmap.SoliderIcon, minmap.transform);
+                    r.SetAsFirstSibling();
+                    minmap.mySoliderIcons.Add(r);
+                }
                 break;
             case GameManager.NowTarget.Tower:
                 {
@@ -99,7 +104,14 @@ public class SceneObjManager : MonoBehaviour
                     if (_e != null)
                     {
                         myElectricityObjs.Add(_e);
+                        //r = Instantiate(minmap.EIcon, minmap.transform);小地圖頭像
                     }
+                    else
+                    {
+                        //r = Instantiate(minmap.EIcon, minmap.transform);小地圖頭像
+                    }
+                    //minmap.myplayerIcon.SetAsLastSibling();小地圖頭像
+                    //minmap.myTowerIcons.Add(r);小地圖頭像
                 }
                 break;
             default:
@@ -127,13 +139,18 @@ public class SceneObjManager : MonoBehaviour
     #region 移除
     public void RemoveMyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
-        Debug.Log("RemoveMyList " + _obj.name);
+        //int _index = -1;小地圖頭像
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
                 {
                     if (mySoldierObjs.Contains(_obj))
+                    {
                         mySoldierObjs.Remove(_obj);
+                        /*_index = mySoldierObjs.IndexOf(_obj);
+                        minmap.mySoliderIcons[_index].gameObject.SetActive(false);
+                        minmap.mySoliderIcons.RemoveAt(_index);*///小地圖頭像
+                    }
                 }
                 break;
             case GameManager.NowTarget.Tower:
@@ -146,6 +163,9 @@ public class SceneObjManager : MonoBehaviour
                         {
                             myElectricityObjs.Remove(_e);
                         }
+                        /*_index = myTowerObjs.IndexOf(_obj);
+                        minmap.myTowerIcons[_index].gameObject.SetActive(false);
+                        minmap.myTowerIcons.RemoveAt(_index);小地圖頭像*/
                     }
                 }
                 break;

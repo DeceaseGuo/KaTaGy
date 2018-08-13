@@ -3,118 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class Bullet_WindTower : Photon.MonoBehaviour
+public class Bullet_WindTower : BulletManager
 {
-    [SerializeField] GameManager.whichObject DataName;
-    private TurretData.TowerDataBase Data;
-    private Vector3 dir;
-    private float distanceThisFrame;
-    private PhotonView Net;
-    private Transform nowTarget;
-
     [Header("碰撞區")]
     [SerializeField] Vector3 pushBox_Size;
     [SerializeField] Vector3 offset;
     [SerializeField] Vector3 pushBox_Offset;
-    public LayerMask pushMask;
 
     [Header("飛行與傷害間隔時間")]
     [SerializeField] float flyTime;
     [SerializeField] float fireCd = 0;
     public List<GameObject> tmpNoDamage;
-
     protected Tweener myTweener;
 
-    private void Awake()
+    private void OnEnable()
     {
-        Data = TurretData.instance.getTowerData(DataName);
-        Debug.Log(Data);
-        Net = GetComponent<PhotonView>();
-        getMask();
-    }
-
-    private void Update()
-    {
-        //bulletMove();
-        /*if (!photonView.isMine)
-        {
-            DetectTarget();
-        }*/
-        DetectTarget();
-    }
-
-    #region 目前為玩家幾
-    public void getMask()
-    {
-        GameManager _gm = GameManager.instance;
-        if (photonView.isMine)
-        {
-            if(_gm.getMyPlayer() == GameManager.MyNowPlayer.player_1)
-            {
-                pushMask = _gm.getPlayer1_Mask;
-            }
-            else
-            {
-                pushMask = _gm.getPlayer2_Mask;
-            }
-        }
-        else
-        {
-            if (_gm.getMyPlayer() == GameManager.MyNowPlayer.player_1)
-            {
-                pushMask = _gm.getPlayer2_Mask;
-            }
-            else
-            {
-                pushMask = _gm.getPlayer1_Mask;
-            }
-        }
-    }
-
-    /*public void checkCurrentPlay()
-    {
-        pushMask = GameManager.instance.correctMask;
-    }*/
-    #endregion
-
-    #region 找到目標
-    public void getTarget(Transform _target)
-    {
-        int viewID = _target.GetComponent<PhotonView>().viewID;
-        Net.RPC("TP_Data", PhotonTargets.All, viewID);
-
         if (photonView.isMine)
             StartCoroutine("DisappearThis");
     }
-    #endregion
+
+    void Update()
+    {
+        if (!hit)
+        {
+            hit = true;
+            StartCoroutine("GetCollider");
+        }
+    }
+
+    IEnumerator GetCollider()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
+        print("抓攻擊對象");
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            targetDead = colliders[i].gameObject.GetComponent<isDead>();
+            if (targetDead == null)
+                break;
+
+            HitTarget();
+        }
+        hit = false;
+    }
 
     [PunRPC]
-    public void TP_Data(int _id)
+    public override void TP_Data(int _id)
     {
-        PhotonView _Photon = PhotonView.Find(_id);
-        nowTarget = _Photon.transform;
-        transform.LookAt(nowTarget);
-        dir = nowTarget.position - transform.position;
-        bulletMove();
-    }    
+        base.TP_Data(_id);
+
+        BulletMove();
+    }
 
     #region 子彈移動
-    void bulletMove()
+    protected override void BulletMove()
     {
+        #region 移動1
         //子彈移動距離
-         /*distanceThisFrame = Data.bullet_Speed * Time.deltaTime;
-        //子彈移動
-          transform.Translate(dir.normalized * distanceThisFrame, Space.World);
-          //子彈朝前
-          if (transform.position.y < 5)
-          {
-              dir.y = 0;
-              Quaternion tmpRot = Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
-              transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .2f);
-          }*/
+        /*distanceThisFrame = Data.bullet_Speed * Time.deltaTime;
+       //子彈移動
+         transform.Translate(dir.normalized * distanceThisFrame, Space.World);
+         //子彈朝前
+         if (transform.position.y < 5)
+         {
+             dir.y = 0;
+             Quaternion tmpRot = Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
+             transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .2f);
+         }*/
+        #endregion
+        if (!photonView.isMine)
+        {
+            print("克龍體有移動喔");
+        }
         Vector3 _targetPoint = dir.normalized * Data.bullet_Speed * flyTime;
-        _targetPoint.y = nowTarget.localPosition.y;
-        myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime+.5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
+        _targetPoint.y = target.localPosition.y;
+        myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
     }
     #endregion
@@ -125,65 +88,26 @@ public class Bullet_WindTower : Photon.MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .1f);
     }
 
-    #region 將碰到的全部擊退
-    void DetectTarget()
+    #region 給予傷害
+    protected override void GiveDamage(isDead _targetDead)
     {
-        Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size , Quaternion.identity, pushMask);
-
-        foreach (Collider bePush_Obj in colliders)
+        if (!checkIf(_targetDead.gameObject))
         {
-            isDead _who = bePush_Obj.gameObject.GetComponent<isDead>();
-            if (_who == null)
-                return;
+            base.GiveDamage(_targetDead);
 
-            if (photonView.isMine)
-            {
-                giveDamage(bePush_Obj, _who);
-            }
-            else
-            {
-                //giveDamage(bePush_Obj, _who);
-                if (_who.myAttributes != GameManager.NowTarget.Tower && _who.myAttributes != GameManager.NowTarget.Core)
-                    bePush_Obj.transform.localPosition += dir.normalized * /*distanceThisFrame*/1.7f;
-            }
+            tmpNoDamage.Add(_targetDead.gameObject);
+            StartCoroutine(DelayDamage(_targetDead.gameObject));
         }
     }
     #endregion
 
-    //扣血
-    void giveDamage(Collider bePush_Obj, isDead _who)
+    #region 位移
+    protected override void MoveTarget()
     {
-        if (!checkIf(bePush_Obj.gameObject))
-        {
-            PhotonView _TargetNet = bePush_Obj.GetComponent<PhotonView>();
-            switch (_who.myAttributes)
-            {
-                case GameManager.NowTarget.Player:
-                    _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage(), Vector3.zero, false);
-                    break;
-                case GameManager.NowTarget.Soldier:
-                    _TargetNet.RPC("takeDamage", PhotonTargets.All, 0, CalculatorDamage());
-                    break;
-                case GameManager.NowTarget.Tower:
-                    {
-                        _TargetNet.RPC("takeDamage", PhotonTargets.All, CalculatorDamage());
-                    }
-                    break;
-                case GameManager.NowTarget.Core:
-                    break;
-                default:
-                    break;
-            }
-            tmpNoDamage.Add(bePush_Obj.gameObject);
-            StartCoroutine(DelayDamage(bePush_Obj.gameObject));
-        }
-        Debug.Log("攻擊");
+        if (targetDead.myAttributes != GameManager.NowTarget.Tower && targetDead.myAttributes != GameManager.NowTarget.Core)
+            targetDead.transform.localPosition += dir.normalized * /*distanceThisFrame*/1.7f;
     }
-    //計算傷害
-    float CalculatorDamage()
-    {
-        return Data.Atk_Damage;
-    }
+    #endregion
 
     #region 檢查敵人是否在無傷害間隔區 
     bool checkIf(GameObject _enemy)
@@ -213,18 +137,9 @@ public class Bullet_WindTower : Photon.MonoBehaviour
     }
     #endregion
 
-    //返回物件池
-    void returnBulletPool()
-    {
-        if (photonView.isMine)
-        {
-            ObjectPooler.instance.Repool(Data.bullet_Name, this.gameObject);
-        }
-    }
-
-   /* void OnDrawGizmos()
+    void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position+offset, pushBox_Size );       
-    }*/
+        Gizmos.DrawWireCube(transform.position + offset, pushBox_Size);
+    }
 }

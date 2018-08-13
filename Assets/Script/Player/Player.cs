@@ -106,9 +106,14 @@ public class Player : Photon.MonoBehaviour
         CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
     }
-
+    //
+    RectTransform map;
+    //
     private void Start()
     {
+        //
+        map = GameObject.Find("smallMapContainer (1)").GetComponent<RectTransform>();
+        //
         skillManager = GetComponent<SkillBase>();
         clickPointPos = GameObject.Find("clickPointPos");
         buildManager = BuildManager.instance;
@@ -465,17 +470,28 @@ public class Player : Photon.MonoBehaviour
     #region 偵測點擊位置
     void ClickPoint()
     {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
+        if (!IsMap())//我新加的
         {
-            if (hit.transform.tag == "CanClickMove")
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
             {
-                clickPointPos.transform.position = hit.point;
-                getTatgetPoint(clickPointPos.transform.position);
+                if (hit.transform.tag == "CanClickMove")
+                {
+                    clickPointPos.transform.position = hit.point;
+                    getTatgetPoint(clickPointPos.transform.position);
+                }
             }
         }
     }
+    bool IsMap()
+    {
+        float mapX = Input.mousePosition.x - (map.position.x - (map.rect.width * 0.5f));
+        float mapY = Input.mousePosition.y - (map.position.y - (map.rect.height * 0.5f));
+
+        return (mapX < map.rect.width && mapX > 0 && mapY < map.rect.height && mapY > 0);
+    }
+
     //無時無刻偵測滑鼠方向
     void CorrectDirection()
     {

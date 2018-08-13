@@ -26,6 +26,8 @@ public class BuildManager : MonoBehaviour
     private TurretData turretData;
     private TurretData.TowerDataBase turretToBuild;
     private GameObject detectObj;
+
+    public bool stopBuild = false;
     //偵測
     private GameObject detectObjectPrefab;
     private GameObject lastDetectObj;
@@ -126,20 +128,6 @@ public class BuildManager : MonoBehaviour
     }
     #endregion
 
-    #region 是否當前建造
-    public bool StopBuild()
-    {
-        if (currentPlayerPos != builder.transform.position)//目前只有位移會取消建造，之後可以加入狀態
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    #endregion
-
     #region 取消目前的選擇
     public void cancelSelect()
     {
@@ -169,7 +157,11 @@ public class BuildManager : MonoBehaviour
 
     public void closeTmpObj()
     {
-        returnPoolTower(turretToBuild.tspObject_Name, TmpObj);
+        if (TmpObj != null)
+        {
+            returnPoolTower(turretToBuild.tspObject_Name, TmpObj);
+            TmpObj = null;
+        }
     }
     #endregion
 
@@ -180,7 +172,7 @@ public class BuildManager : MonoBehaviour
         return towerObj;
     }
 
-    public void returnPoolTower(GameManager.whichObject _name,GameObject _tower)
+    public void returnPoolTower(GameManager.whichObject _name, GameObject _tower)
     {
         objPool.Repool(_name, _tower);
     }
@@ -212,7 +204,7 @@ public class BuildManager : MonoBehaviour
     #region 返回資源懲罰
     public void cancelPunish(float _percent)
     {
-        int _ore = Mathf.RoundToInt( turretToBuild.cost_Ore * _percent);
+        int _ore = Mathf.RoundToInt(turretToBuild.cost_Ore * _percent);
         int _Money = Mathf.RoundToInt(turretToBuild.cost_Money * _percent);
 
         playerObtain.obtaniResource(_ore, _Money);

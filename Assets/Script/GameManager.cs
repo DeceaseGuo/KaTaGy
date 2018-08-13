@@ -87,14 +87,22 @@ public class GameManager : Photon.MonoBehaviour
     public LayerMask getPlayer1_Mask { get { return targetMask_Player1; } }
     public LayerMask getPlayer2_Mask { get { return targetMask_Player2; } }
 
-    public LayerMask correctMask;
-
-    public void changeNowMask()
+    public LayerMask correctMask(bool ismine)
     {
-        if (WhoMe == MyNowPlayer.player_1)
-            correctMask = targetMask_Player1;
-        else if (WhoMe == MyNowPlayer.player_2)
-            correctMask = targetMask_Player2;
+        if (ismine)
+        {
+            if (WhoMe == MyNowPlayer.player_1)
+                return targetMask_Player1;
+            else
+                return targetMask_Player2;
+        }
+        else
+        {
+            if (WhoMe == MyNowPlayer.player_1)
+                return targetMask_Player2;
+            else
+                return targetMask_Player1;
+        }
     }
     #endregion
     //投降選單
