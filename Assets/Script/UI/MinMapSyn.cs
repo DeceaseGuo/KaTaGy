@@ -21,7 +21,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     public RectTransform AllenIcon;
     public RectTransform QueenIcon;
 
-    private RectTransform myplayerIcon;
+    public RectTransform myplayerIcon;
     private RectTransform enemyplayerIcon;
 
     [Header("IconList")]
