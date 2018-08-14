@@ -38177,8 +38177,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myTerrain: {fileID: 403208741}
-  updateIconTime: 0.2
-  IconRange: 0
+  updateIconTime: 0.6
+  IconRange: 30
   TowerIcon: {fileID: 224840513099260816, guid: a7f85e190ef98d34595204900a789b14,
     type: 2}
   EIcon: {fileID: 224347434508864304, guid: 50f157c8f0734a946965305ac4bf20d8, type: 2}
@@ -38186,8 +38186,12 @@ MonoBehaviour:
   PlayerIcon: {fileID: 224581186955224614, guid: e22f7662106351342a039ee7d959ebf9,
     type: 2}
   myplayerIcon: {fileID: 0}
+  enemyplayerIcon: {fileID: 0}
   myTowerIcons: []
   mySoliderIcons: []
+  enemyTowerIcons: []
+  enemySoliderIcons: []
+  ShowEnemyIcons: []
 --- !u!114 &1355060146 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114265179457170156, guid: 1a08b587eda04544e90ad4b65e4123fb,

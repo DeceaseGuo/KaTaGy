@@ -10,17 +10,19 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     [SerializeField] MeshFilter myTerrain;
 
     [Header("設定")]
-    [SerializeField] float updateIconTime = 0.2f;
+    [SerializeField] float updateIconTime = 0.6f;
     [Tooltip("Icon偵測範圍")]
-    [SerializeField] float IconRange;
+    [SerializeField] float IconRange = 30;
 
     [Header("IconPrefabs")]
     public RectTransform TowerIcon;
     public RectTransform EIcon;
     public RectTransform SoliderIcon;
-    public RectTransform PlayerIcon;
-    public RectTransform myplayerIcon;
-    public RectTransform enemyplayerIcon;
+    public RectTransform AllenIcon;
+    public RectTransform QueenIcon;
+
+    private RectTransform myplayerIcon;
+    private RectTransform enemyplayerIcon;
 
     [Header("IconList")]
     public List<RectTransform> myTowerIcons = new List<RectTransform>();
@@ -49,9 +51,10 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
+        myplayerIcon = Instantiate(AllenIcon, transform);
+        enemyplayerIcon = Instantiate(AllenIcon, transform);
         litMap = GetComponent<RectTransform>();
         playerScript = Creatplayer.instance.Player_Script;
-        myplayerIcon = Instantiate(PlayerIcon, transform);
         SceneManager.minmap = this;
         getWidthHeight();
 
@@ -67,97 +70,128 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     #endregion
 
     #region 更新icon位置
-    void UpdatePos(Transform _objTrans, RectTransform _icon)
+    void UpdatePos(GameObject _obj, RectTransform _icon)
     {
+        if (_obj == null || _icon == null)
+        {
+            return;
+        }
+        Transform trans = _obj.transform;
         //print("更新");
         //寬比例=玩家目前位置.x / 大地圖.x
-        widthRate = (_objTrans.position.x + (widthMax*0.5f)) / widthMax;
+        widthRate = (trans.position.x + (widthMax*0.5f)) / widthMax;
         //高比例=玩家目前位置.z / 大地圖.z
-        heightRate = (_objTrans.position.z + (heightMax*0.5f)) / heightMax;
+        heightRate = (trans.position.z + (heightMax*0.5f)) / heightMax;
         //玩家icon位置.x=小地圖.x *寬比例
         tmpPos.x = litMap.sizeDelta.x * (widthRate - 0.5f);
         //玩家icon位置.y=小地圖.y *寬比例
         tmpPos.y = litMap.sizeDelta.y * (heightRate - 0.5f);
         //print(tmpPos);
         tmpAngle = _icon.localEulerAngles;
-        tmpAngle.z = 180 - _objTrans.localEulerAngles.y;
+        tmpAngle.z = 180 - trans.localEulerAngles.y;
         _icon.localEulerAngles = tmpAngle;
         _icon.localPosition = tmpPos;
     }
 
-    List<GameObject> targets = new List<GameObject>();
     IEnumerator UpdateIconPos()
     {
         while (true)
         {
             yield return new WaitForSeconds(updateIconTime);
-
-            UpdatePos(playerScript.transform, myplayerIcon);//更新玩家icon
-            ShowEnemysIcon(playerScript.gameObject);//顯示視野內敵人
+            #region 我方
+            UpdatePos(playerScript.gameObject, myplayerIcon);//更新玩家icon
+            ShowEnemysIcon(myplayerIcon);//顯示視野內敵人
             //Tower
             for (int i = 0; i < myTowerIcons.Count; i++)
             {
-                UpdatePos(SceneManager.myTowerObjs[i].transform, myTowerIcons[i]);                                                                  
-                //ShowEnemysIcon(myObj[i]);//顯示視野內敵人
+                UpdatePos(SceneManager.myTowerObjs[i], myTowerIcons[i]);                                                                  
+                ShowEnemysIcon(myTowerIcons[i]);//顯示視野內敵人
             }
             //Solider
             for (int i = 0; i < mySoliderIcons.Count; i++)
             {
-                UpdatePos(SceneManager.mySoldierObjs[i].transform, mySoliderIcons[i]);                                                                
-                //ShowEnemysIcon(myObj[i]);//顯示視野內敵人
+                UpdatePos(SceneManager.mySoldierObjs[i], mySoliderIcons[i]);                                                                
+                ShowEnemysIcon(mySoliderIcons[i]);//顯示視野內敵人
             }
+            #endregion
+
+            #region 敵方
+            UpdatePos(SceneManager.enemy_Player, enemyplayerIcon);//更新玩家icon
+            //Tower
+            for (int i = 0; i < enemyTowerIcons.Count; i++)
+            {
+                UpdatePos(SceneManager.enemyTowerObjs[i], enemyTowerIcons[i]);
+            }
+            //Solider
+            for (int i = 0; i < enemySoliderIcons.Count; i++)
+            {
+                UpdatePos(SceneManager.enemySoldierObjs[i], enemySoliderIcons[i]);
+            }
+            #endregion
         }
     }
     #endregion
 
-    #region 顯示視角內敵人icon
-    void ShowEnemysIcon(GameObject myeyes)
+    void dis(RectTransform my, RectTransform _r, List<RectTransform> curr)
     {
-        targets = SceneManager.CalculationDis(myeyes, IconRange, true, true);
-        if (targets.Count <= 0)
+        if (_r == null)
         {
             return;
         }
-        for (int i = 0; i < targets.Count; i++)
+
+        if (Vector3.Distance(_r.transform.position , my.transform.position) <= IconRange)
         {
-            isDead targetDead = targets[i].GetComponent<isDead>();
-            RectTransform _target = null;
-            switch (targetDead.myAttributes)
+            curr.Add(_r);
+            if (!ShowEnemyIcons.Contains(_r))
             {
-                case GameManager.NowTarget.Player:
-                    {
-                        _target = enemyplayerIcon;
-                    }
-                    break;
-                case GameManager.NowTarget.Soldier:
-                    {
-                        _target = enemySoliderIcons[SceneManager.enemySoldierObjs.IndexOf(targets[i])];
-                    }
-                    break;
-                case GameManager.NowTarget.Tower:
-                    {
-                        _target = enemyTowerIcons[SceneManager.enemySoldierObjs.IndexOf(targets[i])];
-                    }
-                    break;
-                default:
-                    break;
+                ShowEnemyIcons.Add(_r);
+                _r.gameObject.SetActive(true);
             }
-            if (_target != null)
-            {
-                CheckEnemyIconExist(_target);
-                Debug.LogFormat("我方視野{0}，顯示敵人{1} : {2}", myeyes.name, i, targets[i].name);
-            }
+            Debug.LogFormat("我方{0}視野，顯示敵人 : {1}", my.name, _r.name);
         }
+    }
+    
+    #region 顯示視野內敵人icon
+    void ShowEnemysIcon(RectTransform myeyes)
+    {
+        List<RectTransform> currentIcon = new List<RectTransform>();
+        dis(myeyes, enemyplayerIcon, currentIcon);
+
+        for (int i = 0; i < enemyTowerIcons.Count; i++)
+        {
+            dis(myeyes, enemyTowerIcons[i], currentIcon);
+        }
+
+        for (int i = 0; i < enemySoliderIcons.Count; i++)
+        {
+            dis(myeyes, enemySoliderIcons[i], currentIcon);
+        }
+        for (int i = 0; i < currentIcon.Count; i++)
+        {
+            print(currentIcon[i]);
+        }
+
+        ClearList(currentIcon);
     }
     #endregion
 
-    #region
-    void CheckEnemyIconExist(RectTransform _enemy)
+    #region 清除不再範圍內的Icon
+    [SerializeField]List<RectTransform> lastList = new List<RectTransform>();
+    void ClearList(List<RectTransform> curr)
     {
-        if (!ShowEnemyIcons.Contains(_enemy))
+        for (int i = 0; i < lastList.Count; i++)
         {
-            ShowEnemyIcons.Add(_enemy);
-            _enemy.gameObject.SetActive(true);
+            if (!curr.Contains(lastList[i]))
+            {
+                lastList[i].gameObject.SetActive(false);
+                ShowEnemyIcons.Remove(lastList[i]);
+                Debug.Log("移除敵人");
+            }
+        }
+        lastList.Clear();
+        for (int i = 0; i < curr.Count; i++)
+        {
+            lastList.Add(curr[i]);
         }
     }
     #endregion

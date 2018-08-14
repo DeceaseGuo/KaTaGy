@@ -48,6 +48,26 @@ public class SceneObjManager : MonoBehaviour
         enemySoldierObjs.Add(_core);
     }
 
+    /*private void Update()
+    {
+        if (Input.GetKeyDown("a"))
+        {
+            RectTransform r = null;
+            for (int i = 0; i < enemySoldierObjs.Count; i++)
+            {
+                r = Instantiate(minmap.SoliderIcon, minmap.transform);
+                r.gameObject.SetActive(false);
+                minmap.enemySoliderIcons.Add(r);
+            }
+            for (int i = 0; i < enemyTowerObjs.Count; i++)
+            {
+                r = Instantiate(minmap.TowerIcon, minmap.transform);
+                r.gameObject.SetActive(false);
+                minmap.enemyTowerIcons.Add(r);
+            }           
+        }
+    }*/
+
     public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
     {
         List<GameObject> tmpObj = new List<GameObject>();
