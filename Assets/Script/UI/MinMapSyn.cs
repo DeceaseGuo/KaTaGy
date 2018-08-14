@@ -20,12 +20,14 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     public RectTransform SoliderIcon;
     public RectTransform PlayerIcon;
     public RectTransform myplayerIcon;
+    public RectTransform enemyplayerIcon;
 
     [Header("IconList")]
     public List<RectTransform> myTowerIcons = new List<RectTransform>();
     public List<RectTransform> mySoliderIcons = new List<RectTransform>();
-
-    //public List<RectTransform> enemyIcons = new List<RectTransform>();
+    public List<RectTransform> enemyTowerIcons = new List<RectTransform>();
+    public List<RectTransform> enemySoliderIcons = new List<RectTransform>();
+    public List<RectTransform> ShowEnemyIcons = new List<RectTransform>();
 
     Player playerScript;
     
@@ -83,7 +85,6 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
         _icon.localPosition = tmpPos;
     }
 
-    //List<GameObject> me = new List<GameObject>();
     List<GameObject> targets = new List<GameObject>();
     IEnumerator UpdateIconPos()
     {
@@ -92,7 +93,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
             yield return new WaitForSeconds(updateIconTime);
 
             UpdatePos(playerScript.transform, myplayerIcon);//更新玩家icon
-            //ShowEnemysIcon(playerScript.gameObject);//顯示視野內敵人
+            ShowEnemysIcon(playerScript.gameObject);//顯示視野內敵人
             //Tower
             for (int i = 0; i < myTowerIcons.Count; i++)
             {
@@ -111,15 +112,52 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
 
     #region 顯示視角內敵人icon
     void ShowEnemysIcon(GameObject myeyes)
-    {       
+    {
         targets = SceneManager.CalculationDis(myeyes, IconRange, true, true);
+        if (targets.Count <= 0)
+        {
+            return;
+        }
         for (int i = 0; i < targets.Count; i++)
         {
-
-            if (!targets[i].activeInHierarchy)
+            isDead targetDead = targets[i].GetComponent<isDead>();
+            RectTransform _target = null;
+            switch (targetDead.myAttributes)
             {
+                case GameManager.NowTarget.Player:
+                    {
+                        _target = enemyplayerIcon;
+                    }
+                    break;
+                case GameManager.NowTarget.Soldier:
+                    {
+                        _target = enemySoliderIcons[SceneManager.enemySoldierObjs.IndexOf(targets[i])];
+                    }
+                    break;
+                case GameManager.NowTarget.Tower:
+                    {
+                        _target = enemyTowerIcons[SceneManager.enemySoldierObjs.IndexOf(targets[i])];
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (_target != null)
+            {
+                CheckEnemyIconExist(_target);
                 Debug.LogFormat("我方視野{0}，顯示敵人{1} : {2}", myeyes.name, i, targets[i].name);
             }
+        }
+    }
+    #endregion
+
+    #region
+    void CheckEnemyIconExist(RectTransform _enemy)
+    {
+        if (!ShowEnemyIcons.Contains(_enemy))
+        {
+            ShowEnemyIcons.Add(_enemy);
+            _enemy.gameObject.SetActive(true);
         }
     }
     #endregion

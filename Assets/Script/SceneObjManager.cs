@@ -104,14 +104,14 @@ public class SceneObjManager : MonoBehaviour
                     if (_e != null)
                     {
                         myElectricityObjs.Add(_e);
-                        //r = Instantiate(minmap.EIcon, minmap.transform);小地圖頭像
+                        r = Instantiate(minmap.EIcon, minmap.transform);
                     }
                     else
                     {
-                        //r = Instantiate(minmap.EIcon, minmap.transform);小地圖頭像
+                        r = Instantiate(minmap.TowerIcon, minmap.transform);
                     }
-                    //minmap.myplayerIcon.SetAsLastSibling();小地圖頭像
-                    //minmap.myTowerIcons.Add(r);小地圖頭像
+                    minmap.myplayerIcon.SetAsLastSibling();
+                    minmap.myTowerIcons.Add(r);
                 }
                 break;
             default:
@@ -139,7 +139,7 @@ public class SceneObjManager : MonoBehaviour
     #region 移除
     public void RemoveMyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
-        //int _index = -1;小地圖頭像
+        int _index = -1;
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
@@ -147,9 +147,9 @@ public class SceneObjManager : MonoBehaviour
                     if (mySoldierObjs.Contains(_obj))
                     {
                         mySoldierObjs.Remove(_obj);
-                        /*_index = mySoldierObjs.IndexOf(_obj);
+                        _index = mySoldierObjs.IndexOf(_obj);
                         minmap.mySoliderIcons[_index].gameObject.SetActive(false);
-                        minmap.mySoliderIcons.RemoveAt(_index);*///小地圖頭像
+                        minmap.mySoliderIcons.RemoveAt(_index);
                     }
                 }
                 break;
@@ -163,9 +163,9 @@ public class SceneObjManager : MonoBehaviour
                         {
                             myElectricityObjs.Remove(_e);
                         }
-                        /*_index = myTowerObjs.IndexOf(_obj);
+                        _index = myTowerObjs.IndexOf(_obj);
                         minmap.myTowerIcons[_index].gameObject.SetActive(false);
-                        minmap.myTowerIcons.RemoveAt(_index);小地圖頭像*/
+                        minmap.myTowerIcons.RemoveAt(_index);
                     }
                 }
                 break;
