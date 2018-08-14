@@ -377,6 +377,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1187532236022240
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4541515848660908}
+  m_Layer: 0
+  m_Name: originalPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1193195015972658
 GameObject:
   m_ObjectHideFlags: 1
@@ -2839,6 +2854,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4541515848660908}
   - {fileID: 4595296177028774}
   - {fileID: 4341112121938730}
   m_Father: {fileID: 4580829691811588}
@@ -2914,7 +2930,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4307661915724830}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4344491453509464
 Transform:
@@ -3270,6 +3286,19 @@ Transform:
   m_Father: {fileID: 4351511385928532}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4541515848660908
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1187532236022240}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.016, y: 3.138, z: 2.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4307661915724830}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4542271459173984
 Transform:
   m_ObjectHideFlags: 1
@@ -3526,7 +3555,7 @@ Transform:
   - {fileID: 4406578163086598}
   - {fileID: 4209431233290276}
   m_Father: {fileID: 4307661915724830}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4598739504358204
 Transform:
@@ -4375,6 +4404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 504df5cc5c3ac774a9edeb9c3b2c145c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brfore_shaking: 0
   projector_Q: {fileID: 119597948914971118}
   projector_R:
   - {fileID: 119492928400556204}
@@ -4388,19 +4418,13 @@ MonoBehaviour:
   chain_Pos:
   - {fileID: 4217352091404336}
   - {fileID: 4209431233290276}
+  - {fileID: 4541515848660908}
   grab_MovePos: {fileID: 4595296177028774}
   handSmall: {fileID: 137601349362576186}
   handBig: {fileID: 23316835848805348}
   material_Q: {fileID: 2100000, guid: 9436e7bc4a035a8489ddd4e3882db46f, type: 2}
   whirlwindPos: {fileID: 4413949225724542}
   iconImg: {fileID: 21300000, guid: d2747faa6381b1c4a8c796b42a20534d, type: 3}
-  shieldIcon:
-    isUse: 0
-    listNum: 0
-    statePrefab: {fileID: 0}
-    stateImg: {fileID: 0}
-    cdBar: {fileID: 0}
-    nowAmount: {fileID: 0}
   skillR_radius: 17.2
 --- !u!114 &114158713630837084
 MonoBehaviour:
@@ -4438,8 +4462,8 @@ MonoBehaviour:
   - {fileID: 114995539984100544}
   - {fileID: 114869468751166232}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 1
+  instantiationId: 1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114397225924936212
@@ -4750,9 +4774,21 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 114146824250518146}
+        m_MethodName: CancelShield
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   shieldCollider: {fileID: 65980808570722718}
+  skillManager: {fileID: 0}
   canSkill_Q: 1
   canSkill_W: 1
   canSkill_E: 1

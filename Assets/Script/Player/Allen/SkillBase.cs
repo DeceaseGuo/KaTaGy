@@ -4,46 +4,46 @@ using UnityEngine;
 
 public class SkillBase : Photon.MonoBehaviour
 {
+    protected enum SkillAction
+    {
+        None,
+        is_Q,
+        is_W,
+        is_E,
+        is_R
+    }
+    public bool brfore_shaking;
+    protected SkillAction nowSkill = SkillAction.None;
+    
     #region 技能Event
-    //Q按下
+    //Q按下&&偵測
     public virtual void Skill_Q_Click()
-    {
-    }
-    //Q偵測
+    { }
     public virtual void In_Skill_Q()
-    {
-    }
-    //W按下
+    { }
+
+    //WQ按下&&偵測
     public virtual void Skill_W_Click()
-    { 
-    }
-    //W偵測
+    { }
     public virtual void In_Skill_W()
-    {
-    }
-    //E按下
+    { }
+
+    //EQ按下&&偵測
     public virtual void Skill_E_Click()
-    {
-
-    }
-    //E偵測
+    { }
     public virtual void In_Skill_E()
-    {
+    { }
 
-    }
-    //R按下
+    //RQ按下&&偵測
     public virtual void Skill_R_Click()
-    {
-
-    }
-    //R偵測
+    { }
     public virtual void In_Skill_R()
-    {
-
-    }
+    { }
     #endregion
 
     public virtual void CancelDetectSkill(Player.SkillData _nowSkill)
-    {
-    }
+    { }
+
+    public virtual void InterruptSkill(bool _absolute)
+    { }
 }

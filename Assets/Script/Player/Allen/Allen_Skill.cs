@@ -2,7 +2,6 @@
 using UnityEngine;
 using DG.Tweening;
 using MyCode.Projector;
-//using MyCode.Timer;
 
 public class Allen_Skill : SkillBase
 {
@@ -26,7 +25,7 @@ public class Allen_Skill : SkillBase
     [Tooltip("lineRenderer鎖鏈")]
     [SerializeField] LineRenderer chain;
     [Tooltip("初始位置")]
-    [SerializeField] Transform[] chain_Pos = new Transform[2];
+    [SerializeField] Transform[] chain_Pos = new Transform[3]; //0鎖鏈開始位置 1鎖鏈跟著位子 //2初始位置
     [Tooltip("移動所需位置")]
     [SerializeField] Transform grab_MovePos;
     [Tooltip("開始時的手")]
@@ -182,7 +181,7 @@ public class Allen_Skill : SkillBase
         if (grabSkill != null)
             grabSkill.Kill();
 
-        isForward = true;
+        isForward = true;        
         chain.SetPosition(0, chain_Pos[0].position);
         grabSkill = grab_MovePos.DOBlendableMoveBy(grab_MovePos.forward * 22, 0.28f).SetEase(Ease.InOutQuad).SetAutoKill(false).OnUpdate(PushHand);
         grabSkill.OnStart(ChangeHand_start);
@@ -272,20 +271,22 @@ public class Allen_Skill : SkillBase
         }
         else
         {
-            print("手停止");
-            playerScript.GoBack_AtkState();
+            print("手停止");            
             ResetAllData_Grab();
         }
     }
     //清除重置Q
     public void ResetAllData_Grab()
     {
+        playerScript.GoBack_AtkState();
+
         if (photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
 
         if (grabSkill != null)
             grabSkill.Kill();
         aniScript.anim.SetBool("Catch", false);
+        grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
         chain.enabled = false;
@@ -520,6 +521,47 @@ public class Allen_Skill : SkillBase
                 if (projector_R[0].enabled)
                     ProjectorManager.SwitchPorjector(projector_R, false);
                 break;
+        }
+    }
+    #endregion
+
+    #region 中斷技能
+    public override void InterruptSkill(bool _absolute)
+    {
+        if (!_absolute)
+        {
+            if (!brfore_shaking)
+            {
+                switch (nowSkill)
+                {
+                    case SkillAction.is_Q:
+                        ResetAllData_Grab();
+                        break;
+                    case SkillAction.is_W:
+                        EndWSkill();
+                        break;
+                    case SkillAction.is_R:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        else
+        {
+            switch (nowSkill)
+            {
+                case SkillAction.is_Q:
+                    ResetAllData_Grab();
+                    break;
+                case SkillAction.is_W:
+                    EndWSkill();
+                    break;
+                case SkillAction.is_R:
+                    break;
+                default:
+                    break;
+            }
         }
     }
     #endregion
