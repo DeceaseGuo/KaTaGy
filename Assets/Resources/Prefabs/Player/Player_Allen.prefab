@@ -4393,7 +4393,14 @@ MonoBehaviour:
   handBig: {fileID: 23316835848805348}
   material_Q: {fileID: 2100000, guid: 9436e7bc4a035a8489ddd4e3882db46f, type: 2}
   whirlwindPos: {fileID: 4413949225724542}
-  shieldNum: 3
+  iconImg: {fileID: 21300000, guid: d2747faa6381b1c4a8c796b42a20534d, type: 3}
+  shieldIcon:
+    isUse: 0
+    listNum: 0
+    statePrefab: {fileID: 0}
+    stateImg: {fileID: 0}
+    cdBar: {fileID: 0}
+    nowAmount: {fileID: 0}
   skillR_radius: 17.2
 --- !u!114 &114158713630837084
 MonoBehaviour:

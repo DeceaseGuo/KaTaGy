@@ -37,23 +37,10 @@
             if (callback_2 != null)
                 callback_2();
         }
-
-        /*public static IEnumerator Start_MoreFunction(float duration_1, Action callback_1, float duration_2, Action callback_2, float duration_3, Action callback_3)
-        {
-            yield return new WaitForSeconds(duration_1);
-            if (callback_1 != null)
-                callback_1();
-            yield return new WaitForSeconds(duration_2);
-            if (callback_2 != null)
-                callback_2();
-            yield return new WaitForSeconds(duration_3);
-            if (callback_3 != null)
-                callback_3();
-        }*/
         #endregion
 
         #region 過一段時間後執行
-        public static IEnumerator StartRealtime(float time, Action callback)
+       /* public static IEnumerator StartRealtime(float time, Action callback)
         {
             float start = Time.realtimeSinceStartup;
             while (Time.realtimeSinceStartup < start + time)
@@ -62,7 +49,7 @@
             }
             if (callback != null) callback();
             
-        }
+        }*/
         #endregion
 
         public static IEnumerator NextFrame(Action callback)

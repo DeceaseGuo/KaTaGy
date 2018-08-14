@@ -79,11 +79,12 @@ public class Player : Photon.MonoBehaviour
     private SkillData skillState = SkillData.None;
     public SkillData SkillState { get { return skillState; } set { skillState = value; } }
 
+    private bool nowCC;
+    public bool NowCC { get { return nowCC; } set { nowCC = value; } }
    /* public enum buffData
     {
         None,
         NowCC,
-        Shield //盾
     }
     private buffData nowBuff = buffData.None;
     public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }*/
@@ -569,12 +570,19 @@ public class Player : Photon.MonoBehaviour
     //暈眩 僵直
     [PunRPC]
     public void GetDeBuff_Stun(float _time)
-    {        
-        stopAnything_Switch(true);
-        CancelNowSkill();
-        AniControll.anim.SetTrigger("Stun");
-        AniControll.anim.SetBool("StunRock", true);
-        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+    {
+        if (!deadManager.checkDead)
+        {
+            if (photonView.isMine)
+            {
+                stopAnything_Switch(true);
+                CancelNowSkill();
+            }
+            NowCC = true;
+            AniControll.anim.SetTrigger("Stun");
+            AniControll.anim.SetBool("StunRock", true);
+            StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+        }
     }
     //緩速
     protected virtual void GetDeBuff_Slow()
@@ -599,6 +607,7 @@ public class Player : Photon.MonoBehaviour
         {
             CancelNowSkill();
             stopAnything_Switch(true);
+            NowCC = true;
             AniControll.anim.SetTrigger("HitFly");
         }
     }
@@ -732,7 +741,8 @@ public class Player : Photon.MonoBehaviour
     //回攻擊狀態
     public void GoBack_AtkState()
     {
-        MyState = statesData.canMove_Atk;
+        if (!NowCC)
+            MyState = statesData.canMove_Atk;
     }
 
     //切換目前模式(攻擊 , 建造)

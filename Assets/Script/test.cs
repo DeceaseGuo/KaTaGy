@@ -15,7 +15,8 @@ namespace Mytest
         public float A1;
         public float A2 = 1;
         public float width;
-        [SerializeField] Projector kkk;
+
+        [SerializeField] List<bool> sss;
 
         private void Update()
         {
@@ -24,28 +25,38 @@ namespace Mytest
                  kkk.Invoke();
                  Debug.Log("click");
              }*/
-            kkk.orthographicSize = A1;
-            kkk.aspectRatio = width / A1;
+
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-               
-                kkk.orthographicSize = A1 / 2;
+
+                int num = sss.FindIndex(x => x == true);
+                Debug.Log(num);
 
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
 
-                kkk.aspectRatio = A2;
+                
 
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
 
-                kkk.aspectRatio = width / A1;
+                
 
             }
 
+        }
+
+        IEnumerator ggg()
+        {
+            yield return new WaitForSeconds(0.2f);
+            if (A1 != 4)
+            {
+                Debug.Log(A1);
+                A1++;
+            }
         }
     }
 }

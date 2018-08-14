@@ -1399,11 +1399,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 350625899}
---- !u!119 &356281690 stripped
-Projector:
-  m_PrefabParentObject: {fileID: 119597948914971118, guid: 8121f96662179974d8e57825a7916bf4,
-    type: 2}
-  m_PrefabInternal: {fileID: 1952261514}
 --- !u!1 &357887681
 GameObject:
   m_ObjectHideFlags: 0
@@ -2393,7 +2388,7 @@ MonoBehaviour:
   A1: 13.5
   A2: 1
   width: 5
-  kkk: {fileID: 356281690}
+  sss: 0000000100
 --- !u!1 &662101243
 GameObject:
   m_ObjectHideFlags: 0
@@ -4988,9 +4983,6 @@ MonoBehaviour:
   Meis: 0
   firstPlayer: 0
   WhoMe: 0
-  correctMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!4 &1178481980
 Transform:
   m_ObjectHideFlags: 0
@@ -7911,6 +7903,12 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114146824250518146, guid: 8121f96662179974d8e57825a7916bf4,
+        type: 2}
+      propertyPath: iconImg
+      value: 
+      objectReference: {fileID: 21300000, guid: d2747faa6381b1c4a8c796b42a20534d,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8121f96662179974d8e57825a7916bf4, type: 2}
   m_IsPrefabParent: 0

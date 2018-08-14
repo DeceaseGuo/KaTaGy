@@ -2,6 +2,7 @@
 using UnityEngine;
 using DG.Tweening;
 using MyCode.Projector;
+//using MyCode.Timer;
 
 public class Allen_Skill : SkillBase
 {
@@ -32,7 +33,7 @@ public class Allen_Skill : SkillBase
     [SerializeField] SkinnedMeshRenderer handSmall;
     [Tooltip("抓取時的手")]
     [SerializeField] MeshRenderer handBig;
-    private bool isForward = false;
+    private bool isForward;
     private GameObject catchObj = null;
     [SerializeField] Material material_Q;
 
@@ -42,9 +43,14 @@ public class Allen_Skill : SkillBase
 
     //E盾減傷協成
     Coroutine shieldCoroutine;
-    private bool canShield = false;
-    [Tooltip("格檔次數")]
-    [SerializeField] int shieldNum = 3;
+    private bool canShield;
+    private bool shieldCanOpen;
+    //格檔次數
+    private int shieldNum = 0;
+    [Tooltip("左上顯示圖")]
+    [SerializeField] Sprite iconImg;
+    private SkillIcon.MyStates shieldIcon;    
+
     //R
     [Tooltip("大絕傷害半徑")]
     [SerializeField] float skillR_radius;
@@ -53,18 +59,30 @@ public class Allen_Skill : SkillBase
     {
         playerScript = GetComponent<Player>();
         aniScript = GetComponent<PlayerAni>();
-        SkillIconManager.SetSkillIcon(mySkillIcon);
+
+        if (photonView.isMine)
+        {
+            SkillIconManager.SetSkillIcon(mySkillIcon);
+        }        
+    }
+
+    private void Update()
+    {
+        if (canShield)
+        {
+            NowCanOpenShield();
+        }
     }
     //手的抓取範圍
     /*  private void OnDrawGizmos()
       {
          Gizmos.DrawWireCube(grab_MovePos.position, new Vector3(4, 2.5f, 2.2f));
       }*/
-      //大絕的範圍
-     /*private void OnDrawGizmos()
-     {
-         Gizmos.DrawWireSphere(transform.localPosition, skillR_radius);
-     }*/
+    //大絕的範圍
+    /*private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.localPosition, skillR_radius);
+    }*/
 
     #region 技能Event
     //Q按下
@@ -124,12 +142,7 @@ public class Allen_Skill : SkillBase
             playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
     }
-    //E偵測
-    public override void In_Skill_E()
-    {
-        if (canShield)
-            Shield();
-    }
+
     public override void Skill_R_Click()
     {
         if (!playerScript.ConsumeAP(1f, false))
@@ -334,27 +347,34 @@ public class Allen_Skill : SkillBase
     #region E減傷 盾
     public void E_ReduceDamage()
     {
-        playerScript.stopAnything_Switch(true);
-        shieldCoroutine = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f));
-        shieldNum = 3;
-        canShield = true;
-        Debug.Log("技能E  " + "開始減商");
+        if (photonView.isMine)
+        {
+            playerScript.stopAnything_Switch(true);
+            shieldNum = 3;
+            canShield = true;
+            SwitchShieldIcon(true);
+            shieldCoroutine = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f, null, shieldIcon.cdBar));
+            Debug.Log("技能E  " + "開始減商");
+        }
+        //特效
     }
 
-    public void Shield()
+    //開盾
+    void Shield()
     {
         if (shieldNum > 0 && canShield)
         {
             canShield = false;
             shieldNum--;
-            playerScript.Net.RPC("NowShield", PhotonTargets.All);            
-            Debug.Log("技能E  " + "減少次數" + shieldNum);
+            shieldIcon.nowAmount.text = shieldNum.ToString();
+            playerScript.Net.RPC("NowShield", PhotonTargets.All);
             if (shieldNum == 0)
             {
                 if (shieldCoroutine != null)
                 {
                     StopCoroutine(shieldCoroutine);
                     shieldCoroutine = null;
+                    SwitchShieldIcon(false);
                 }
             }
         }
@@ -376,19 +396,56 @@ public class Allen_Skill : SkillBase
         {
             StopCoroutine(shieldCoroutine);
             shieldCoroutine = null;
+            SwitchShieldIcon(false);
         }
-        shieldNum = 0;
+        shieldNum = 0;        
         playerScript.ChangeMyCollider(true);
         canShield = false;
         if (photonView.isMine)
+        {
+            shieldCanOpen = false;
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
+        }
     }
+
+    #region 盾牌功能
+    void NowCanOpenShield()
+    {
+        if (Input.GetKeyUp(KeyCode.E) && !shieldCanOpen)
+        {
+            shieldCanOpen = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && shieldCanOpen)
+        {
+            Shield();
+        }
+    }
+
+    void SwitchShieldIcon(bool _t)
+    {
+        if (_t)
+        {
+            shieldIcon = SkillIconManager.GetNewStateCT();
+            shieldIcon.stateImg.sprite = iconImg;
+            shieldIcon.nowAmount.text = shieldNum.ToString();
+            SkillIconManager.GoHintArea(shieldIcon.statePrefab);
+        }
+        else
+        {
+            if (photonView.isMine)
+            {
+                SkillIconManager.ClearThisCT(shieldIcon.listNum);
+            }
+        }
+    }
+    #endregion
 
     [PunRPC]
     public void NowShield()
     {
         playerScript.ChangeMyCollider(false);
-        StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.8f));
+        StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.7f));
     }
     #endregion
 
@@ -446,6 +503,7 @@ public class Allen_Skill : SkillBase
     }
     #endregion
 
+    #region 關閉技能提示
     public override void CancelDetectSkill(Player.SkillData _nowSkill)
     {
         switch (_nowSkill)
@@ -464,4 +522,5 @@ public class Allen_Skill : SkillBase
                 break;
         }
     }
+    #endregion
 }
