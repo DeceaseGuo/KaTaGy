@@ -116,7 +116,7 @@ public class Attribute_HP : Photon.MonoBehaviour
             if (player.playerData.Hp_original <= 0)
             {
                 player.deadManager.ifDead(true);
-                ani.SetBool("CanSkill", false);
+                ani.SetBool("Die", false);
                 StartCoroutine(player.Death());
                 UI_HpObj.SetActive(false);
             }
@@ -124,8 +124,12 @@ public class Attribute_HP : Photon.MonoBehaviour
             if (ifHit && !player.deadManager.checkDead)
             {
                 player.CancelNowSkill();
-                ani.SetTrigger("Hit");
-                player.beHit(_dir);
+               // if (!player.skillManager.brfore_shaking)
+                {
+                 //   player.skillManager.InterruptSkill(false);
+                    ani.SetTrigger("Hit");
+                    player.beHit(_dir);
+                }
             }
         }
     }

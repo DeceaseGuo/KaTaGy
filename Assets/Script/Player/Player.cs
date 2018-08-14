@@ -92,7 +92,8 @@ public class Player : Photon.MonoBehaviour
     private CapsuleCollider CharaCollider;
     public BoxCollider shieldCollider;
     //技能
-    private SkillBase skillManager;
+    [HideInInspector]
+    public SkillBase skillManager;
     [HideInInspector]
     public bool canSkill_Q = true;
     [HideInInspector]
@@ -579,8 +580,11 @@ public class Player : Photon.MonoBehaviour
                 CancelNowSkill();
             }
             NowCC = true;
-            AniControll.anim.SetTrigger("Stun");
-            AniControll.anim.SetBool("StunRock", true);
+            if (!AniControll.anim.GetBool("Die"))
+            {
+                AniControll.anim.CrossFade("Stun", 0.02f, 0);
+                AniControll.anim.SetBool("StunRock", true);
+            }
             StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
         }
     }
@@ -608,7 +612,10 @@ public class Player : Photon.MonoBehaviour
             CancelNowSkill();
             stopAnything_Switch(true);
             NowCC = true;
-            AniControll.anim.SetTrigger("HitFly");
+            if (!AniControll.anim.GetBool("Die"))
+            {
+                AniControll.anim.CrossFade("HitFly", 0.02f, 0);
+            }
         }
     }
 

@@ -327,7 +327,8 @@ public class PlayerAni : Photon.MonoBehaviour
     }
 
     public void Die()
-    {        
-        anim.SetTrigger("Die");
+    {
+        anim.CrossFade("dead" , 0.05f, 0);
+        anim.SetBool("Die", true);
     }
 }

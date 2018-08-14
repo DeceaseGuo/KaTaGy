@@ -33947,7 +33947,7 @@ GameObject:
   - component: {fileID: 1191354690}
   - component: {fileID: 1191354689}
   m_Layer: 5
-  m_Name: CanvasBG
+  m_Name: StaticCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38186,8 +38186,12 @@ MonoBehaviour:
   PlayerIcon: {fileID: 224581186955224614, guid: e22f7662106351342a039ee7d959ebf9,
     type: 2}
   myplayerIcon: {fileID: 0}
+  enemyplayerIcon: {fileID: 0}
   myTowerIcons: []
   mySoliderIcons: []
+  enemyTowerIcons: []
+  enemySoliderIcons: []
+  ShowEnemyIcons: []
 --- !u!114 &1355060146 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114265179457170156, guid: 1a08b587eda04544e90ad4b65e4123fb,
