@@ -6,7 +6,6 @@ using DG.Tweening;
 public class Allen_Ani : PlayerAni
 {
     #region Combo
-
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
     {
@@ -47,7 +46,7 @@ public class Allen_Ani : PlayerAni
                 if (!photonView.isMine)
                     return;
                 canClick = true;
-                redressOpen = true;
+               // redressOpen = true;
                 anim.SetBool("Action", false);
                 ChangeNowDir();
                 break;
@@ -64,6 +63,7 @@ public class Allen_Ani : PlayerAni
             case (3):
                 if (!photonView.isMine)
                     return;
+                redressOpen = true;
                 brfore_shaking = true;
                 if (!nextComboBool)
                     canClick = true;
@@ -96,7 +96,7 @@ public class Allen_Ani : PlayerAni
 
         if (startDetect_1)
         {
-          ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
+            ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
         }
         if (startDetect_2)
         {
@@ -114,7 +114,7 @@ public class Allen_Ani : PlayerAni
     #region 給予正確目標傷害
     protected override void GetCurrentTarget(Collider[] _enemies)
     {
-        if (!photonView.isMine || anim.GetCurrentAnimatorStateInfo(0).IsName("dodge"))
+        if (!photonView.isMine)
             return;
 
         foreach (Collider beAtk_Obj in _enemies)

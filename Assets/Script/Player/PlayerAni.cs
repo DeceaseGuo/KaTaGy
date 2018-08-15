@@ -242,7 +242,7 @@ public class PlayerAni : Photon.MonoBehaviour
     #region 前搖點前可變動方向
     protected void ChangeNowDir()
     {
-        if (photonView.isMine && !brfore_shaking)
+        if (photonView.isMine && !brfore_shaking && !redressOpen)
         {
             currentAtkDir = player.nowMouseDir();
             transform.forward = currentAtkDir.normalized;
@@ -293,6 +293,8 @@ public class PlayerAni : Photon.MonoBehaviour
     public void Skill_Q_Fun()
     {
         anim.SetTrigger("Skill_Q");
+        player.deadManager.notFeedBack = true;
+        player.skillManager.nowSkill = SkillBase.SkillAction.is_Q;
         if (player.skill_Q != null)
             player.skill_Q.Invoke();
     }
@@ -301,6 +303,8 @@ public class PlayerAni : Photon.MonoBehaviour
     public void Skill_W_Fun()
     {
         anim.SetTrigger("Skill_W");
+        player.deadManager.notFeedBack = true;
+        player.skillManager.nowSkill = SkillBase.SkillAction.is_W;
         if (player.skill_W != null)
             player.skill_W.Invoke();
     }
@@ -309,6 +313,8 @@ public class PlayerAni : Photon.MonoBehaviour
     public void Skill_E_Fun()
     {
         anim.SetTrigger("Skill_E");
+        player.deadManager.notFeedBack = true;
+        player.skillManager.nowSkill = SkillBase.SkillAction.is_E;
         if (player.skill_E != null)
             player.skill_E.Invoke();
     }
@@ -317,6 +323,8 @@ public class PlayerAni : Photon.MonoBehaviour
     public void Skill_R_Fun()
     {
         anim.SetTrigger("Skill_R");
+        player.deadManager.notFeedBack = true;
+        player.skillManager.nowSkill = SkillBase.SkillAction.is_R;
         if (player.skill_R != null)
             player.skill_R.Invoke();
     }
