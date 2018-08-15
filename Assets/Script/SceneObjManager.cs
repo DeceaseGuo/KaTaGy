@@ -166,10 +166,11 @@ public class SceneObjManager : MonoBehaviour
                 {
                     if (mySoldierObjs.Contains(_obj))
                     {
-                        mySoldierObjs.Remove(_obj);
                         _index = mySoldierObjs.IndexOf(_obj);
                         minmap.mySoliderIcons[_index].gameObject.SetActive(false);
                         minmap.mySoliderIcons.RemoveAt(_index);
+
+                        mySoldierObjs.Remove(_obj);
                     }
                 }
                 break;
@@ -177,15 +178,17 @@ public class SceneObjManager : MonoBehaviour
                 {
                     if (myTowerObjs.Contains(_obj))
                     {
+                        _index = myTowerObjs.IndexOf(_obj);
+                        print(_index);
+                        minmap.myTowerIcons[_index].gameObject.SetActive(false);
+                        minmap.myTowerIcons.RemoveAt(_index);
+
                         myTowerObjs.Remove(_obj);
                         Electricity _e = _obj.GetComponent<Electricity>();
                         if (_e != null)
                         {
                             myElectricityObjs.Remove(_e);
-                        }
-                        _index = myTowerObjs.IndexOf(_obj);
-                        minmap.myTowerIcons[_index].gameObject.SetActive(false);
-                        minmap.myTowerIcons.RemoveAt(_index);
+                        }                        
                     }
                 }
                 break;

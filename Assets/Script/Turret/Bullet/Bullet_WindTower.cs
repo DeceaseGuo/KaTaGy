@@ -12,7 +12,7 @@ public class Bullet_WindTower : BulletManager
 
     [Header("飛行與傷害間隔時間")]
     [SerializeField] float flyTime;
-    [SerializeField] float fireCd = 0;
+    [SerializeField] float fireCd = 0.1f;
     public List<GameObject> tmpNoDamage;
     protected Tweener myTweener;
 
@@ -20,31 +20,26 @@ public class Bullet_WindTower : BulletManager
     {
         if (photonView.isMine)
             StartCoroutine("DisappearThis");
-    }
 
-    void Update()
-    {
-        if (!hit)
-        {
-            hit = true;
-            StartCoroutine("GetCollider");
-        }
+        StartCoroutine("GetCollider");
     }
 
     IEnumerator GetCollider()
     {
-        yield return new WaitForSeconds(0.1f);
-        Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
-        print("抓攻擊對象");
-        for (int i = 0; i < colliders.Length; i++)
+        while (true)
         {
-            targetDead = colliders[i].gameObject.GetComponent<isDead>();
-            if (targetDead == null)
-                break;
+            yield return new WaitForSeconds(0.05f);
+            Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
+            print("抓攻擊對象");
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                targetDead = colliders[i].gameObject.GetComponent<isDead>();
+                if (targetDead == null)
+                    break;
 
-            HitTarget();
+                HitTarget();
+            }
         }
-        hit = false;
     }
 
     [PunRPC]

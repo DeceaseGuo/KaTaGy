@@ -53,6 +53,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     {
         myplayerIcon = Instantiate(AllenIcon, transform);
         enemyplayerIcon = Instantiate(AllenIcon, transform);
+        enemyplayerIcon.gameObject.SetActive(false);
         litMap = GetComponent<RectTransform>();
         playerScript = Creatplayer.instance.Player_Script;
         SceneManager.minmap = this;

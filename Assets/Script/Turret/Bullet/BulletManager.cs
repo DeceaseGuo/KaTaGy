@@ -6,39 +6,35 @@ public class BulletManager : Photon.MonoBehaviour {
 
     public GameManager.whichObject DataName;
     protected PhotonView Net;
-    protected bool hit;
     protected Transform target;
     protected TurretData.TowerDataBase Data;
     protected LayerMask atkMask;
-
+    protected bool hit;
     public bool Isfllow = false;
     protected isDead targetDead;
 
     private void OnEnable()
-    {
+    {      
         if (Data.objectName == null)
         {
             //print("初始");
             Data = TurretData.instance.getTowerData(DataName);
             Net = GetComponent<PhotonView>();
             atkMask = GameManager.instance.correctMask(photonView.isMine);
-        }
-        else
-        {
-            distanceThisFrame = Data.bullet_Speed * Time.deltaTime;
         }       
+        distanceThisFrame = Data.bullet_Speed * Time.deltaTime;   
     }
 
     #region 取得目標，外部使用
     public void getTarget(Transform _target)
     {
+        hit = false;
         if (_target == null && photonView.isMine)
         {
             print("沒有目標");
             returnBulletPool();
             return;
         }
-        hit = false;
         int viewID = _target.GetComponent<PhotonView>().viewID;
         Net.RPC("TP_Data", PhotonTargets.All, viewID);
     }

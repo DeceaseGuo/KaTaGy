@@ -183,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DataName: 5
+  Isfllow: 1
 --- !u!114 &114875571474760226
 MonoBehaviour:
   m_ObjectHideFlags: 1
