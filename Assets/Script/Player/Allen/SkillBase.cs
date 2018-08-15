@@ -9,7 +9,7 @@ public class SkillBase : Photon.MonoBehaviour
     protected SkillIcon skillIconManager;
     protected SkillIcon SkillIconManager { get { if (skillIconManager == null) skillIconManager = SkillIcon.instance; return skillIconManager; } }
 
-    protected enum SkillAction
+    public enum SkillAction
     {
         None,
         is_Q,
@@ -18,13 +18,14 @@ public class SkillBase : Photon.MonoBehaviour
         is_R
     }
     public bool brfore_shaking = true;
-    protected SkillAction nowSkill = SkillAction.None;
+    public SkillAction nowSkill = SkillAction.None;
 
     private void Awake()
     {
         playerScript = GetComponent<Player>();
         aniScript = GetComponent<PlayerAni>();
     }
+
 
     public void ArriveBP()
     {

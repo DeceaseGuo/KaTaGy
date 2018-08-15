@@ -44,7 +44,7 @@ public class Queen_Ani : PlayerAni
                 if (!photonView.isMine)
                     return;
                 canClick = true;
-                redressOpen = true;
+                //redressOpen = true;
                 anim.SetBool("Action", false);
                 ChangeNowDir();
                 break;
@@ -62,6 +62,7 @@ public class Queen_Ani : PlayerAni
                 if (!photonView.isMine)
                     return;
                 brfore_shaking = true;
+                redressOpen = true;
                 if (!nextComboBool)
                     canClick = true;
                 if (anim.GetBool("Action"))

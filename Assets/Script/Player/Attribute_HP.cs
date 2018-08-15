@@ -121,7 +121,7 @@ public class Attribute_HP : Photon.MonoBehaviour
                 UI_HpObj.SetActive(false);
             }
             openPopupObject(tureDamage);
-            if (ifHit && !player.deadManager.checkDead && !player.deadManager.notFeedBack)
+            if (ifHit && !player.deadManager.checkDead && !player.deadManager.notFeedBack && !player.NowCC)
             {
                 player.CancelNowSkill();
                 ani.SetTrigger("Hit");

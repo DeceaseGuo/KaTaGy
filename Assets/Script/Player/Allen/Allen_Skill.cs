@@ -94,8 +94,6 @@ public class Allen_Skill : SkillBase
         {
             if (playerScript.ConsumeAP(1f,true))
             {
-                nowSkill = SkillAction.is_Q;
-                playerScript.deadManager.notFeedBack = true;
                 playerScript.SkillState = Player.SkillData.None;
                 projector_Q.enabled = false;
                 //關閉顯示範圍
@@ -115,8 +113,6 @@ public class Allen_Skill : SkillBase
     {
         if (playerScript.ConsumeAP(1f, true))
         {
-            nowSkill = SkillAction.is_W;
-            playerScript.deadManager.notFeedBack = true;
             playerScript.canSkill_W = false;
             playerScript.SkillState = Player.SkillData.None;
             playerScript.canSkill_W = false;
@@ -131,7 +127,6 @@ public class Allen_Skill : SkillBase
     {
         if (playerScript.ConsumeAP(1f, true))
         {
-            playerScript.deadManager.notFeedBack = true;
             playerScript.canSkill_E = false;            
             playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
@@ -153,9 +148,7 @@ public class Allen_Skill : SkillBase
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(1f, true))
-            {
-                playerScript.deadManager.notFeedBack = true;
-                nowSkill = SkillAction.is_R;
+            {             
                 playerScript.SkillState = Player.SkillData.None;
                 ProjectorManager.SwitchPorjector(projector_R, false);
                 //關閉顯示範圍
@@ -460,7 +453,7 @@ public class Allen_Skill : SkillBase
         }
         else
         {
-            if (photonView.isMine)
+            if (photonView.isMine && shieldIcon != null)
             {
                 SkillIconManager.ClearThisCT(shieldIcon.listNum);
             }
@@ -602,7 +595,6 @@ public class Allen_Skill : SkillBase
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;
-    }
-        
+    }    
     #endregion
 }

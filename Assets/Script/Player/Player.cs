@@ -108,7 +108,7 @@ public class Player : Photon.MonoBehaviour
         CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
     }
-    //
+    //    
     RectTransform map;
     //
     private void Start()
@@ -280,7 +280,7 @@ public class Player : Photon.MonoBehaviour
         if (leftTopPowerBar.fillAmount != 1)
             AddPower();
 
-        CorrectDirection();
+        CorrectDirection();        
 
         if (MyState != statesData.None)
         {
@@ -706,11 +706,6 @@ public class Player : Photon.MonoBehaviour
         skillManager.CancelDetectSkill(SkillState);
         SkillState = SkillData.None;
     }
-
-    public void KillAllSkill()
-    {
-        cancelSkill.Invoke();
-    }
     #endregion
     #endregion
 
@@ -810,6 +805,7 @@ public class Player : Photon.MonoBehaviour
         if (photonView.isMine)
         {
             CancelNowSkill();
+            cancelSkill.Invoke();
             CameraEffect.instance.nowDie(true);
             Creatplayer.instance.player_ReBorn(playerData.ReBorn_CountDown);
         }
