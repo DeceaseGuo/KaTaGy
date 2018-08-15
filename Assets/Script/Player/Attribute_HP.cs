@@ -121,15 +121,11 @@ public class Attribute_HP : Photon.MonoBehaviour
                 UI_HpObj.SetActive(false);
             }
             openPopupObject(tureDamage);
-            if (ifHit && !player.deadManager.checkDead)
+            if (ifHit && !player.deadManager.checkDead && !player.deadManager.notFeedBack)
             {
                 player.CancelNowSkill();
-               // if (!player.skillManager.brfore_shaking)
-                {
-                 //   player.skillManager.InterruptSkill(false);
-                    ani.SetTrigger("Hit");
-                    player.beHit(_dir);
-                }
+                ani.SetTrigger("Hit");
+                player.beHit(_dir);
             }
         }
     }
