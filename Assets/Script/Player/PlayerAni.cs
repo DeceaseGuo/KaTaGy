@@ -140,6 +140,7 @@ public class PlayerAni : Photon.MonoBehaviour
     public void GoDodge()
     {
         CancleAllAni();
+        player.deadManager.notFeedBack = true;
         anim.SetTrigger("Dodge");
     }
     #endregion

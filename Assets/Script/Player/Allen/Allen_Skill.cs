@@ -5,12 +5,6 @@ using MyCode.Projector;
 
 public class Allen_Skill : SkillBase
 {
-    private Player playerScript;
-    private PlayerAni aniScript;
-
-    private SkillIcon skillIconManager;
-    private SkillIcon SkillIconManager { get { if (skillIconManager == null) skillIconManager = SkillIcon.instance; return skillIconManager; } }
-
     //技能提示
     [Tooltip("抓取範圍")]
     [SerializeField] Projector projector_Q;
@@ -56,13 +50,10 @@ public class Allen_Skill : SkillBase
 
     private void Start()
     {
-        playerScript = GetComponent<Player>();
-        aniScript = GetComponent<PlayerAni>();
-
         if (photonView.isMine)
         {
             SkillIconManager.SetSkillIcon(mySkillIcon);
-        }        
+        }
     }
 
     private void Update()
@@ -103,6 +94,8 @@ public class Allen_Skill : SkillBase
         {
             if (playerScript.ConsumeAP(1f,true))
             {
+                nowSkill = SkillAction.is_Q;
+                playerScript.deadManager.notFeedBack = true;
                 playerScript.SkillState = Player.SkillData.None;
                 projector_Q.enabled = false;
                 //關閉顯示範圍
@@ -122,6 +115,8 @@ public class Allen_Skill : SkillBase
     {
         if (playerScript.ConsumeAP(1f, true))
         {
+            nowSkill = SkillAction.is_W;
+            playerScript.deadManager.notFeedBack = true;
             playerScript.canSkill_W = false;
             playerScript.SkillState = Player.SkillData.None;
             playerScript.canSkill_W = false;
@@ -136,8 +131,8 @@ public class Allen_Skill : SkillBase
     {
         if (playerScript.ConsumeAP(1f, true))
         {
-            playerScript.canSkill_E = false;
-            //playerScript.skillSecondClick = true;
+            playerScript.deadManager.notFeedBack = true;
+            playerScript.canSkill_E = false;            
             playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
     }
@@ -159,6 +154,8 @@ public class Allen_Skill : SkillBase
         {
             if (playerScript.ConsumeAP(1f, true))
             {
+                playerScript.deadManager.notFeedBack = true;
+                nowSkill = SkillAction.is_R;
                 playerScript.SkillState = Player.SkillData.None;
                 ProjectorManager.SwitchPorjector(projector_R, false);
                 //關閉顯示範圍
@@ -271,12 +268,12 @@ public class Allen_Skill : SkillBase
         }
         else
         {
-            print("手停止");            
-            ResetAllData_Grab();
+            print("手停止");
+            ResetQ_GoCD();
         }
     }
     //清除重置Q
-    public void ResetAllData_Grab()
+    public override void ResetQ_GoCD()
     {
         playerScript.GoBack_AtkState();
 
@@ -286,6 +283,20 @@ public class Allen_Skill : SkillBase
         if (grabSkill != null)
             grabSkill.Kill();
         aniScript.anim.SetBool("Catch", false);
+        grab_MovePos.position = chain_Pos[2].position;
+        isForward = false;
+        catchObj = null;
+        chain.enabled = false;
+        handSmall.enabled = true;
+        handBig.enabled = false;
+    }
+
+    //直接恢復cd(中斷,或死亡用)
+    public override void ClearQ_Skill()
+    {
+        playerScript.CountDown_Q();
+        if (grabSkill != null)
+            grabSkill.Kill();
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -338,10 +349,16 @@ public class Allen_Skill : SkillBase
         }
     }
 
-    public void EndWSkill()
+    public override void ResetW_GoCD()
     {
         if (photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
+    }
+
+    //直接恢復cd(中斷,或死亡用)
+    public override void ClearW_Skill()
+    {
+        playerScript.CountDown_W();
     }
     #endregion
 
@@ -397,8 +414,8 @@ public class Allen_Skill : SkillBase
         {
             StopCoroutine(shieldCoroutine);
             shieldCoroutine = null;
-            SwitchShieldIcon(false);
         }
+        SwitchShieldIcon(false);
         shieldNum = 0;        
         playerScript.ChangeMyCollider(true);
         canShield = false;
@@ -407,6 +424,15 @@ public class Allen_Skill : SkillBase
             shieldCanOpen = false;
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
         }
+    }
+    //直接恢復cd(中斷,或死亡用)
+    public override void ClearE_Skill()
+    {
+        SwitchShieldIcon(false);
+        shieldNum = 0;
+        playerScript.ChangeMyCollider(true);
+        canShield = false;
+        playerScript.CountDown_E();
     }
 
     #region 盾牌功能
@@ -450,17 +476,17 @@ public class Allen_Skill : SkillBase
     }
     #endregion
 
-    #region R大絕
+    #region R大絕(開大無敵)
     public void Go_RSkill()
     {
-        if(!photonView.isMine)
+        playerScript.ChangeMyCollider(false);
+        //clone體執行
+        if (!photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(R_Skill, 1f));
     }
 
     public void R_Skill()
     {
-        //clone體執行
-
          Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition, skillR_radius, aniScript.canAtkMask);
          if (tmpEnemy != null)
          {
@@ -497,10 +523,18 @@ public class Allen_Skill : SkillBase
              }
          }
     }
-    public void EndRSkill()
+    public override void ResetR_GoCD()
     {
+        playerScript.ChangeMyCollider(true);
+
         if (photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
+    }
+    //直接恢復cd(中斷,或死亡用)
+    public override void ClearR_Skill()
+    {
+        playerScript.CountDown_R();
+        playerScript.ChangeMyCollider(true);
     }
     #endregion
 
@@ -526,25 +560,25 @@ public class Allen_Skill : SkillBase
     #endregion
 
     #region 中斷技能
-    public override void InterruptSkill(bool _absolute)
+    public override void InterruptSkill()
     {
-        if (!_absolute)
+        //前搖之後
+        if (!brfore_shaking)
         {
-            if (!brfore_shaking)
+            switch (nowSkill)
             {
-                switch (nowSkill)
-                {
-                    case SkillAction.is_Q:
-                        ResetAllData_Grab();
-                        break;
-                    case SkillAction.is_W:
-                        EndWSkill();
-                        break;
-                    case SkillAction.is_R:
-                        break;
-                    default:
-                        break;
-                }
+                case SkillAction.is_Q:
+                    if (playerScript.NowCC)
+                        ResetQ_GoCD();
+                    break;
+                case SkillAction.is_W:
+                    ResetW_GoCD();
+                    break;
+                case SkillAction.is_R:
+                    ResetR_GoCD();
+                    break;
+                default:
+                    break;
             }
         }
         else
@@ -552,17 +586,23 @@ public class Allen_Skill : SkillBase
             switch (nowSkill)
             {
                 case SkillAction.is_Q:
-                    ResetAllData_Grab();
+                    ClearQ_Skill();
                     break;
                 case SkillAction.is_W:
-                    EndWSkill();
+                    ClearW_Skill();
                     break;
                 case SkillAction.is_R:
+                    ClearR_Skill();
                     break;
                 default:
                     break;
             }
         }
+
+        playerScript.deadManager.notFeedBack = false;
+        nowSkill = SkillAction.None;
+        brfore_shaking = true;
     }
+        
     #endregion
 }
