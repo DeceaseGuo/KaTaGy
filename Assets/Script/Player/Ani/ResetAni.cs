@@ -20,7 +20,6 @@ public class ResetAni : StateMachineBehaviour
         animator.SetBool("Action", false);
         animator.SetBool("PullSword", false);
         animator.SetBool("StunRock", false);
-        animator.SetBool("Catch", false);
         if (animator.GetBool("Die"))
             animator.SetBool("Die", false);
     }

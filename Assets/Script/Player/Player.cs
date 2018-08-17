@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using DG.Tweening;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class Player : Photon.MonoBehaviour
@@ -46,6 +47,7 @@ public class Player : Photon.MonoBehaviour
     public PhotonView Net;
     //方向
     private Vector3 mousePosition;
+    public Vector3 MousePosition { get { return mousePosition; } private set { mousePosition = value; } }
     public Transform arrow;
 
     public UnityEvent skill_Q;
@@ -81,13 +83,14 @@ public class Player : Photon.MonoBehaviour
 
     private bool nowCC;
     public bool NowCC { get { return nowCC; } set { nowCC = value; } }
-   /* public enum buffData
-    {
-        None,
-        NowCC,
-    }
-    private buffData nowBuff = buffData.None;
-    public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }*/
+
+    /* public enum buffData
+{
+    None,
+    NowCC,
+}
+private buffData nowBuff = buffData.None;
+public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }*/
     #endregion
     private CapsuleCollider CharaCollider;
     public BoxCollider shieldCollider;
@@ -102,6 +105,9 @@ public class Player : Photon.MonoBehaviour
     public bool canSkill_E = true;
     [HideInInspector]
     public bool canSkill_R = true;
+
+    //負面
+    private Tweener flyUp;
 
     private void Awake()
     {
@@ -135,7 +141,6 @@ public class Player : Photon.MonoBehaviour
         else
         {
             AniControll = GetComponent<PlayerAni>();
-            //nav.enabled = false;
             SceneObjManager.Instance.enemy_Player = gameObject;
             this.enabled = false;
         }
@@ -289,7 +294,7 @@ public class Player : Photon.MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
 
-                transform.position = mousePosition;
+                transform.position = MousePosition;
             }
         }
     }
@@ -501,15 +506,15 @@ public class Player : Photon.MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
         {
-            mousePosition = hit.point;
+            MousePosition = hit.point;
             nowMouseDir();
         }
     }
     //滑鼠目前方向
     public Vector3 nowMouseDir()
     {
-        mousePosition = new Vector3(mousePosition.x, transform.localPosition.y, mousePosition.z);
-        Vector3 tmpDir = mousePosition - transform.position;
+        MousePosition = new Vector3(MousePosition.x, transform.localPosition.y, MousePosition.z);
+        Vector3 tmpDir = MousePosition - transform.position;
         arrow.rotation = Quaternion.LookRotation(tmpDir);
         return arrow.forward;
     }
@@ -589,17 +594,17 @@ public class Player : Photon.MonoBehaviour
         }
     }
     //緩速
-    protected virtual void GetDeBuff_Slow()
+    public void GetDeBuff_Slow()
     {
 
     }
     //破甲
-    protected virtual void GetDeBuff_DestoryDef()
+    public void GetDeBuff_DestoryDef()
     {
 
     }
     //燒傷
-    protected virtual void GetDeBuff_Burn()
+    public void GetDeBuff_Burn()
     {
 
     }
@@ -619,10 +624,27 @@ public class Player : Photon.MonoBehaviour
         }
     }
 
+    //往上擊飛
+    [PunRPC]
+    public void HitFlayUp()
+    {
+        flyUp = transform.DOMoveY(transform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
+        flyUp.onComplete = delegate () { EndFlyUp(); };
+        //flyUp.PlayForward();
+    }
+    #endregion
+
+    #region 負面狀態恢復
+    //恢復暈眩
     void Recover_Stun()
     {
         GoBack_AtkState();
         AniControll.anim.SetBool("StunRock", false);
+    }
+    //回到地上
+    void EndFlyUp()
+    {
+        flyUp.PlayBackwards();
     }
     #endregion
 

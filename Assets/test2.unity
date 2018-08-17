@@ -14162,9 +14162,9 @@ MonoBehaviour:
     Ap_original: 0
     add_APValue: 4.5
     skillCD_Q: 2
-    skillCD_W: 0
-    skillCD_E: 0
-    skillCD_R: 0
+    skillCD_W: 2
+    skillCD_E: 2
+    skillCD_R: 2
     Add_hp1: 0
     Add_hp2: 0
     Add_hp3: 0
@@ -18342,10 +18342,23 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 20807777228026412, guid: 11e0376524b45cb4bb172fae14bf9035,
+    - target: {fileID: 1576241093054250, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1511977454431120, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 119360210232591914, guid: 11e0376524b45cb4bb172fae14bf9035,
         type: 2}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4093607915
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 119715970764969646, guid: 11e0376524b45cb4bb172fae14bf9035,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
@@ -21298,8 +21311,9 @@ GameObject:
   - component: {fileID: 760086967}
   - component: {fileID: 760086966}
   - component: {fileID: 760086965}
+  - component: {fileID: 760086970}
   - component: {fileID: 760086969}
-  m_Layer: 31
+  m_Layer: 30
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21387,6 +21401,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myAttributes: 4
   notFeedBack: 0
+--- !u!114 &760086970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 760086964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc69015dd149356458d6964ac542494b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  kkk: {x: 0, y: 0, z: 0}
+  aaa: {fileID: 0}
 --- !u!1 &761035117
 GameObject:
   m_ObjectHideFlags: 0

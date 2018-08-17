@@ -7,7 +7,7 @@
         {
             if (_projector != null)
             {
-                _projector.aspectRatio = _width / _scale;
+                _projector.aspectRatio = _width;
                 _projector.orthographicSize = _scale;
                 _projector.enabled = _open;
             }
@@ -31,6 +31,11 @@
             {
                 if (Vector3.Distance(_pos, _originalPos.position) <= _maxRange)
                     _projector.transform.position = _pos;
+                else
+                {
+                    Vector3 tmpPos = _pos - _originalPos.position;
+                    _projector.transform.position = _originalPos.position + (tmpPos.normalized * _maxRange);
+                }
             }
         }
     }

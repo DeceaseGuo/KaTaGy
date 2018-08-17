@@ -7,16 +7,9 @@ namespace Mytest
 {
     public class test : MonoBehaviour
     {
-        public Text num;
-        public Coroutine testaaa;
-        public float coutnDown;
+        public Vector3 kkk;
+        public PhotonView aaa;
 
-
-        public float A1;
-        public float A2 = 1;
-        public float width;
-
-        [SerializeField] List<bool> sss;
 
         private void Update()
         {
@@ -30,14 +23,10 @@ namespace Mytest
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
 
-                int num = sss.FindIndex(x => x == true);
-                Debug.Log(num);
 
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-
-                
 
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -47,16 +36,6 @@ namespace Mytest
 
             }
 
-        }
-
-        IEnumerator ggg()
-        {
-            yield return new WaitForSeconds(0.2f);
-            if (A1 != 4)
-            {
-                Debug.Log(A1);
-                A1++;
-            }
         }
     }
 }

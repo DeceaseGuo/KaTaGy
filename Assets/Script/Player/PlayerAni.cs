@@ -185,15 +185,13 @@ public class PlayerAni : Photon.MonoBehaviour
         nextComboBool = false;
         after_shaking = false;
         brfore_shaking = false;
-        player.Net.RPC("TP_Combo", PhotonTargets.Others, comboIndex);
+        player.Net.RPC("TP_Combo", PhotonTargets.All, comboIndex);
     }
 
     [PunRPC]
     protected void TP_Combo(int _i)
     {
-        if (!photonView.isMine)
-            alreadyDamage.Clear();
-        anim.CrossFade("combo" + _i, 0.07f, 0);
+        anim.CrossFade("combo" + _i, 0.05f, 0);
     }
     #endregion
 

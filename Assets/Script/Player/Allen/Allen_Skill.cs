@@ -6,10 +6,12 @@ using MyCode.Projector;
 public class Allen_Skill : SkillBase
 {
     //技能提示
+    private Projector allSkillRange;
+    
     [Tooltip("抓取範圍")]
     [SerializeField] Projector projector_Q;
     [Tooltip("大絕範圍")]
-    [SerializeField] Projector[] projector_R = new Projector[2];
+    [SerializeField] Projector[] projector_R = new Projector[2]; //0攻擊 //1範圍
 
     [Tooltip("技能圖")]
     public List<Sprite> mySkillIcon;
@@ -50,9 +52,15 @@ public class Allen_Skill : SkillBase
 
     private void Start()
     {
+
         if (photonView.isMine)
         {
+            allSkillRange = GameObject.Find("AllSkillRange_G").GetComponent<Projector>();
             SkillIconManager.SetSkillIcon(mySkillIcon);
+        }
+        else
+        {
+            allSkillRange = GameObject.Find("AllSkillRange_R").GetComponent<Projector>();
         }
     }
 
@@ -69,10 +77,12 @@ public class Allen_Skill : SkillBase
          Gizmos.DrawWireCube(grab_MovePos.position, new Vector3(4, 2.5f, 2.2f));
       }*/
     //大絕的範圍
+
     /*private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.localPosition, skillR_radius);
     }*/
+
 
     #region 技能Event
     //Q按下
@@ -131,14 +141,14 @@ public class Allen_Skill : SkillBase
             playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
     }
-
+    //R按下
     public override void Skill_R_Click()
     {
         if (!playerScript.ConsumeAP(1f, false))
             return;
 
         playerScript.canSkill_R = false;
-        playerScript.SkillState = Player.SkillData.skill_R;
+        playerScript.SkillState = Player.SkillData.skill_R;        
         //顯示範圍
         ProjectorManager.SwitchPorjector(projector_R, true);
     }
@@ -148,14 +158,15 @@ public class Allen_Skill : SkillBase
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(1f, true))
-            {             
+            {
                 playerScript.SkillState = Player.SkillData.None;
-                ProjectorManager.SwitchPorjector(projector_R, false);
+                //開啟攻擊範圍
+                playerScript.Net.RPC("GetSkillPos", PhotonTargets.All, projector_R[0].transform.position);
                 //關閉顯示範圍
-
+                ProjectorManager.SwitchPorjector(projector_R, false);
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);                
+                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -290,6 +301,7 @@ public class Allen_Skill : SkillBase
         playerScript.CountDown_Q();
         if (grabSkill != null)
             grabSkill.Kill();
+        aniScript.anim.SetBool("Catch", false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -473,6 +485,9 @@ public class Allen_Skill : SkillBase
     public void Go_RSkill()
     {
         playerScript.ChangeMyCollider(false);
+        //設定攻擊範圍
+        allSkillRange.transform.position = mySkillPos;
+        ProjectorManager.Setsize(allSkillRange, 17.5f, 1, true);
         //clone體執行
         if (!photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(R_Skill, 1f));
@@ -519,6 +534,7 @@ public class Allen_Skill : SkillBase
     public override void ResetR_GoCD()
     {
         playerScript.ChangeMyCollider(true);
+        allSkillRange.enabled = false;
 
         if (photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
@@ -526,6 +542,7 @@ public class Allen_Skill : SkillBase
     //直接恢復cd(中斷,或死亡用)
     public override void ClearR_Skill()
     {
+        allSkillRange.enabled = false;
         playerScript.CountDown_R();
         playerScript.ChangeMyCollider(true);
     }
@@ -540,7 +557,7 @@ public class Allen_Skill : SkillBase
                 projector_Q.enabled = false;
                 break;
             case Player.SkillData.skill_R:
-                ProjectorManager.SwitchPorjector(projector_R, false);
+                ProjectorManager.SwitchPorjector(projector_R, false);                
                 break;
             default:
                 if (projector_Q.enabled)

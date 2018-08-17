@@ -2083,7 +2083,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.69102997
+        functionName: GoBack_AtkState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -5658,23 +5666,72 @@ ModelImporter:
       lastFrame: 550
       wrapMode: 0
       orientationOffsetY: 0
-      level: 0
+      level: -1.22
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 1
-      loopBlendPositionY: 1
+      loopBlendPositionY: 0
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 1
-      keepOriginalPositionY: 1
+      keepOriginalPositionY: 0
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
+      curves:
+      - name: Curve
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          preInfinity: 2
+          postInfinity: 2
+          rotationOrder: 4
+      events:
+      - time: 0.33017492
+        functionName: OpenFirstAtk
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.74039394
+        functionName: OpenEndAtk
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.17005081
+        functionName: ArriveBP
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -6006,7 +6063,23 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.31756705
+        functionName: ArriveBP
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.4449764
+        functionName: Go_W_Skill
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -6338,7 +6411,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.14974594
+        functionName: ArriveBP
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -6670,7 +6751,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.47348404
+        functionName: ArriveBP
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1

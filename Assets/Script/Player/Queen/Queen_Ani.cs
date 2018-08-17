@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class Allen_Ani : PlayerAni
+public class Queen_Ani : PlayerAni
 {
-    #region Combo
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
     {
@@ -68,15 +67,17 @@ public class Allen_Ani : PlayerAni
             case (3):
                 if (!photonView.isMine)
                     return;
-                
                 redressOpen = true;
                 brfore_shaking = true;
+               /* if (!nextComboBool)
+                    canClick = true;
+                if (anim.GetBool("Action"))
+                    anim.SetBool("Action", false);*/
                 break;
             //後搖點
             case (4):
                 if (!photonView.isMine)
                     return;
-
                 redressOpen = false;
                 after_shaking = true;
                 if (!canClick && nextComboBool)
@@ -90,24 +91,25 @@ public class Allen_Ani : PlayerAni
         }
     }
     #endregion
-    #endregion
 
     #region 傷害判定
     public override void DetectAtkRanage()
     {
         base.DetectAtkRanage();
 
-        if (startDetect_1)
+        //鐮刀本身
+       if (startDetect_1)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
+            ProduceCheckBox(weapon_Detect, new Vector3(5.0f, 1f, 1.3f));
         }
-        if (startDetect_2)
+       //轉刀
+         if (startDetect_2)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(4f, 4f, 2f));
+            ProduceCheckBox(weapon_Detect, new Vector3(5.0f, 1f, 4.5f));
         }
     }
 
-    void ProduceCheckBox(Transform _pos , Vector3 _size)
+    void ProduceCheckBox(Transform _pos, Vector3 _size)
     {
         Collider[] checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
         GetCurrentTarget(checkBox);
@@ -117,34 +119,29 @@ public class Allen_Ani : PlayerAni
     #region 給予正確目標傷害
     protected override void GetCurrentTarget(Collider[] _enemies)
     {
-        if (!photonView.isMine)
+        if (!photonView.isMine )
             return;
 
         foreach (Collider beAtk_Obj in _enemies)
         {
+
             if (checkIf(beAtk_Obj.gameObject))
                 return;
 
             isDead checkTag = beAtk_Obj.GetComponent<isDead>();
-            if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
-            {
-                SwitchAtkRange(8);
-                player.Net.RPC("HitNull", PhotonTargets.All);
-                return;
-            }
             PhotonView Net = beAtk_Obj.GetComponent<PhotonView>();
             switch (checkTag.myAttributes)
-            {                 
+            {
                 case (GameManager.NowTarget.Soldier):
                     if (startDetect_1)
                     {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 2.5f);
-                    }
-                    if (startDetect_2)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 6.0f);
+                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
                     }
 
+                    if (startDetect_2)
+                    {
+                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
+                    }
                     break;
                 case (GameManager.NowTarget.Tower):
                     Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
@@ -152,18 +149,18 @@ public class Allen_Ani : PlayerAni
                 case (GameManager.NowTarget.Player):
                     if (startDetect_2)
                     {
-                        Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);
+                        Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);
                         //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
                         break;
                     }
                     else
                     {
-                        Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
+                        Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
                     }
                     break;
                 case (GameManager.NowTarget.Core):
                     Debug.Log("還沒寫");
-                    break;             
+                    break;
                 default:
                     Debug.Log("錯誤");
                     break;
@@ -183,28 +180,28 @@ public class Allen_Ani : PlayerAni
                 break;
             case (1):
                 startDetect_2 = true;
-                if (photonView.isMine)
-                    StartCoroutine(cameraControl.CameraShake(.2f, .35f));
+                break;
+            case (2):
+                break;
+            case (3):
+
                 break;
             //刀光1
-            case (3):
-                swordLight[0].SetActive(true);
+            case (4):
+               // swordLight[0].SetActive(true);
                 break;
             //刀光2
-            case (4):
-                swordLight[1].SetActive(true);
+            case (5):
+             //   swordLight[1].SetActive(true);
                 break;
             //刀光3
-            case (5):
-                swordLight[2].SetActive(true);
+            case (6):
+               // swordLight[2].SetActive(true);
                 break;
 
             default:
                 startDetect_1 = false;
-                startDetect_2 = false;               
-                swordLight[0].SetActive(false);
-                swordLight[1].SetActive(false);
-                swordLight[2].SetActive(false);
+                startDetect_2 = false;
                 alreadyDamage.Clear();
                 break;
         }

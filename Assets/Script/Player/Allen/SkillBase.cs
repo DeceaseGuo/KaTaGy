@@ -8,6 +8,7 @@ public class SkillBase : Photon.MonoBehaviour
     protected PlayerAni aniScript;
     protected SkillIcon skillIconManager;
     protected SkillIcon SkillIconManager { get { if (skillIconManager == null) skillIconManager = SkillIcon.instance; return skillIconManager; } }
+    protected Vector3 mySkillPos;
 
     public enum SkillAction
     {
@@ -26,10 +27,15 @@ public class SkillBase : Photon.MonoBehaviour
         aniScript = GetComponent<PlayerAni>();
     }
 
-
     public void ArriveBP()
     {
         brfore_shaking = false;
+    }
+
+    [PunRPC]
+    public void GetSkillPos(Vector3 _pos)
+    {
+        mySkillPos = _pos;
     }
 
     #region 技能Event
