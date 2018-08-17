@@ -112,8 +112,33 @@ MonoBehaviour:
       type: 2}
     pool_amount: 2
     filePath: Prefabs/Tower/Tower_Cannon/build_show_Cannon
+  - pool_Name: 17
+    pool_Prefab: {fileID: 1180311297308650, guid: 91b9aa9258660dd42aec7e3a518aa7bb,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/Tower/bullet_FllowMissile
   - pool_Name: 14
     pool_Prefab: {fileID: 1410073726703040, guid: 35cbfd929a374da4c9849a84fdad9de8,
       type: 2}
     pool_amount: 10
     filePath: Prefabs/Tower/Tower1_E
+  - pool_Name: 16
+    pool_Prefab: {fileID: 1696973022472230, guid: 7cf2f48d3ea74914e84937283fa5e638,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/Tower/Tower_FllowMissile
+  - pool_Name: 18
+    pool_Prefab: {fileID: 1011292527403890, guid: 50f157c8f0734a946965305ac4bf20d8,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/UI/testIcon/EIcon
+  - pool_Name: 20
+    pool_Prefab: {fileID: 1011292527403890, guid: 5dfa85cba210edb4ab5fcf2675c9a634,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/UI/testIcon/SoldierIcon
+  - pool_Name: 19
+    pool_Prefab: {fileID: 1204352581405850, guid: a7f85e190ef98d34595204900a789b14,
+      type: 2}
+    pool_amount: 10
+    filePath: Prefabs/UI/testIcon/TowerIcon

@@ -6,14 +6,14 @@ public class BulletManager : Photon.MonoBehaviour {
 
     public GameManager.whichObject DataName;
     protected PhotonView Net;
-    protected Transform target;
+    private Transform target;
     protected TurretData.TowerDataBase Data;
     protected LayerMask atkMask;
     protected bool hit;
     public bool Isfllow = false;
     protected isDead targetDead;
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {      
         if (Data.objectName == null)
         {
@@ -29,7 +29,7 @@ public class BulletManager : Photon.MonoBehaviour {
     public void getTarget(Transform _target)
     {
         hit = false;
-        if (_target == null && photonView.isMine)
+        if (_target == null)
         {
             print("沒有目標");
             returnBulletPool();
@@ -43,57 +43,51 @@ public class BulletManager : Photon.MonoBehaviour {
     [PunRPC]
     public virtual void TP_Data(int _id)
     {
-        print("RPC");
         PhotonView _Photon = PhotonView.Find(_id);
         target = _Photon.gameObject.transform;
         targetDead = target.gameObject.GetComponent<isDead>();
-        dir = target.position - transform.position;
-        transform.LookAt(target);
+
+        Vector3 targetPos = target.position;
+        targetPos.y = target.position.y + targetOffsetY;
+        dir = targetPos - transform.position;
+        transform.LookAt(targetPos);
     }
 
     #region 子彈移動
     protected Vector3 dir;
+    [SerializeField] float targetOffsetY;
     protected float distanceThisFrame;
     protected virtual void BulletMove()
     {
-        if (!targetDead.checkDead && Isfllow)
+        if (Isfllow)
         {
-            dir = target.position - transform.position;
-            transform.LookAt(target);
+            Vector3 targetPos = target.position;
+            targetPos.y = target.position.y + targetOffsetY;
+            dir = targetPos - transform.position;
+            transform.LookAt(targetPos);
         }
+        
         transform.Translate(dir.normalized * distanceThisFrame, Space.World);        
     }
     #endregion
 
-    #region 擊中目標
-    protected virtual void HitTarget()
-    {
-        if (photonView.isMine)
-        {           
-            GiveDamage(targetDead);            
-        }
-        else
-        {
-            MoveTarget();
-        }
-    }
-    #endregion
-
     #region 給予傷害
-    protected virtual void GiveDamage(isDead _targetDead)
+    protected virtual void GiveDamage()
     {
-        print("傷害");
-        GameManager.NowTarget _who = _targetDead.myAttributes;
+        //print("傷害");
+        GameManager.NowTarget _who = targetDead.myAttributes;
+        PhotonView nn = targetDead.gameObject.GetComponent<PhotonView>();
+
         switch (_who)
         {
             case (GameManager.NowTarget.Soldier):
-                _targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 0, Data.Atk_Damage);
+                nn.RPC("takeDamage", PhotonTargets.All, 0, Data.Atk_Damage);
                 break;
             case (GameManager.NowTarget.Player):
-                _targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage, Vector3.zero, false);
+                nn.RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage, Vector3.zero, false);
                 break;
             case (GameManager.NowTarget.Tower):
-                _targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage);
+                nn.RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage);
                 break;
             case (GameManager.NowTarget.Core):
                 break;

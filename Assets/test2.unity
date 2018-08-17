@@ -3012,14 +3012,14 @@ RectTransform:
   m_GameObject: {fileID: 103082335}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1629766, y: 1.1629766, z: 1.1629766}
   m_Children: []
   m_Father: {fileID: 36987645}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -202.5, y: 173.5}
+  m_AnchoredPosition: {x: -221, y: 188.9}
   m_SizeDelta: {x: 405, y: 347}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &103082337
@@ -3035,7 +3035,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -38123,14 +38123,14 @@ RectTransform:
   m_GameObject: {fileID: 1353476134}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8252129, y: 0.8252129, z: 0.8252129}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 36987645}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -199.2, y: 127}
+  m_AnchoredPosition: {x: -217.2, y: 134.9}
   m_SizeDelta: {x: 263, y: 208}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1353476136
@@ -38177,16 +38177,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myTerrain: {fileID: 403208741}
-  updateIconTime: 0.6
-  IconRange: 30
-  TowerIcon: {fileID: 224840513099260816, guid: a7f85e190ef98d34595204900a789b14,
-    type: 2}
-  EIcon: {fileID: 224347434508864304, guid: 50f157c8f0734a946965305ac4bf20d8, type: 2}
-  SoliderIcon: {fileID: 0}
+  updateIconTime: 0.3
+  IconRange: 45
+  range: 0
   AllenIcon: {fileID: 224581186955224614, guid: e22f7662106351342a039ee7d959ebf9,
     type: 2}
   QueenIcon: {fileID: 0}
   myplayerIcon: {fileID: 0}
+  enemyplayerIcon: {fileID: 0}
   myTowerIcons: []
   mySoliderIcons: []
   enemyTowerIcons: []
@@ -39585,7 +39583,7 @@ MonoBehaviour:
   enemyTowerObjs: []
   mySoldierObjs: []
   enemySoldierObjs: []
-  enemy_Player: {fileID: 0}
+  enemy_Player: {fileID: 760086964}
 --- !u!1001 &1398975583
 Prefab:
   m_ObjectHideFlags: 0
@@ -42569,14 +42567,14 @@ RectTransform:
   m_GameObject: {fileID: 1513459750}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0500001, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 36987645}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -18.5, y: -6.9}
+  m_AnchoredPosition: {x: -32, y: 1}
   m_SizeDelta: {x: 300, y: 220}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1513459752
@@ -45484,6 +45482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6bb9451e0a60224dadcdf091b2d2340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiManager: {fileID: 0}
   grid_snap: {fileID: 2130130603}
   build_Scaffolding: {fileID: 0}
   build_CD_Obj: {fileID: 720031885}
@@ -45612,6 +45611,35 @@ MonoBehaviour:
     cost_Ore: 40
     cost_Money: 40
     cost_Electricity: 0
+  - objectName: "\u8FFD\u8E64\u98DB\u5F48"
+    TurretName: 16
+    headImage: {fileID: 21300000, guid: afffe7a1cc18cae4d95b7665d36567a5, type: 3}
+    Atk_Damage: 10
+    Atk_maxDamage: 0
+    Atk_Gap: 3
+    Atk_Range: 30
+    Atk_MinRange: 10
+    ATK_Level: 0
+    def_maxDEF: 0
+    def_base: 0
+    DEF_Level: 0
+    bullet_Name: 17
+    bullet_Speed: 20
+    UI_maxHp: 90
+    UI_Hp: 90
+    Fad_oneEnergy: 30
+    Fad_decreaseRate: 4
+    Fad_thermalEnergy: 0
+    Fad_maxThermalEnergy: 100
+    Over_downSpd: 3.5
+    Fad_overHeat: 0
+    turret_buildDistance: 3
+    detectObjPrefab: {fileID: 286091979}
+    tspObject_Name: 12
+    turret_delayTime: 3
+    cost_Ore: 40
+    cost_Money: 40
+    cost_Electricity: 10
 --- !u!1001 &1593562318
 Prefab:
   m_ObjectHideFlags: 0

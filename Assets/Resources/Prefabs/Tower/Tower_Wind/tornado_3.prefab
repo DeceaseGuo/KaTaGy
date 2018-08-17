@@ -233,15 +233,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DataName: 6
-  pushBox_Size: {x: 7.5, y: 6.5, z: 10}
-  offset: {x: 0, y: 0, z: 6}
+  Isfllow: 0
+  pushBox_Size: {x: 10, y: 10, z: 10}
+  offset: {x: 0, y: 0, z: 7}
   pushBox_Offset: {x: 0, y: 5, z: 0}
-  pushMask:
-    serializedVersion: 2
-    m_Bits: 10240
   flyTime: 2
   fireCd: 0.1
-  tmpNoDamage: []
+  moveDis: 0.5
 --- !u!198 &198089456902557072
 ParticleSystem:
   m_ObjectHideFlags: 1

@@ -72,7 +72,6 @@ public class ButtonManager_Tower : MonoBehaviour
             case NowMenu.topMenu:
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    Debug.Log("電力塔");
                     clickAction(GameManager.whichObject.Tower_Electricity);
                 }
                 if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -119,7 +118,10 @@ public class ButtonManager_Tower : MonoBehaviour
                 if (currentMenu == towerAtk_3)
                 {
                     if (Input.GetKeyDown(KeyCode.Alpha1))
-                        clickAction(GameManager.whichObject.None);
+                    {
+                        clickAction(GameManager.whichObject.Tower1_Missile);
+                        Debug.Log("飛彈");
+                    }
                     if (Input.GetKeyDown(KeyCode.Alpha2))
                         Debug.Log("塔3-2");
                     //clickAction(GameManager.whichObject.Tower2_Wind);

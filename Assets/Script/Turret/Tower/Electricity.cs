@@ -92,7 +92,6 @@ public class Electricity : Photon.MonoBehaviour
         {
             _mytouch = myTouch.Count;
             FindTower(SceneManager.myTowerObjs, this);
-            //Debug.Log(name + "FindTower");
         }
 
         if (myTouch.Count != _mytouch)
@@ -221,21 +220,11 @@ public class Electricity : Photon.MonoBehaviour
     Transform gridparent = null;
     void ShowElectricitRange(bool _open)
     {
-        if (_open)
+        foreach (var grid in gridList)
         {
-            foreach (var grid in gridList)
-            {
-                gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
-                grid.gameObject.layer = 25;
-            }
-        }
-        else
-        {
-            foreach (var grid in gridList)
-            {
-                gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = false;
-                grid.gameObject.layer = 10;
-            }
+            gridparent = grid.transform.parent;
+            gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = _open;
+            grid.gameObject.layer = (_open) ? 25 : 10;
         }
     }
     #endregion
@@ -243,32 +232,31 @@ public class Electricity : Photon.MonoBehaviour
     #region 找塔防
     void FindTower(List<GameObject> TurretList, Electricity _electricity)
     {
-        foreach (var manager in TurretList)
+        for (int i = 0; i < TurretList.Count; i++)
         {
-            if (_electricity.firstE.connectTowers.Contains(manager) || manager.GetComponent<Electricity>() != null)
-            {
-                //Debug.Log("continue");
+            Turret_Manager t = TurretList[i].GetComponent<Turret_Manager>();
+            if (_electricity.firstE.connectTowers.Contains(TurretList[i]) || t == null)
                 continue;
-            }
 
-            if (Vector3.Distance(manager.transform.position, _electricity.transform.position) <= range)
-            {
-                //Debug.Log(_electricity.name + "在電力範圍內");
-
-                Collider[] TowerGrids = Physics.OverlapBox(manager.transform.position, new Vector3(5.5f, 2, 5.5f), manager.transform.localRotation, TowerMask);
-                Turret_Manager t = manager.GetComponent<Turret_Manager>();
-                if (TowerGrids.Length >= t.GridNumber)
+            if (Vector3.Distance(TurretList[i].transform.position, _electricity.transform.position) <= range)
+            {               
+                if (t.GridNumber <= 1)
                 {
-                    _electricity.firstE.connectTowers.Add(manager);
+                    _electricity.firstE.connectTowers.Add(TurretList[i]);
                     _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(t.DataName));
                     t.power = _electricity;
-                    Debug.Log(_electricity.name + "grids.Length >= manager.GridNumber");
+                    continue;
+                }
+
+                Collider[] TowerGrids = Physics.OverlapBox(TurretList[i].transform.position, new Vector3(5.5f, 2, 5.5f), TurretList[i].transform.localRotation, TowerMask);
+                if (TowerGrids.Length >= t.GridNumber)
+                {
+                    _electricity.firstE.connectTowers.Add(TurretList[i]);
+                    _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(t.DataName));
+                    t.power = _electricity;
                 }
                 else
-                {
                     t.power = null;
-                    //Debug.Log(_electricity.name + "沒有在網格內");
-                }
             }
         }
     }
@@ -277,20 +265,23 @@ public class Electricity : Photon.MonoBehaviour
     #region 改變網格顏色
     public void changeGridColor(int _electricity)
     {
-        foreach (var grid in gridList)
+        if (playerObtain.Check_ElectricityAmount(resource_Electricity, _electricity))
         {
-            gridparent = grid.transform.parent;
-
-            if (playerObtain.Check_ElectricityAmount(resource_Electricity, _electricity))
+            foreach (var grid in gridList)
             {
+                gridparent = grid.transform.parent;
                 grid.gameObject.layer = 25;
-                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", origonalColor);
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", origonalColor); 
             }
-            else
+        }
+        else
+        {
+            foreach (var grid in gridList)
             {
+                gridparent = grid.transform.parent;
                 grid.gameObject.layer = 10;
                 gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", notBuildColor);
-            }
+            }           
         }
     }
     #endregion
@@ -313,23 +304,15 @@ public class Electricity : Photon.MonoBehaviour
     {
         if (connectElectricitys.Count > 0)
         {
-            foreach (var i in connectElectricitys)
+            for (int i = 0; i < connectElectricitys.Count; i++)
             {
-                if (i.resource_Electricity == resource_Electricity)
+                if (connectElectricitys[i].resource_Electricity != resource_Electricity)
                 {
-                    //Debug.Log("電量相等 : " + i.name);
-                    continue;
+                    connectElectricitys[i].resource_Electricity = resource_Electricity;
+                    connectElectricitys[i].changeGridColor(0);
                 }
-
-                i.resource_Electricity = resource_Electricity;
-                i.changeGridColor(0);
-                //Debug.Log(i.name + "有做同步?");
             }
             //Debug.Log("誰做" + name);
-        }
-        else
-        {
-            //Debug.Log(name + " touchElectricitys.Count < 0");
         }
     }
     #endregion
@@ -340,9 +323,9 @@ public class Electricity : Photon.MonoBehaviour
         //Debug.Log("然後就死掉了");
         List<Electricity> e = new List<Electricity>();
         List<GameObject> o = new List<GameObject>();
-        foreach (var item in myTouch)
+        for (int i = 0; i < myTouch.Count; i++)
         {
-            item.myTouch.Remove(this);
+            myTouch[i].myTouch.Remove(this);
         }
 
         if (firstE != this)
@@ -352,32 +335,31 @@ public class Electricity : Photon.MonoBehaviour
             firstE.resource_Electricity = firstE.origine_Electricity;
         }
 
-        foreach (var item in firstE.connectTowers)
+        for (int i = 0; i < firstE.connectTowers.Count; i++)
         {
-            item.GetComponent<Turret_Manager>().power = null;
-            o.Add(item);
+            firstE.connectTowers[i].GetComponent<Turret_Manager>().power = null;
+            o.Add(firstE.connectTowers[i]);
+        }
+        
+        for (int i = 0; i < firstE.connectElectricitys.Count; i++)
+        {
+            firstE.connectElectricitys[i].firstE = null;
+            firstE.connectElectricitys[i].resource_Electricity = firstE.connectElectricitys[i].origine_Electricity;
+            e.Add(firstE.connectElectricitys[i]);
         }
 
         firstE.connectTowers.Clear();
-        
-        foreach (var item in firstE.connectElectricitys)
-        {
-            item.firstE = null;
-            item.resource_Electricity = item.origine_Electricity;
-            e.Add(item);
-        }
         firstE.connectElectricitys.Clear();
 
-        foreach (var item in e)
+        for (int i = 0; i < e.Count; i++)
         {
-            //Debug.Log("開始重新找FindfirstE" + item.name);
-            item.ShowElectricitRange(true);
-            buildManager.FindfirstE(e, item);
+            e[i].ShowElectricitRange(true);
+            buildManager.FindfirstE(e, e[i]);
         }
 
-        foreach (var item in e)
+        for (int i = 0; i < e.Count; i++)
         {
-            FindTower(o, item);
+            FindTower(o, e[i]);
         }
     }
     #endregion

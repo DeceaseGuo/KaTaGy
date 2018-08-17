@@ -16,8 +16,6 @@ public class ObjectPooler : MonoBehaviour
     }
     #endregion
 
-    
-
     [System.Serializable]
     public class pool
     {
@@ -103,7 +101,10 @@ public class ObjectPooler : MonoBehaviour
     {
         PhotonView Net = _obj.GetComponent<PhotonView>();
         if (Net == null)
+        {
             _obj.SetActive(false);
+            _obj.transform.SetParent(transform);
+        }
         else
         {
             Net.RPC("SetActiveF", PhotonTargets.All);

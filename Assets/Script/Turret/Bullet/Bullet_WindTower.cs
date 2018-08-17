@@ -12,33 +12,37 @@ public class Bullet_WindTower : BulletManager
 
     [Header("飛行與傷害間隔時間")]
     [SerializeField] float flyTime;
-    [SerializeField] float fireCd = 0.1f;
-    public List<GameObject> tmpNoDamage;
-    protected Tweener myTweener;
+    [SerializeField] float fireCd = 0.08f;
+    [SerializeField] float moveDis = 1.7f;
+    private List<GameObject> tmpNoDamage = new List<GameObject>();
+    Tweener myTweener;
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (photonView.isMine)
-            StartCoroutine("DisappearThis");
+            StartCoroutine(DisappearThis());
 
-        StartCoroutine("GetCollider");
+        //StartCoroutine("GetCollider");
     }
-
-    IEnumerator GetCollider()
+    void Hit()
     {
-        while (true)
+        Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
+        //print("抓攻擊對象");
+        for (int i = 0; i < colliders.Length; i++)
         {
-            yield return new WaitForSeconds(0.05f);
-            Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
-            print("抓攻擊對象");
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                targetDead = colliders[i].gameObject.GetComponent<isDead>();
-                if (targetDead == null)
-                    break;
+            targetDead = colliders[i].gameObject.GetComponent<isDead>();
+            if (targetDead == null || targetDead.checkDead)
+                continue;
 
-                HitTarget();
+            if (!checkIf(colliders[i].gameObject))
+            {
+                GiveDamage();
+                tmpNoDamage.Add(targetDead.gameObject);
+                StartCoroutine(DelayDamage(targetDead.gameObject));
             }
+
+            MoveTarget();
         }
     }
 
@@ -53,27 +57,14 @@ public class Bullet_WindTower : BulletManager
     #region 子彈移動
     protected override void BulletMove()
     {
-        #region 移動1
-        //子彈移動距離
-        /*distanceThisFrame = Data.bullet_Speed * Time.deltaTime;
-       //子彈移動
-         transform.Translate(dir.normalized * distanceThisFrame, Space.World);
-         //子彈朝前
-         if (transform.position.y < 5)
-         {
-             dir.y = 0;
-             Quaternion tmpRot = Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
-             transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .2f);
-         }*/
-        #endregion
-        if (!photonView.isMine)
-        {
-            print("克龍體有移動喔");
-        }
         Vector3 _targetPoint = dir.normalized * Data.bullet_Speed * flyTime;
-        _targetPoint.y = target.localPosition.y;
+        _targetPoint.y = targetDead.transform.localPosition.y;
         myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
+        if (!photonView.isMine)
+        {
+            myTweener.OnUpdate(Hit);
+        }      
     }
     #endregion
 
@@ -83,24 +74,11 @@ public class Bullet_WindTower : BulletManager
         transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .1f);
     }
 
-    #region 給予傷害
-    protected override void GiveDamage(isDead _targetDead)
-    {
-        if (!checkIf(_targetDead.gameObject))
-        {
-            base.GiveDamage(_targetDead);
-
-            tmpNoDamage.Add(_targetDead.gameObject);
-            StartCoroutine(DelayDamage(_targetDead.gameObject));
-        }
-    }
-    #endregion
-
     #region 位移
     protected override void MoveTarget()
     {
         if (targetDead.myAttributes != GameManager.NowTarget.Tower && targetDead.myAttributes != GameManager.NowTarget.Core)
-            targetDead.transform.localPosition += dir.normalized * /*distanceThisFrame*/1.7f;
+            targetDead.transform.localPosition += dir.normalized * moveDis;
     }
     #endregion
 

@@ -21,12 +21,12 @@ GameObject:
   - component: {fileID: 4838629152814218}
   - component: {fileID: 33013749313887810}
   - component: {fileID: 23893411342094840}
-  - component: {fileID: 114395307177855250}
+  - component: {fileID: 114591171520803128}
   - component: {fileID: 114875571474760226}
   - component: {fileID: 114201779650060798}
   - component: {fileID: 114953757622897124}
   m_Layer: 0
-  m_Name: bullet_normal
+  m_Name: bullet_FllowMissile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4bb3c38b884f4c4f9f30c05427b2dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114395307177855250
+--- !u!114 &114591171520803128
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -179,12 +179,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1180311297308650}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a64d3f03a84d414c9b8383327b670d5, type: 3}
+  m_Script: {fileID: 11500000, guid: e4a633544ddb73d428c8d24ff8469bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DataName: 5
+  DataName: 16
   Isfllow: 1
   targetOffsetY: 3
+  DamageRange: 5
+  pushDis: 5
+  colliders: []
 --- !u!114 &114875571474760226
 MonoBehaviour:
   m_ObjectHideFlags: 1
