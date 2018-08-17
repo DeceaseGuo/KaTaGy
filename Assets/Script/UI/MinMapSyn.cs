@@ -10,19 +10,18 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     [SerializeField] MeshFilter myTerrain;
 
     [Header("設定")]
-    [SerializeField] float updateIconTime = 0.6f;
+    [SerializeField] float updateIconTime;
     [Tooltip("Icon偵測範圍")]
-    [SerializeField] float IconRange = 30;
-
-    [Header("IconPrefabs")]
-    public RectTransform TowerIcon;
-    public RectTransform EIcon;
-    public RectTransform SoliderIcon;
+    [SerializeField] float IconRange;
+    private float range;
+    [Header("PlayerIconPrefabs")]
     public RectTransform AllenIcon;
     public RectTransform QueenIcon;
 
+    [HideInInspector]
     public RectTransform myplayerIcon;
-    private RectTransform enemyplayerIcon;
+    [HideInInspector]
+    public RectTransform enemyplayerIcon;
 
     [Header("IconList")]
     public List<RectTransform> myTowerIcons = new List<RectTransform>();
@@ -38,7 +37,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     float heightMax;
 
     RectTransform litMap;
-
+    float ScreenScale;
     //寬高比例
     float widthRate;
     float heightRate;
@@ -51,6 +50,8 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
 
     private void Start()
     {
+        ScreenScale = (float)Screen.width / 1920.0f;
+        range = ScreenScale * IconRange;
         myplayerIcon = Instantiate(AllenIcon, transform);
         enemyplayerIcon = Instantiate(AllenIcon, transform);
         enemyplayerIcon.gameObject.SetActive(false);
@@ -58,7 +59,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
         playerScript = Creatplayer.instance.Player_Script;
         SceneManager.minmap = this;
         getWidthHeight();
-
+        
         StartCoroutine("UpdateIconPos");
     }
 
@@ -74,31 +75,26 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     void UpdatePos(GameObject _obj, RectTransform _icon)
     {
         if (_obj == null || _icon == null)
-        {
             return;
-        }
+
         Transform trans = _obj.transform;
-        //print("更新");
-        //寬比例=玩家目前位置.x / 大地圖.x
-        widthRate = (trans.position.x + (widthMax*0.5f)) / widthMax;
-        //高比例=玩家目前位置.z / 大地圖.z
-        heightRate = (trans.position.z + (heightMax*0.5f)) / heightMax;
-        //玩家icon位置.x=小地圖.x *寬比例
-        tmpPos.x = litMap.sizeDelta.x * (widthRate - 0.5f);
-        //玩家icon位置.y=小地圖.y *寬比例
-        tmpPos.y = litMap.sizeDelta.y * (heightRate - 0.5f);
-        //print(tmpPos);
-        tmpAngle = _icon.localEulerAngles;
+        widthRate = trans.position.x / widthMax;//寬比例=玩家目前位置.x / 大地圖.x        
+        heightRate = trans.position.z / heightMax;//高比例=玩家目前位置.z / 大地圖.z        
+        tmpPos.x = widthRate * litMap.rect.width;//玩家icon位置.x=小地圖.x *寬比例       
+        tmpPos.y = heightRate * litMap.rect.height;//玩家icon位置.y=小地圖.y *寬比例
+        /*tmpAngle = _icon.localEulerAngles;
         tmpAngle.z = 180 - trans.localEulerAngles.y;
-        _icon.localEulerAngles = tmpAngle;
+        _icon.localEulerAngles = tmpAngle;*/
         _icon.localPosition = tmpPos;
     }
-
+    List<RectTransform> currentIcon = new List<RectTransform>();
     IEnumerator UpdateIconPos()
     {
         while (true)
         {
             yield return new WaitForSeconds(updateIconTime);
+
+            currentIcon.Clear();
             #region 我方
             UpdatePos(playerScript.gameObject, myplayerIcon);//更新玩家icon
             ShowEnemysIcon(myplayerIcon);//顯示視野內敵人
@@ -129,70 +125,64 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
                 UpdatePos(SceneManager.enemySoldierObjs[i], enemySoliderIcons[i]);
             }
             #endregion
+
+            ClearList(currentIcon);
         }
     }
     #endregion
 
-    void dis(RectTransform my, RectTransform _r, List<RectTransform> curr)
+    void Dis(RectTransform my, RectTransform goal)
     {
-        if (_r == null)
-        {
+        if (goal == null || my == null)
             return;
-        }
 
-        if (Vector3.Distance(_r.transform.position , my.transform.position) <= IconRange)
+        if (Vector2.Distance(goal.transform.position , my.transform.position) <= range)
         {
-            curr.Add(_r);
-            if (!ShowEnemyIcons.Contains(_r))
+            currentIcon.Add(goal);
+            if (!ShowEnemyIcons.Contains(goal))
             {
-                ShowEnemyIcons.Add(_r);
-                _r.gameObject.SetActive(true);
+                ShowEnemyIcons.Add(goal);
+                goal.gameObject.SetActive(true);
             }
-            Debug.LogFormat("我方{0}視野，顯示敵人 : {1}", my.name, _r.name);
+            //Debug.LogFormat("我方{0}視野，顯示敵人 : {1}", my.name, _r.name);
         }
     }
     
     #region 顯示視野內敵人icon
     void ShowEnemysIcon(RectTransform myeyes)
     {
-        List<RectTransform> currentIcon = new List<RectTransform>();
-        dis(myeyes, enemyplayerIcon, currentIcon);
+        
+        Dis(myeyes, enemyplayerIcon);
 
         for (int i = 0; i < enemyTowerIcons.Count; i++)
         {
-            dis(myeyes, enemyTowerIcons[i], currentIcon);
+            Dis(myeyes, enemyTowerIcons[i]);
         }
 
         for (int i = 0; i < enemySoliderIcons.Count; i++)
         {
-            dis(myeyes, enemySoliderIcons[i], currentIcon);
+            Dis(myeyes, enemySoliderIcons[i]);
         }
-        for (int i = 0; i < currentIcon.Count; i++)
-        {
-            print(currentIcon[i]);
-        }
-
-        ClearList(currentIcon);
     }
     #endregion
 
     #region 清除不再範圍內的Icon
     [SerializeField]List<RectTransform> lastList = new List<RectTransform>();
-    void ClearList(List<RectTransform> curr)
+    void ClearList(List<RectTransform> currentIcons)
     {
         for (int i = 0; i < lastList.Count; i++)
         {
-            if (!curr.Contains(lastList[i]))
+            if (!currentIcons.Contains(lastList[i]))
             {
                 lastList[i].gameObject.SetActive(false);
                 ShowEnemyIcons.Remove(lastList[i]);
-                Debug.Log("移除敵人");
+                //Debug.Log("移除敵人");
             }
         }
         lastList.Clear();
-        for (int i = 0; i < curr.Count; i++)
+        for (int i = 0; i < currentIcons.Count; i++)
         {
-            lastList.Add(curr[i]);
+            lastList.Add(currentIcons[i]);
         }
     }
     #endregion
@@ -201,13 +191,11 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     public void ClickMap()
     {
         Vector3 _pos = Vector3.zero;
+        float mapX = (Input.mousePosition.x - litMap.position.x) / ScreenScale;
+        float mapY = (Input.mousePosition.y - litMap.position.y) / ScreenScale;
 
-        float mapX = Input.mousePosition.x - (litMap.position.x - (litMap.rect.width * 0.5f));
-        float mapY = Input.mousePosition.y - (litMap.position.y - (litMap.rect.height * 0.5f));
-
-        _pos.x = ((mapX / litMap.rect.width) - 0.5f) * widthMax;
-        _pos.z = ((mapY / litMap.rect.height) - 0.5f) * heightMax;
-
+        _pos.x = (mapX / litMap.rect.width) * widthMax;
+        _pos.z = (mapY / litMap.rect.height) * heightMax;
         playerScript.getTatgetPoint(_pos);
     }
 
@@ -215,7 +203,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
     {
         if ((playerScript.MyState == Player.statesData.canMove_Atk || playerScript.MyState == Player.statesData.canMvoe_Build) && eventData.pointerId == -2)
         {
-            Debug.Log("點擊");
+            //Debug.Log("點擊");
             ClickMap();
         }
     }

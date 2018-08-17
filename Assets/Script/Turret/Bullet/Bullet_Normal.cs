@@ -19,9 +19,8 @@ public class Bullet_Normal : BulletManager
             {
                 print("擊中");
                 hit = true;
-                HitTarget();
+                GiveDamage();
                 returnBulletPool();
-                return;
             }
         }
 

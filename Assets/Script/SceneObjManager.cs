@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SceneObjManager : MonoBehaviour
 {
@@ -36,10 +37,14 @@ public class SceneObjManager : MonoBehaviour
     //玩家
     public GameObject enemy_Player;
 
+    ObjectPooler pool;
+
     private void Start()
     {
         if (Instance != this)
             Destroy(this);
+
+        pool = ObjectPooler.instance;
     }
 
     //加入敵人核心
@@ -103,18 +108,51 @@ public class SceneObjManager : MonoBehaviour
         return tmpObj;
     }
 
+    #region Icon
+    //取出icon
+    void GetIcon(GameManager.whichObject whichObject, List<RectTransform> Icons)
+    {
+        GameObject icon_obj = pool.getPoolObject(whichObject, Vector3.zero, Quaternion.identity);
+        if (Icons == minmap.enemySoliderIcons || Icons == minmap.enemyTowerIcons)
+        {
+            icon_obj.GetComponent<Image>().color = Color.red;
+        }
+        RectTransform r = icon_obj.GetComponent<RectTransform>();
+        icon_obj.transform.SetParent(minmap.transform);
+        Icons.Add(r);
+
+        if (whichObject == GameManager.whichObject.SoldierIcon)
+        {
+            r.SetAsFirstSibling();
+        }
+        else
+        {
+            minmap.enemyplayerIcon.SetAsLastSibling();
+            minmap.myplayerIcon.SetAsLastSibling();
+        }
+    }
+
+    //收回icon
+    void ReIcon(GameManager.whichObject whichObject, List<RectTransform> Icons, int _index)
+    {
+        if (Icons == minmap.enemySoliderIcons || Icons == minmap.enemyTowerIcons)
+        {
+            Icons[_index].gameObject.GetComponent<Image>().color = Color.white;
+        }
+        pool.Repool(whichObject, Icons[_index].gameObject);
+        Icons.RemoveAt(_index);
+    }
+    #endregion
+
     #region 增加
     public void AddMyList(GameObject _obj,GameManager.NowTarget _whoIs)
     {
-        RectTransform r = null;
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
                 {
                     mySoldierObjs.Add(_obj);
-                    r = Instantiate(minmap.SoliderIcon, minmap.transform);
-                    r.SetAsFirstSibling();
-                    minmap.mySoliderIcons.Add(r);
+                    GetIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons);
                 }
                 break;
             case GameManager.NowTarget.Tower:
@@ -124,14 +162,12 @@ public class SceneObjManager : MonoBehaviour
                     if (_e != null)
                     {
                         myElectricityObjs.Add(_e);
-                        r = Instantiate(minmap.EIcon, minmap.transform);
+                        GetIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons);
                     }
                     else
                     {
-                        r = Instantiate(minmap.TowerIcon, minmap.transform);
-                    }
-                    minmap.myplayerIcon.SetAsLastSibling();
-                    minmap.myTowerIcons.Add(r);
+                        GetIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons);
+                    }                    
                 }
                 break;
             default:
@@ -141,14 +177,26 @@ public class SceneObjManager : MonoBehaviour
 
     public void AddEnemyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
-        Debug.Log("AddEnemyList " + _obj.name);
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
-                enemySoldierObjs.Add(_obj);
+                {
+                    enemySoldierObjs.Add(_obj);
+                    GetIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons);
+                }
                 break;
             case GameManager.NowTarget.Tower:
-                enemyTowerObjs.Add(_obj);
+                {
+                    enemyTowerObjs.Add(_obj);
+                    if (_obj.GetComponent<Electricity>() != null)
+                    {
+                        GetIcon(GameManager.whichObject.EIcon, minmap.enemyTowerIcons);
+                    }
+                    else
+                    {
+                        GetIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons);
+                    }
+                }
                 break;
             default:
                 break;
@@ -159,17 +207,13 @@ public class SceneObjManager : MonoBehaviour
     #region 移除
     public void RemoveMyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
-        int _index = -1;
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
                 {
                     if (mySoldierObjs.Contains(_obj))
                     {
-                        _index = mySoldierObjs.IndexOf(_obj);
-                        minmap.mySoliderIcons[_index].gameObject.SetActive(false);
-                        minmap.mySoliderIcons.RemoveAt(_index);
-
+                        ReIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons, mySoldierObjs.IndexOf(_obj));
                         mySoldierObjs.Remove(_obj);
                     }
                 }
@@ -178,17 +222,17 @@ public class SceneObjManager : MonoBehaviour
                 {
                     if (myTowerObjs.Contains(_obj))
                     {
-                        _index = myTowerObjs.IndexOf(_obj);
-                        print(_index);
-                        minmap.myTowerIcons[_index].gameObject.SetActive(false);
-                        minmap.myTowerIcons.RemoveAt(_index);
-
-                        myTowerObjs.Remove(_obj);
                         Electricity _e = _obj.GetComponent<Electricity>();
                         if (_e != null)
                         {
+                            ReIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
                             myElectricityObjs.Remove(_e);
-                        }                        
+                        }
+                        else
+                        {
+                            ReIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
+                        }
+                        myTowerObjs.Remove(_obj);
                     }
                 }
                 break;
@@ -199,16 +243,21 @@ public class SceneObjManager : MonoBehaviour
 
     public void RemoveEnemyList(GameObject _obj, GameManager.NowTarget _whoIs)
     {
-        Debug.Log("RemoveEnemyList " + _obj.name);
         switch (_whoIs)
         {
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
+                {
+                    ReIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons, enemySoldierObjs.IndexOf(_obj));
                     enemySoldierObjs.Remove(_obj);
+                }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
+                {
+                    ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
                     enemyTowerObjs.Remove(_obj);
+                }
                 break;
             default:
                 break;

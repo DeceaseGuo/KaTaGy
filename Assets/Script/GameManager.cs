@@ -50,7 +50,12 @@ public class GameManager : Photon.MonoBehaviour
         popupText=11,
         TowerDetect_Cannon=12,
         Tower_Electricity=14,
-        TowerDetect_Electricity=15
+        TowerDetect_Electricity=15,
+        Tower1_Missile = 16,
+        Bullet_Missile = 17,
+        EIcon = 18,
+        TowerIcon = 19,
+        SoldierIcon = 20
     }
 
     public enum NowTarget

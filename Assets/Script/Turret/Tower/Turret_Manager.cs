@@ -66,7 +66,7 @@ namespace AtkTower
             if (turretData.Fad_thermalEnergy > 0)
             {
                 overHeat();
-            }            
+            }
 
             if (turretData.Fad_overHeat) //過熱
                 return;
@@ -74,18 +74,14 @@ namespace AtkTower
             if (target == null)
             {
                 FindEnemy();
-                if (nowCD != turretData.Atk_Gap)
-                {
-                    nowCD = turretData.Atk_Gap;
-                }
             }
 
             if (target != null)
             {
-                nowCD -= Time.deltaTime;
                 DetectTarget();
                 LockOnTarget();
             }
+            nowCD -= Time.deltaTime;
         }
 
         #region 恢復初始數據
@@ -108,9 +104,11 @@ namespace AtkTower
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
                 }
             }
+            nowCD = turretData.Atk_Gap;
             turretData = originalTurretData;
             turretData.UI_Hp = turretData.UI_maxHp;
-            healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
+            healthBar.fillAmount = 1;
+            turretData.Fad_thermalEnergy = 0;
             Fad_energyBar.fillAmount = 0.0f;
         }
         #endregion
@@ -188,7 +186,7 @@ namespace AtkTower
             float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
 
             // Debug.Log("角度" + tmpAngle);
-            if (tmpAngle < 35)
+            if (tmpAngle < 30)
             {
                 DecidedNowTurret();
             }
@@ -215,26 +213,20 @@ namespace AtkTower
             addHeat(1.0f);
             float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
             Fad_energyBar.fillAmount = _value;
+
+            GameObject bulletObj = ObjectPooler.instance.getPoolObject(turretData.bullet_Name, Pos_attack.position, Pos_attack.rotation);
+            BulletManager bullet = bulletObj.GetComponent<BulletManager>();
+            bullet.getTarget(target);
         }
         #endregion
 
         #region 熱能處理
         void overHeat()
         {
-            if (!turretData.Fad_overHeat)
-            {
-                reduceHeat(1.0f);
+            reduceHeat((!turretData.Fad_overHeat) ? 1.0f : turretData.Over_downSpd);
 
-                float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-                Fad_energyBar.fillAmount = _value;
-            }
-            else
-            {
-                reduceHeat(turretData.Over_downSpd);
-
-                float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-                Fad_energyBar.fillAmount = _value;
-            }
+            float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
+            Fad_energyBar.fillAmount = _value;
         }
         #endregion
 
@@ -256,6 +248,7 @@ namespace AtkTower
         //增加
         public void addHeat(float _speed)
         {
+            print("增加熱量");
             float tmpValue = turretData.Fad_oneEnergy * _speed;
 
             turretData.Fad_thermalEnergy += tmpValue;

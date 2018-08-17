@@ -25,6 +25,10 @@ public class HitChange : StateMachineBehaviour
             animator.SetBool("PullSword", false);
             animator.SetBool("NowBuild", false);
             playerScript.buildManager.nowBuilding = false;
+            //
+            playerScript.buildManager.uiManager.CloseTowerMenu();
+            playerScript.buildManager.grid_snap.closGrid();
+            //
             ani.WeaponChangePos(1);
             Debug.Log("中斷");
         }
