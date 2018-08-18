@@ -3801,7 +3801,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.95188504
-        functionName: Q_GoGrab
+        functionName: Q_Skill
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 504df5cc5c3ac774a9edeb9c3b2c145c,
           type: 3}

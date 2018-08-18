@@ -1419,7 +1419,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.7411307
+        functionName: StopAllOnlyDodge
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -6756,6 +6764,14 @@ ModelImporter:
         functionName: ArriveBP
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.8350251
+        functionName: Teleport
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
           type: 3}
         floatParameter: 0
         intParameter: 0

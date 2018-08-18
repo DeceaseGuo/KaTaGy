@@ -4433,6 +4433,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 504df5cc5c3ac774a9edeb9c3b2c145c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillQ_needAP: 1
+  skillW_needAP: 1
+  skillE_needAP: 1
+  skillR_needAP: 1
   brfore_shaking: 0
   nowSkill: 0
   projector_Q: {fileID: 119597948914971118}
@@ -4549,7 +4553,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 0}
-  skillPosTransform: {fileID: 0}
   swordRecyclePos: {fileID: 23885923858694944}
   pullSwordPos: {fileID: 23071911235041832}
   weapon_Detect: {fileID: 4580805044020342}
@@ -4747,7 +4750,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114146824250518146}
-        m_MethodName: W_Whirlwind
+        m_MethodName: W_Skill
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4763,7 +4766,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114146824250518146}
-        m_MethodName: E_ReduceDamage
+        m_MethodName: E_Skill
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

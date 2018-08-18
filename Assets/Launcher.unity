@@ -236,27 +236,13 @@ Prefab:
       propertyPath: instantiationId
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114461197509811920, guid: 8121f96662179974d8e57825a7916bf4,
+        type: 2}
+      propertyPath: viewAngle
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 1392877743622432, guid: 8121f96662179974d8e57825a7916bf4, type: 2}
       propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 119703800416683450, guid: 8121f96662179974d8e57825a7916bf4,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 119492928400556204, guid: 8121f96662179974d8e57825a7916bf4,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1841089950607906, guid: 8121f96662179974d8e57825a7916bf4, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 119597948914971118, guid: 8121f96662179974d8e57825a7916bf4,
-        type: 2}
-      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6361,6 +6347,10 @@ Prefab:
     - target: {fileID: 1031621628352424, guid: 295228ac325f04d49a4323931702e0a5, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4634498795510370, guid: 295228ac325f04d49a4323931702e0a5, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 295228ac325f04d49a4323931702e0a5, type: 2}

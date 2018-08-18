@@ -46,6 +46,7 @@ public class Allen_Ani : PlayerAni
                     return;
                 canClick = true;
                 anim.SetBool("Action", false);
+                player.lockDodge = false;
                 break;
             //結束點
             case (2):
@@ -58,6 +59,7 @@ public class Allen_Ani : PlayerAni
                 {
                     if (!anim.GetBool("Action"))
                     {
+                        player.lockDodge = false;
                         anim.SetTrigger("ExitCombo");
                         GoBackIdle_canMove();
                         SwitchAtkRange(8);
@@ -68,7 +70,8 @@ public class Allen_Ani : PlayerAni
             case (3):
                 if (!photonView.isMine)
                     return;
-                
+                //鎖閃避
+                player.lockDodge = true;
                 redressOpen = true;
                 brfore_shaking = true;
                 break;
@@ -76,7 +79,8 @@ public class Allen_Ani : PlayerAni
             case (4):
                 if (!photonView.isMine)
                     return;
-
+                //解閃避
+                player.lockDodge = false;
                 redressOpen = false;
                 after_shaking = true;
                 if (!canClick && nextComboBool)

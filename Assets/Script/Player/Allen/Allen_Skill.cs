@@ -30,7 +30,6 @@ public class Allen_Skill : SkillBase
     [SerializeField] MeshRenderer handBig;
     private bool isForward;
     private GameObject catchObj = null;
-    [SerializeField] Material material_Q;
 
     //W    
     [Tooltip("W技能偵測位子")]
@@ -72,7 +71,7 @@ public class Allen_Skill : SkillBase
         }
     }
     //手的抓取範圍
-    /*  private void OnDrawGizmos()
+    /* private void OnDrawGizmos()
       {
          Gizmos.DrawWireCube(grab_MovePos.position, new Vector3(4, 2.5f, 2.2f));
       }*/
@@ -85,11 +84,11 @@ public class Allen_Skill : SkillBase
 
 
     #region 技能Event
-    //Q按下
+    //Q按下&&偵測
     public override void Skill_Q_Click()
     {
         //消耗不足
-        if (!playerScript.ConsumeAP(1f, false))
+        if (!playerScript.ConsumeAP(skillQ_needAP, false))
             return;
 
         playerScript.canSkill_Q = false;
@@ -97,12 +96,11 @@ public class Allen_Skill : SkillBase
         //顯示範圍
         projector_Q.enabled = true;
     }
-    //Q偵測
     public override void In_Skill_Q()
     {        
         if (Input.GetMouseButtonDown(0))
         {
-            if (playerScript.ConsumeAP(1f,true))
+            if (playerScript.ConsumeAP(skillQ_needAP, true))
             {
                 playerScript.SkillState = Player.SkillData.None;
                 projector_Q.enabled = false;
@@ -118,10 +116,11 @@ public class Allen_Skill : SkillBase
             playerScript.CancelNowSkill();
         }
     }
+
     //W按下
     public override void Skill_W_Click()
     {
-        if (playerScript.ConsumeAP(1f, true))
+        if (playerScript.ConsumeAP(skillW_needAP, true))
         {
             playerScript.canSkill_W = false;
             playerScript.SkillState = Player.SkillData.None;
@@ -135,16 +134,17 @@ public class Allen_Skill : SkillBase
     //E按下
     public override void Skill_E_Click()
     {
-        if (playerScript.ConsumeAP(1f, true))
+        if (playerScript.ConsumeAP(skillE_needAP, true))
         {
             playerScript.canSkill_E = false;            
             playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
     }
-    //R按下
+
+    //R按下&&偵測
     public override void Skill_R_Click()
     {
-        if (!playerScript.ConsumeAP(1f, false))
+        if (!playerScript.ConsumeAP(skillR_needAP, false))
             return;
 
         playerScript.canSkill_R = false;
@@ -152,12 +152,11 @@ public class Allen_Skill : SkillBase
         //顯示範圍
         ProjectorManager.SwitchPorjector(projector_R, true);
     }
-    //R偵測
     public override void In_Skill_R()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (playerScript.ConsumeAP(1f, true))
+            if (playerScript.ConsumeAP(skillR_needAP, true))
             {
                 playerScript.SkillState = Player.SkillData.None;
                 //開啟攻擊範圍
@@ -177,7 +176,7 @@ public class Allen_Skill : SkillBase
     #endregion
 
     #region Q抓取
-    public void Q_GoGrab()
+    public void Q_Skill()
     {
         if (grabSkill != null)
             grabSkill.Kill();
@@ -199,7 +198,7 @@ public class Allen_Skill : SkillBase
 
         if (catchObj == null && isForward)
         {
-            Collider[] enemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(4, 2.5f, 2.2f), Quaternion.identity, aniScript.canAtkMask);
+            Collider[] enemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3, 2f, 2f), Quaternion.identity, aniScript.canAtkMask);
             if (enemy.Length != 0)
             {
                 catchObj = enemy[0].gameObject;
@@ -276,43 +275,10 @@ public class Allen_Skill : SkillBase
             ResetQ_GoCD();
         }
     }
-    //清除重置Q
-    public override void ResetQ_GoCD()
-    {
-        playerScript.GoBack_AtkState();
-
-        if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
-
-        if (grabSkill != null)
-            grabSkill.Kill();
-        aniScript.anim.SetBool("Catch", false);
-        grab_MovePos.position = chain_Pos[2].position;
-        isForward = false;
-        catchObj = null;
-        chain.enabled = false;
-        handSmall.enabled = true;
-        handBig.enabled = false;
-    }
-
-    //直接恢復cd(中斷,或死亡用)
-    public override void ClearQ_Skill()
-    {
-        playerScript.CountDown_Q();
-        if (grabSkill != null)
-            grabSkill.Kill();
-        aniScript.anim.SetBool("Catch", false);
-        grab_MovePos.position = chain_Pos[2].position;
-        isForward = false;
-        catchObj = null;
-        chain.enabled = false;
-        handSmall.enabled = true;
-        handBig.enabled = false;
-    }
     #endregion
 
     #region W轉 擊飛
-    public void W_Whirlwind()
+    public void W_Skill()
     {
         //clone體執行
         if (photonView.isMine)
@@ -353,22 +319,10 @@ public class Allen_Skill : SkillBase
             }
         }
     }
-
-    public override void ResetW_GoCD()
-    {
-        if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
-    }
-
-    //直接恢復cd(中斷,或死亡用)
-    public override void ClearW_Skill()
-    {
-        playerScript.CountDown_W();
-    }
     #endregion
 
     #region E減傷 盾
-    public void E_ReduceDamage()
+    public void E_Skill()
     {
         if (photonView.isMine)
         {
@@ -430,16 +384,6 @@ public class Allen_Skill : SkillBase
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
         }
     }
-    //直接恢復cd(中斷,或死亡用)
-    public override void ClearE_Skill()
-    {
-        SwitchShieldIcon(false);
-        shieldNum = 0;
-        playerScript.ChangeMyCollider(true);
-        canShield = false;
-        playerScript.CountDown_E();
-    }
-
     #region 盾牌功能
     void NowCanOpenShield()
     {
@@ -531,6 +475,34 @@ public class Allen_Skill : SkillBase
              }
          }
     }
+    #endregion
+
+    #region 重置技能(需跑CD)
+    //Q
+    public override void ResetQ_GoCD()
+    {
+        playerScript.GoBack_AtkState();
+
+        if (photonView.isMine)
+            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
+
+        if (grabSkill != null)
+            grabSkill.Kill();
+        aniScript.anim.SetBool("Catch", false);
+        grab_MovePos.position = chain_Pos[2].position;
+        isForward = false;
+        catchObj = null;
+        chain.enabled = false;
+        handSmall.enabled = true;
+        handBig.enabled = false;
+    }
+    //W
+    public override void ResetW_GoCD()
+    {
+        if (photonView.isMine)
+            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
+    }
+    //R
     public override void ResetR_GoCD()
     {
         playerScript.ChangeMyCollider(true);
@@ -539,7 +511,38 @@ public class Allen_Skill : SkillBase
         if (photonView.isMine)
             StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
     }
-    //直接恢復cd(中斷,或死亡用)
+    #endregion
+
+    #region 直接恢復cd(中斷,或死亡用)
+    //Q
+    public override void ClearQ_Skill()
+    {
+        playerScript.CountDown_Q();
+        if (grabSkill != null)
+            grabSkill.Kill();
+        aniScript.anim.SetBool("Catch", false);
+        grab_MovePos.position = chain_Pos[2].position;
+        isForward = false;
+        catchObj = null;
+        chain.enabled = false;
+        handSmall.enabled = true;
+        handBig.enabled = false;
+    }
+    //W
+    public override void ClearW_Skill()
+    {
+        playerScript.CountDown_W();
+    }
+    //E
+    public override void ClearE_Skill()
+    {
+        SwitchShieldIcon(false);
+        shieldNum = 0;
+        playerScript.ChangeMyCollider(true);
+        canShield = false;
+        playerScript.CountDown_E();
+    }
+    //R
     public override void ClearR_Skill()
     {
         allSkillRange.enabled = false;

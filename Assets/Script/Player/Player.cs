@@ -23,6 +23,7 @@ public class Player : Photon.MonoBehaviour
     [HideInInspector] public isDead deadManager;
     private Ray ray;
     private RaycastHit hit;
+    public bool lockDodge;
     private bool canDodge = true;
     
     private NavMeshAgent nav;
@@ -293,8 +294,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             ///
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-
+                nav.enabled = false;
                 transform.position = MousePosition;
+                nav.enabled = true;
             }
         }
     }
@@ -352,7 +354,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //切換攻擊與建造模式
     private void ATK_Build_Btn()
     {
-        if (buildManager.nowSelect && !StopClick)
+        if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") || 
+            AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
+            || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_run")))
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
@@ -367,7 +371,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //閃避
     private void Dodge_Btn()
     {
-        if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt)))
+        if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) && !lockDodge))
         {
             if (SkillState != SkillData.None)
                 CancelNowSkill();
@@ -422,7 +426,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //Q
     private void Character_Skill_Q()
     {
-        if (SkillState != SkillData.skill_Q && canSkill_Q && Input.GetKeyDown(KeyCode.Q))
+        if (SkillState != SkillData.skill_Q && canSkill_Q && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.Q))
         {
             if (SkillState != SkillData.None)
                 CancelNowSkill();
@@ -436,7 +440,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //W
     private void Character_Skill_W()
     {
-        if (SkillState != SkillData.skill_W && canSkill_W && Input.GetKeyDown(KeyCode.W))
+        if (SkillState != SkillData.skill_W && canSkill_W && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.W))
         {
             if (SkillState != SkillData.None)
                 CancelNowSkill();
@@ -449,7 +453,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //E
     private void Character_Skill_E()
     {
-        if (SkillState != SkillData.skill_E && canSkill_E && Input.GetKeyDown(KeyCode.E))
+        if (SkillState != SkillData.skill_E && canSkill_E && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.E))
         {
             if (SkillState != SkillData.None)
                 CancelNowSkill();
@@ -462,7 +466,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //R
     private void Character_Skill_R()
     {
-        if (SkillState != SkillData.skill_R && canSkill_R && Input.GetKeyDown(KeyCode.R))
+        if (SkillState != SkillData.skill_R && canSkill_R && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.R))
         {
             if (SkillState != SkillData.None)
                 CancelNowSkill();
@@ -568,6 +572,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         {
             AniControll.beOtherHit();
             MyState = statesData.notMove;
+            lockDodge = false;
         }
     }
     #endregion
@@ -761,6 +766,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     {
         isStop();
         MyState = statesData.notMove;
+        lockDodge = false;
     }
     //回攻擊狀態
     public void GoBack_AtkState()
@@ -789,6 +795,13 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     {
         CharaCollider.enabled = _myCollider;
         shieldCollider.enabled = !_myCollider;
+    }
+
+    public void TeleportPos(Vector3 _pos)
+    {
+        nav.enabled = false;
+        transform.position = _pos;
+        nav.enabled = true;
     }
     #endregion
 

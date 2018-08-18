@@ -141,7 +141,9 @@ public class PlayerAni : Photon.MonoBehaviour
     {
         CancleAllAni();
         player.deadManager.notFeedBack = true;
-        anim.SetTrigger("Dodge");
+
+        if (!anim.GetBool("Die"))
+            anim.CrossFade("Dodge", 0.01f, 0);
     }
     #endregion
 

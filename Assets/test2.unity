@@ -18342,24 +18342,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1576241093054250, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1511977454431120, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 119360210232591914, guid: 11e0376524b45cb4bb172fae14bf9035,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 119715970764969646, guid: 11e0376524b45cb4bb172fae14bf9035,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
   m_IsPrefabParent: 0
@@ -38206,7 +38188,6 @@ MonoBehaviour:
   myTerrain: {fileID: 403208741}
   updateIconTime: 0.3
   IconRange: 45
-  range: 0
   AllenIcon: {fileID: 224581186955224614, guid: e22f7662106351342a039ee7d959ebf9,
     type: 2}
   QueenIcon: {fileID: 0}

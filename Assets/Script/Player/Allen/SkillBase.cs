@@ -10,6 +10,11 @@ public class SkillBase : Photon.MonoBehaviour
     protected SkillIcon SkillIconManager { get { if (skillIconManager == null) skillIconManager = SkillIcon.instance; return skillIconManager; } }
     protected Vector3 mySkillPos;
 
+    public float skillQ_needAP = 1;
+    public float skillW_needAP = 1;
+    public float skillE_needAP = 1;
+    public float skillR_needAP = 1;
+
     public enum SkillAction
     {
         None,

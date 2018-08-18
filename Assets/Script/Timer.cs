@@ -28,6 +28,17 @@
             } while (repeat);
         }
 
+        public static IEnumerator FirstAction(float duration, Action callback)
+        {
+            while (true)
+            {
+                if (callback != null)
+                    callback();
+
+                yield return new WaitForSeconds(duration);
+            } 
+        }
+
         public static IEnumerator Start_MoreFunction(float duration_1, Action callback_1, float duration_2, Action callback_2)
         {
             yield return new WaitForSeconds(duration_1);
