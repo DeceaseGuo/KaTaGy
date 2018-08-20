@@ -69,4 +69,5 @@ MonoBehaviour:
   - Skill_R_Fun
   - GetSkillPos
   - HitFlayUp
+  - OverheatChange
   DisableAutoOpenWizard: 1

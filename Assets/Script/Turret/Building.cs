@@ -65,9 +65,9 @@ public class Building : MonoBehaviour
 
                 if (builderDistance())
                 {
-                    _pos = buildManager.builder.transform.position;
                     if (buildManager.payment(true))
                     {
+                        _pos = buildManager.builder.transform.position;
                         buildManager.playerScript.stopAnything_Switch(true);
                         buildManager.openScaffolding(NodePos);
                         buildManager.playerScript.switchScaffolding(true);
@@ -115,9 +115,9 @@ public class Building : MonoBehaviour
 
         if (CheckStopPos())
         {
-
             if (buildManager.payment(true))
             {
+                _pos = buildManager.builder.transform.position;
                 buildManager.playerScript.stopAnything_Switch(true);
                 buildManager.openScaffolding(NodePos);
                 buildManager.closeTmpObj();
@@ -143,7 +143,7 @@ public class Building : MonoBehaviour
         if (Physics.Linecast(d, d + buildManager.builder.transform.forward * 5f, stopMask))
         {
             buildManager.playerScript.isStop();
-            _pos = buildManager.builder.transform.position;
+            
             return true;
         }
         else

@@ -230,6 +230,12 @@ namespace AtkTower
         }
         #endregion
 
+        [PunRPC]
+        public void OverheatChange(int _r, int _b, int _g)
+        {
+            Fad_energyBar.color = new Color(_r, _b, _g);
+        }
+
         #region 增加減少熱能
         //減少
         public void reduceHeat(float _speed)
@@ -242,7 +248,8 @@ namespace AtkTower
             {
                 turretData.Fad_thermalEnergy = 0;
                 turretData.Fad_overHeat = false;
-                Fad_energyBar.color = new Color(242, 235, 0);
+                Net.RPC("OverheatChange", PhotonTargets.All, 242, 235, 0);
+                //Fad_energyBar.color = new Color(242, 235, 0);
             }
         }
         //增加
@@ -257,7 +264,8 @@ namespace AtkTower
             {
                 turretData.Fad_thermalEnergy = turretData.Fad_maxThermalEnergy;
                 turretData.Fad_overHeat = true;
-                Fad_energyBar.color = new Color(255, 142, 81);
+                Net.RPC("OverheatChange", PhotonTargets.All, 255, 142, 81);
+                //Fad_energyBar.color = new Color(255, 142, 81);
             }
         }
         #endregion
@@ -328,33 +336,33 @@ namespace AtkTower
         {
             if (stream.isWriting)
             {
-                stream.SendNext(turretData.UI_Hp);
-                stream.SendNext(turretData.UI_maxHp);
+                //stream.SendNext(turretData.UI_Hp);
+                //stream.SendNext(turretData.UI_maxHp);
                 stream.SendNext(Fad_energyBar.fillAmount);
-                stream.SendNext(Fad_energyBar.color.r);
+                /*stream.SendNext(Fad_energyBar.color.r);
                 stream.SendNext(Fad_energyBar.color.g);
-                stream.SendNext(Fad_energyBar.color.b);
+                stream.SendNext(Fad_energyBar.color.b);*/
             }
             else
             {
-                turretData.UI_Hp = (float)stream.ReceiveNext();
-                turretData.UI_maxHp = (float)stream.ReceiveNext();
+                //turretData.UI_Hp = (float)stream.ReceiveNext();
+                //turretData.UI_maxHp = (float)stream.ReceiveNext();
                 Fad_energyBar.fillAmount = (float)stream.ReceiveNext();
-                float _r = (float)stream.ReceiveNext();
+                /*float _r = (float)stream.ReceiveNext();
                 float _g = (float)stream.ReceiveNext();
-                float _b = (float)stream.ReceiveNext();
+                float _b = (float)stream.ReceiveNext();*/
 
-                if (Fad_energyBar.color.r != _r)
+                /*if (Fad_energyBar.color.r != _r)
                 {
                     Fad_energyBar.color = new Color(_r, _g, _b);
-                }
+                }*/
 
-                if (turretData.UI_maxHp != originalTurretData.UI_maxHp)
+                /*if (turretData.UI_maxHp != originalTurretData.UI_maxHp)
                 {
                     originalTurretData.UI_maxHp = turretData.UI_maxHp;
                     print("升級血量變動");
                     healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
-                }
+                }*/
             }
         }
         #endregion
