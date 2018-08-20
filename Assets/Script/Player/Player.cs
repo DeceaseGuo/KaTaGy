@@ -64,7 +64,6 @@ public class Player : Photon.MonoBehaviour
         None,
         canMove_Atk,
         canMvoe_Build,
-        UAV,
         notMove,
         Combo
     }
@@ -260,24 +259,6 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     }
     #endregion
 
-    /*
-    public float TestAtkTime;
-    void TestAtk()
-    {
-        getIsRunning = false;
-        nav.ResetPath();
-        Vector3 tmpDir = transform.forward;
-        if (MyState != statesData.Combo)
-        {
-            MyState = statesData.Combo;
-            tmpDir = nowMouseDir();
-            CharacterRot = Quaternion.LookRotation(tmpDir.normalized);
-            transform.rotation = CharacterRot;
-        }
-
-        AniControll.TypeCombo(tmpDir);
-    }*/
-
     private void Update()
     {
         if (!photonView.isMine || deadManager.checkDead)
@@ -293,10 +274,8 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             nowCanDo();
             ///
             if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                nav.enabled = false;
+            { 
                 transform.position = MousePosition;
-                nav.enabled = true;
             }
         }
     }
@@ -317,7 +296,6 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             case statesData.canMove_Atk:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
-                //UAV_Btn(statesData.UAV);
                 DetectSkillBtn();
                 CharacterAtk_F();
                 Dodge_Btn();
@@ -326,14 +304,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             case statesData.canMvoe_Build:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
-              //  UAV_Btn(statesData.UAV);
                 ATK_Build_Btn();
-                break;
-            case statesData.UAV:
-                if (!buildManager.nowBuilding)
-                    UAV_Btn(statesData.canMove_Atk);
-                else
-                    UAV_Btn(statesData.canMvoe_Build);
                 break;
             case statesData.notMove:
                 Dodge_Btn();
@@ -381,15 +352,6 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
                 stopAnything_Switch(true);
                 Dodge_FCN(nowMouseDir());
             }
-        }
-    }
-    //開關UAV
-    private void UAV_Btn(statesData _data)
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SmoothFollow.instance.switch_UAV();
-            MyState = _data;
         }
     }
     //按下F→目前為combo
@@ -635,7 +597,10 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     {
         flyUp = transform.DOMoveY(transform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
         flyUp.onComplete = delegate () { EndFlyUp(); };
-        //flyUp.PlayForward();
+        if (!NowCC)
+        {
+            GetDeBuff_Stun(1f);
+        }
     }
     #endregion
 

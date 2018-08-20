@@ -5716,7 +5716,15 @@ ModelImporter:
           postInfinity: 2
           rotationOrder: 4
       events:
-      - time: 0.33017492
+      - time: 0.17005081
+        functionName: ArriveBP
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.3162538
         functionName: OpenFirstAtk
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
@@ -5724,18 +5732,18 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.74039394
-        functionName: OpenEndAtk
+      - time: 0.64250565
+        functionName: CloseFirstAtk
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
           type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.17005081
-        functionName: ArriveBP
+      - time: 0.7311132
+        functionName: OpenEndAtk
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: d859f42127e9e164c96c788e95991982,
+        objectReferenceParameter: {fileID: 11500000, guid: bc3b76850f95ba947aa11c7ac2ffda2e,
           type: 3}
         floatParameter: 0
         intParameter: 0

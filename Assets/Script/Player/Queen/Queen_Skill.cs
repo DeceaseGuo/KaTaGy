@@ -20,15 +20,15 @@ public class Queen_Skill : SkillBase
     //Q技能
     private bool firstQAtk;
     private bool endQAtk;
+    [SerializeField] Transform q_DetectPos;
     IEnumerator skillQ_CT;
     //E技能
-    [SerializeField] Transform e_DetectPos;
     IEnumerator skillE_CT;
 
     private void Start()
     {
         if (photonView.isMine)
-        {            
+        {
             allSkillRange = GameObject.Find("AllSkillRange_G").GetComponent<Projector>();
             SkillIconManager.SetSkillIcon(mySkillIcon);
         }
@@ -38,16 +38,17 @@ public class Queen_Skill : SkillBase
             skillQ_CT = Timer.NextFrame(SetQ_CT);
         }
     }
+
     [SerializeField] GameObject testObj;
-   /* private void OnDrawGizmos()
+  /*  private void OnDrawGizmos()
     {
         //E的範圍//84度
-        Gizmos.DrawWireCube(e_DetectPos.position, new Vector3(12, 1, 8));
+       // Gizmos.DrawWireCube(e_DetectPos.position, new Vector3(12, 1, 8));
         //W的範圍
-        //Gizmos.DrawWireSphere(transform.position, 5);
+        //Gizmos.DrawWireSphere(transform.position, 7);
         //Q的範圍
-        // Gizmos.DrawWireSphere(transform.localPosition + new Vector3(0, 0, 2.2f), 5.5f);
-        //  Gizmos.DrawWireCube(transform.localPosition + transform.forward * 3.5f, new Vector3(4.7f, 2f, 13));
+         //Gizmos.DrawWireSphere(transform.localPosition + transform.forward * 2.2f, 9);
+       // Gizmos.DrawWireCube(q_DetectPos.position, new Vector3(6.2f, 3f, 8f));
     }*/
 
     #region 技能Event
@@ -94,12 +95,12 @@ public class Queen_Skill : SkillBase
         playerScript.canSkill_W = false;
         playerScript.SkillState = Player.SkillData.skill_W;
         //顯示範圍
-        ProjectorManager.Setsize(projector_W[0], 20, 1,true);
-        ProjectorManager.Setsize(projector_W[1], 5, 1, true);
+        ProjectorManager.Setsize(projector_W[0], 26, 1,true);
+        ProjectorManager.Setsize(projector_W[1], 7.2f, 1, true);
     }
     public override void In_Skill_W()
     {
-        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.MousePosition, 17.5f);
+        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.MousePosition, 22.4f);
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(skillW_needAP, true))
@@ -194,7 +195,6 @@ public class Queen_Skill : SkillBase
     }
     #endregion
 
-
     #region Q技能
     public void Q_Skill()
     {
@@ -210,26 +210,42 @@ public class Queen_Skill : SkillBase
             StopCoroutine(skillQ_CT);
     }
 
+    #region 開關偵測範圍
     public void OpenFirstAtk()
     {
-        firstQAtk = true;
+        if (!photonView.isMine)
+            firstQAtk = true;
+    }
+    public void CloseFirstAtk()
+    {
+        if (!photonView.isMine)
+        {
+            firstQAtk = false;
+            alreadyDamage.Clear();
+        }
     }
     public void OpenEndAtk()
     {
-        endQAtk = true;
+        if (!photonView.isMine)
+            endQAtk = true;
     }
+    #endregion
 
+    public List<Collider> alreadyDamage;
     void SetQ_CT()
     {
+        Debug.Log("Q技能施放中");
         //第一次刷
-        if (firstQAtk)
+        if (firstQAtk && !endQAtk)
         {
-            firstQAtk = false;
-            Collider[] tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 3.5f, new Vector3(2.35f, 1f, 8f), transform.rotation, aniScript.canAtkMask);
+            Collider[] tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
             if (tmpEnemy != null)
             {
                 foreach (var target in tmpEnemy)
                 {
+                    if (alreadyDamage.Contains(target))
+                        continue;
+
                     isDead who = target.GetComponent<isDead>();
                     if (who != null)
                     {
@@ -254,14 +270,15 @@ public class Queen_Skill : SkillBase
                                 break;
                         }
                     }
-                }
+                    alreadyDamage.Add(target);
+                }                
             }
         }
         //第二次攻擊
         if (endQAtk)
         {
             endQAtk = false;
-            Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 5.5f, aniScript.canAtkMask);
+            Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 9, aniScript.canAtkMask);
             if (tmpEnemy != null)
             {
                 foreach (var target in tmpEnemy)
@@ -293,6 +310,7 @@ public class Queen_Skill : SkillBase
                         }
                     }
                 }
+                alreadyDamage.Clear();
                 OpenDetect(false);
             }
         }
@@ -304,7 +322,7 @@ public class Queen_Skill : SkillBase
     {
         //設定攻擊範圍
         allSkillRange.transform.position = mySkillPos;
-        ProjectorManager.Setsize(allSkillRange, 5.2f, 1, true);
+        ProjectorManager.Setsize(allSkillRange, 7.2f, 1, true);
 
     }
 
@@ -312,7 +330,7 @@ public class Queen_Skill : SkillBase
     {
         if (!photonView.isMine)
         {
-            Collider[] tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 5.1f, aniScript.canAtkMask);
+            Collider[] tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 7f, aniScript.canAtkMask);
             if (tmpEnemy != null)
             {
                 foreach (var target in tmpEnemy)
@@ -346,21 +364,19 @@ public class Queen_Skill : SkillBase
         }
 
         GameObject aaa = Instantiate(testObj, allSkillRange.transform.position, allSkillRange.transform.rotation);
-        Destroy(aaa, 3f);
+        Destroy(aaa, 1.5f);
     }
     #endregion
 
-    public Collider[] seeTest;
     #region E技能
     public void E_Skill()
     {
         if (!photonView.isMine)
         {
             skillE_CT = Timer.FirstAction(0.23f, () =>
-            {                
-                Collider[] tmpEnemy = Physics.OverlapBox(e_DetectPos.position, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
+            {
+                Collider[] tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
                 Debug.Log("偵測e技能打到誰中");
-                seeTest = tmpEnemy;
                 if (tmpEnemy != null)
                 {
                     foreach (var target in tmpEnemy)
@@ -420,10 +436,7 @@ public class Queen_Skill : SkillBase
 
     public void Teleport()
     {
-        if (photonView.isMine)
-        {
-            playerScript.TeleportPos(allSkillRange.transform.position);
-        }
+        playerScript.TeleportPos(allSkillRange.transform.position);
     }
     #endregion
 

@@ -4456,7 +4456,6 @@ MonoBehaviour:
   grab_MovePos: {fileID: 4595296177028774}
   handSmall: {fileID: 137601349362576186}
   handBig: {fileID: 23316835848805348}
-  material_Q: {fileID: 2100000, guid: 9436e7bc4a035a8489ddd4e3882db46f, type: 2}
   whirlwindPos: {fileID: 4413949225724542}
   iconImg: {fileID: 21300000, guid: d2747faa6381b1c4a8c796b42a20534d, type: 3}
   skillR_radius: 17.2
@@ -4731,6 +4730,7 @@ MonoBehaviour:
   AniControll: {fileID: 0}
   buildManager: {fileID: 0}
   deadManager: {fileID: 0}
+  lockDodge: 0
   clickPointPos: {fileID: 0}
   canClickToMove_Layer:
     serializedVersion: 2

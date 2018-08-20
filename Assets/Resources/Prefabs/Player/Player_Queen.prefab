@@ -1956,7 +1956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4634498795510370}
   m_Layer: 0
-  m_Name: E_pos
+  m_Name: Q_Pos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4075,8 +4075,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1764419324886064}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -11, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.25, z: -0.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4047743476350026}
@@ -5149,10 +5149,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 61593def57c4e964f82be1e0264a7871, type: 3}
   - {fileID: 21300000, guid: 41f3a657ff35ef0478ddabee3827480b, type: 3}
   - {fileID: 21300000, guid: 86d3692d23792c548a520954c63b23dd, type: 3}
-  e_DetectPos: {fileID: 4634498795510370}
-  testVector: {x: 12.5, y: 1, z: 9}
+  q_DetectPos: {fileID: 4634498795510370}
   testObj: {fileID: 1946333397291292, guid: 7fddc484d58ab1540bcdff077b4b3583, type: 2}
-  seeTest: []
+  alreadyDamage: []
 --- !u!114 &114166378226988154
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5648,7 +5647,7 @@ Projector:
   m_FieldOfView: 1
   m_AspectRatio: 1
   m_Orthographic: 1
-  m_OrthographicSize: 5
+  m_OrthographicSize: 26
   m_Material: {fileID: 2100000, guid: 00aa7dc11b42404479e0c5893834cdb5, type: 2}
   m_IgnoreLayers:
     serializedVersion: 2
@@ -5702,7 +5701,7 @@ Projector:
   m_FieldOfView: 1
   m_AspectRatio: 1
   m_Orthographic: 1
-  m_OrthographicSize: 4.5
+  m_OrthographicSize: 9
   m_Material: {fileID: 2100000, guid: 00aa7dc11b42404479e0c5893834cdb5, type: 2}
   m_IgnoreLayers:
     serializedVersion: 2
@@ -5720,7 +5719,7 @@ Projector:
   m_FieldOfView: 1
   m_AspectRatio: 1
   m_Orthographic: 1
-  m_OrthographicSize: 4
+  m_OrthographicSize: 7.2
   m_Material: {fileID: 2100000, guid: 00aa7dc11b42404479e0c5893834cdb5, type: 2}
   m_IgnoreLayers:
     serializedVersion: 2

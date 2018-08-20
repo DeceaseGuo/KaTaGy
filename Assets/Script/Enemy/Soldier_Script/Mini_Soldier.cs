@@ -55,7 +55,7 @@ public class Mini_Soldier : EnemyControl
     #region 攻擊是否打中
     protected override void TouchTarget()
     {
-        Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.5f, 2.8f, .3f), sword_1.rotation, currentMask);
+        Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.25f, 1.4f, .15f), sword_1.rotation, currentMask);
         foreach (var target in enemies)
         {
             if (!alreadytakeDamage.Contains(target.gameObject))
