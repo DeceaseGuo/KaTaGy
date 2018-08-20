@@ -127,17 +127,33 @@ public class GameManager : Photon.MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            if (StopMenu.instance == null)
-            {
-                Debug.LogWarning("沒有暫停選單啦 媽b");
-            }
+            InGameSetMenu();
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            SmoothFollow.instance.switch_UAV();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SmoothFollow.instance.GoBackMyPos();
+        }
+    }
+
+    //目前投降功能(之後加入esc裡)
+    void InGameSetMenu()
+    {
+        if (StopMenu.instance == null)
+        {
+            Debug.LogWarning("沒有暫停選單啦 媽b");
+        }
+        else
+        {
+            if (surrenderMessage == null)
+                surrenderMessage = StopMenu.instance.stopMenuPrefab;
             else
-            {
-                if (surrenderMessage == null)
-                    surrenderMessage = StopMenu.instance.stopMenuPrefab;
-                else
-                    surrenderMessage.SetActive(!surrenderMessage.activeInHierarchy);
-            }
+                surrenderMessage.SetActive(!surrenderMessage.activeInHierarchy);
         }
     }
 

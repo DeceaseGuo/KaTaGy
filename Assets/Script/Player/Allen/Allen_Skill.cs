@@ -70,10 +70,11 @@ public class Allen_Skill : SkillBase
             NowCanOpenShield();
         }
     }
+
     //手的抓取範圍
-    /* private void OnDrawGizmos()
+   /*  private void OnDrawGizmos()
       {
-         Gizmos.DrawWireCube(grab_MovePos.position, new Vector3(4, 2.5f, 2.2f));
+         Gizmos.DrawWireCube(grab_MovePos.position, new Vector3(6.4f, 4f, 4f));
       }*/
     //大絕的範圍
 
@@ -198,7 +199,7 @@ public class Allen_Skill : SkillBase
 
         if (catchObj == null && isForward)
         {
-            Collider[] enemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3, 2f, 2f), Quaternion.identity, aniScript.canAtkMask);
+            Collider[] enemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.2f, 2f, 2f), Quaternion.identity, aniScript.canAtkMask);
             if (enemy.Length != 0)
             {
                 catchObj = enemy[0].gameObject;
