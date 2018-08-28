@@ -4,23 +4,37 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using MyCode.Timer;
+using UnityEngine.AI;
 namespace Mytest
 {
     public class test : MonoBehaviour
     {
 
-        bool A = true;
-        bool B = false;
-        public int atk;
-        public float d;
+        public enum kkk :int
+        {
+            A=0,
+            B=1,
+            C=2,
+            D=3
+        }
 
+        public kkk nowTest;
+
+        NavMeshAgent nav;
+        [SerializeField] Transform pos;
         private void Start()
         {
-            for (int i = 0; i < 100; i++)
-            {
-                kkk(atk);
-            }
+            nav = GetComponent<NavMeshAgent>();
         }
+
+        void SetPos()
+        {
+            if (pos != null)
+                nav.SetDestination(pos.position);
+        }
+
+        public EnemyControl aaa;
+        public GameObject target;
 
         private void Update()
         {
@@ -33,12 +47,12 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-
-                B = true;
+               /* aaa.currentTarget = target;
+                aaa.nowState = EnemyControl.states.Atk;
+                StartCoroutine(aaa.enemyAttack());*/
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-
+            { 
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
@@ -49,11 +63,5 @@ namespace Mytest
 
         }
 
-
-        void kkk(int a)
-        {
-            float s = a * Mathf.Pow((1 - 0.06f), d);
-            Debug.Log(s);
-        }
     }
 }

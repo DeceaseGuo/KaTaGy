@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SceneObjManager : MonoBehaviour
+public class SceneObjManager : Photon.MonoBehaviour
 {
     #region 單例模式
     public static SceneObjManager instance;
@@ -152,7 +152,7 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 {
                     mySoldierObjs.Add(_obj);
-                    GetIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons);
+                   // GetIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons);
                 }
                 break;
             case GameManager.NowTarget.Tower:
@@ -162,11 +162,11 @@ public class SceneObjManager : MonoBehaviour
                     if (_e != null)
                     {
                         myElectricityObjs.Add(_e);
-                        GetIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons);
+                     //   GetIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons);
                     }
                     else
                     {
-                        GetIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons);
+                     //   GetIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons);
                     }                    
                 }
                 break;
@@ -182,7 +182,7 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 {
                     enemySoldierObjs.Add(_obj);
-                    GetIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons);
+                  //  GetIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons);
                 }
                 break;
             case GameManager.NowTarget.Tower:
@@ -190,11 +190,11 @@ public class SceneObjManager : MonoBehaviour
                     enemyTowerObjs.Add(_obj);
                     if (_obj.GetComponent<Electricity>() != null)
                     {
-                        GetIcon(GameManager.whichObject.EIcon, minmap.enemyTowerIcons);
+                       // GetIcon(GameManager.whichObject.EIcon, minmap.enemyTowerIcons);
                     }
                     else
                     {
-                        GetIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons);
+                     //   GetIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons);
                     }
                 }
                 break;
@@ -213,7 +213,7 @@ public class SceneObjManager : MonoBehaviour
                 {
                     if (mySoldierObjs.Contains(_obj))
                     {
-                        ReIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons, mySoldierObjs.IndexOf(_obj));
+                     //   ReIcon(GameManager.whichObject.SoldierIcon, minmap.mySoliderIcons, mySoldierObjs.IndexOf(_obj));
                         mySoldierObjs.Remove(_obj);
                     }
                 }
@@ -225,12 +225,12 @@ public class SceneObjManager : MonoBehaviour
                         Electricity _e = _obj.GetComponent<Electricity>();
                         if (_e != null)
                         {
-                            ReIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
+                        //    ReIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
                             myElectricityObjs.Remove(_e);
                         }
                         else
                         {
-                            ReIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
+                            //ReIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
                         }
                         myTowerObjs.Remove(_obj);
                     }
@@ -248,16 +248,304 @@ public class SceneObjManager : MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 if (enemySoldierObjs.Contains(_obj))
                 {
-                    ReIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons, enemySoldierObjs.IndexOf(_obj));
+                   // ReIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons, enemySoldierObjs.IndexOf(_obj));
                     enemySoldierObjs.Remove(_obj);
                 }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
                 {
-                    ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
+                   // ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
                     enemyTowerObjs.Remove(_obj);
                 }
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
+
+    #region 升級士兵
+    public void UpdataMySoldier(int _level, int _whatAbility)
+    {
+        switch (((UpdateManager.Myability)_whatAbility))
+        {
+            case (UpdateManager.Myability.Soldier_ATK):
+                UpdateMySoldier_Atk(_level);
+                break;
+            case (UpdateManager.Myability.Soldier_DEF):
+                UpdateMySoldier_Def(_level);
+                break;
+            default:
+                break;
+        }
+    }
+    public void UpdataClientSoldier(int _level, int _whatAbility)
+    {
+        switch (((UpdateManager.Myability)_whatAbility))
+        {
+            case (UpdateManager.Myability.Soldier_ATK):
+                UpdateClientSoldier_Atk(_level);
+                break;
+            case (UpdateManager.Myability.Soldier_DEF):
+                UpdateClientSoldier_Def(_level);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void UpdateMySoldier_Atk(int _level)
+    {
+        EnemyControl tmpScript = null;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage+= tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.originalData.atk_Damage+= tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.originalData.atk_Damage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.originalData.atk_Damage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        MyEnemyData.instance.changeMyData(tmpScript.originalData._soldierName, tmpScript.originalData);
+    }
+    void UpdateClientSoldier_Atk(int _level)
+    {
+        EnemyControl tmpScript = null;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.originalData.atk_Damage += tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk1;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.originalData.atk_Damage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk2;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.ATK_Level = _level;
+                        tmpScript.originalData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.originalData.atk_Damage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.enemyData.atk_maxDamage += tmpScript.originalData.updateData.Add_atk3;
+                        tmpScript.enemyData.atk_Damage += tmpScript.originalData.updateData.Add_atk3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        MyEnemyData.instance.changeEnemyData(tmpScript.originalData._soldierName, tmpScript.originalData);
+    }
+
+    void UpdateMySoldier_Def(int _level)
+    {
+        EnemyControl tmpScript = null;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def1;
+                        tmpScript.originalData.UI_HP+= tmpScript.originalData.updateData.Add_hp1;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp1;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def1;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp1;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def2;
+                        tmpScript.originalData.UI_HP += tmpScript.originalData.updateData.Add_hp2;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp2;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def2;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp2;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < mySoldierObjs.Count; i++)
+                {
+                    tmpScript = mySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def3;
+                        tmpScript.originalData.UI_HP += tmpScript.originalData.updateData.Add_hp3;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp3;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def3;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp3;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        MyEnemyData.instance.changeMyData(tmpScript.originalData._soldierName, tmpScript.originalData);
+    }
+    void UpdateClientSoldier_Def(int _level)
+    {
+        EnemyControl tmpScript = null;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def1;
+                        tmpScript.originalData.UI_HP += tmpScript.originalData.updateData.Add_hp1;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp1;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def1;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp1;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def2;
+                        tmpScript.originalData.UI_HP += tmpScript.originalData.updateData.Add_hp2;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp2;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def2;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp2;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                {
+                    tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
+                    if (tmpScript.originalData.ATK_Level != _level)
+                    {
+                        tmpScript.originalData.DEF_Level = _level;
+                        tmpScript.originalData.def_base += tmpScript.originalData.updateData.Add_def3;
+                        tmpScript.originalData.UI_HP += tmpScript.originalData.updateData.Add_hp3;
+                        tmpScript.originalData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp3;
+
+                        tmpScript.enemyData.def_base += tmpScript.originalData.updateData.Add_def3;
+                        tmpScript.enemyData.UI_HP += tmpScript.originalData.updateData.Add_hp3;
+                        tmpScript.enemyData.UI_MaxHp += tmpScript.originalData.updateData.Add_hp3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        MyEnemyData.instance.changeEnemyData(tmpScript.originalData._soldierName, tmpScript.originalData);
+    }
+    #endregion
+
+    #region 升級塔防
+    public void UpdataMyTower(int _level, int _whatAbility)
+    {
+        switch (((UpdateManager.Myability)_whatAbility))
+        {
+            case (UpdateManager.Myability.Tower_ATK):
+                break;
+            case (UpdateManager.Myability.Tower_DEF):
+                break;
+            default:
+                break;
+        }
+    }
+    public void UpdataClientTower(int _level, int _whatAbility)
+    {
+        switch (((UpdateManager.Myability)_whatAbility))
+        {
+            case (UpdateManager.Myability.Tower_ATK):
+                break;
+            case (UpdateManager.Myability.Tower_DEF):
                 break;
             default:
                 break;

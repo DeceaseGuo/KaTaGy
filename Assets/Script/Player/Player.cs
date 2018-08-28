@@ -15,6 +15,7 @@ public class Player : Photon.MonoBehaviour
     private HintManager hintManager;
     public HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
 
+    public GameManager.meIs meIs;
     public PlayerData.PlayerDataBase playerData;
     public PlayerData.PlayerDataBase originalData;
     public PlayerAni AniControll;
@@ -50,6 +51,7 @@ public class Player : Photon.MonoBehaviour
     private Vector3 mousePosition;
     public Vector3 MousePosition { get { return mousePosition; } private set { mousePosition = value; } }
     public Transform arrow;
+    [SerializeField] Projector arrowProjector;
 
     public UnityEvent skill_Q;
     public UnityEvent skill_W;
@@ -129,9 +131,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         deadManager = GetComponent<isDead>();
         nav.updateRotation = false;
         nav.speed = playerData.moveSpeed;
+        AniControll = GetComponent<PlayerAni>();
         if (photonView.isMine)
         {
-            AniControll = Creatplayer.instance.Player_AniScript;
             if (headImage == null)
                 headImage = GameObject.Find("headImage_leftTop").GetComponent<Image>();
 
@@ -140,7 +142,6 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         }
         else
         {
-            AniControll = GetComponent<PlayerAni>();
             SceneObjManager.Instance.enemy_Player = gameObject;
             this.enabled = false;
         }
@@ -152,27 +153,29 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 30);
-            arrow.gameObject.layer = 0;
-            Net.RPC("changeMask_1", PhotonTargets.All);
+            arrowProjector.gameObject.layer = 0;
+            Net.RPC("changeMask_1", PhotonTargets.All,(int)GameManager.instance.Meis);
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 31);
-            arrow.gameObject.layer = 0;
-            Net.RPC("changeMask_2", PhotonTargets.All);
+            arrowProjector.gameObject.layer = 0;
+            Net.RPC("changeMask_2", PhotonTargets.All, (int)GameManager.instance.Meis);
         }
     }
     [PunRPC]
-    public void changeMask_1()
+    public void changeMask_1(int _who)
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
         shieldCollider.gameObject.layer = 30;
+        meIs = ((GameManager.meIs)_who);
     }
     [PunRPC]
-    public void changeMask_2()
+    public void changeMask_2(int _who)
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
         shieldCollider.gameObject.layer = 31;
+        meIs = ((GameManager.meIs)_who);
     }
     #endregion
 
@@ -191,8 +194,8 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
 
             leftTopPowerBar.fillAmount = 1;
         }
-        if (originalData.headImage == null)
-            originalData = PlayerData.instance.getPlayerData(GameManager.instance.Meis);
+
+        originalData = PlayerData.instance.getPlayerData(meIs);
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
         playerData.Hp_original = playerData.Hp_Max;
@@ -201,62 +204,168 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     #endregion
 
     #region 升級
-    public void UpdateMyData(int _level, bool _atk, bool _def, bool _Q, bool _W, bool _E, bool _R)
+    #region 玩家
+    [PunRPC]
+    public void UpdataData(int _level,int _whatAbility)
+    {
+        switch (((UpdateManager.Myability) _whatAbility))
+        {
+            case (UpdateManager.Myability.Player_ATK):
+                UpdataData_Atk(_level);
+                break;
+            case (UpdateManager.Myability.Player_DEF):
+                UpdataData_Def(_level);
+                break;
+            case (UpdateManager.Myability.Skill_Q_Player):
+                UpdataData_Skill_Q(_level);
+                break;
+            case (UpdateManager.Myability.Skill_W_Player):
+                UpdataData_Skill_W(_level);
+                break;
+            case (UpdateManager.Myability.Skill_E_Player):
+                UpdataData_Skill_E(_level);
+                break;
+            case (UpdateManager.Myability.Skill_R_Player):
+                UpdataData_Skill_R(_level);
+                break;
+            default:
+                break;
+        }
+
+        PlayerData.instance.ChangeMyData(meIs, originalData);
+    }
+
+    void UpdataData_Atk(int _level)
     {
         switch (_level)
         {
             case (1):
-                //功
-                if (_atk && originalData.ATK_Level != _level)
+                if (originalData.ATK_Level != _level)
                 {
                     originalData.ATK_Level = _level;
-                    originalData.Atk_Damage += originalData.Add_atk1;
-                    playerData.Atk_Damage += originalData.Add_atk1;
-                }
-                //防
-                if (_def && originalData.DEF_Level != _level)
-                {
-                    originalData.DEF_Level = _level;
-                    originalData.def_base += originalData.Add_def1;
-                    playerData.def_base += originalData.Add_def1;
+                    originalData.Atk_Damage += originalData.updateData.Add_atk1;
+                    originalData.Atk_maxDamage += originalData.updateData.Add_atk1;
+                    originalData.Ap_original += originalData.updateData.Add_ap1;
+                    originalData.Ap_Max += originalData.updateData.Add_ap1;
+
+                    playerData.Atk_Damage += originalData.updateData.Add_atk1;
+                    playerData.Atk_maxDamage += originalData.updateData.Add_atk1;
+                    playerData.Ap_original += originalData.updateData.Add_ap1;
+                    playerData.Ap_Max += originalData.updateData.Add_ap1;
                 }
                 break;
             case (2):
-                //功
-                if (_atk && originalData.ATK_Level != _level)
+                if (originalData.ATK_Level != _level)
                 {
                     originalData.ATK_Level = _level;
-                    originalData.Atk_Damage += originalData.Add_atk2;
-                    playerData.Atk_Damage += originalData.Add_atk2;
-                }
-                //防
-                if (_def && originalData.DEF_Level != _level)
-                {
-                    originalData.DEF_Level = _level;
-                    originalData.def_base += originalData.Add_def2;
-                    playerData.def_base += originalData.Add_def2;
+                    originalData.Atk_Damage += originalData.updateData.Add_atk2;
+                    originalData.Atk_maxDamage += originalData.updateData.Add_atk2;
+                    originalData.Ap_original += originalData.updateData.Add_ap2;
+                    originalData.Ap_Max += originalData.updateData.Add_ap2;
+
+                    playerData.Atk_Damage += originalData.updateData.Add_atk2;
+                    playerData.Atk_maxDamage += originalData.updateData.Add_atk2;
+                    playerData.Ap_original += originalData.updateData.Add_ap2;
+                    playerData.Ap_Max += originalData.updateData.Add_ap2;
                 }
                 break;
             case (3):
-                //功
-                if (_atk && originalData.ATK_Level != _level)
+                if (originalData.ATK_Level != _level)
                 {
                     originalData.ATK_Level = _level;
-                    originalData.Atk_Damage += originalData.Add_atk3;
-                    playerData.Atk_Damage += originalData.Add_atk3;
-                }
-                //防
-                if (_def && originalData.DEF_Level != _level)
-                {
-                    originalData.DEF_Level = _level;
-                    originalData.def_base += originalData.Add_def3;
-                    playerData.def_base += originalData.Add_def3;
+                    originalData.Atk_Damage += originalData.updateData.Add_atk3;
+                    originalData.Atk_maxDamage += originalData.updateData.Add_atk3;
+                    originalData.Ap_original += originalData.updateData.Add_ap3;
+                    originalData.Ap_Max += originalData.updateData.Add_ap3;
+
+                    playerData.Atk_Damage += originalData.updateData.Add_atk3;
+                    playerData.Atk_maxDamage += originalData.updateData.Add_atk3;
+                    playerData.Ap_original += originalData.updateData.Add_ap3;
+                    playerData.Ap_Max += originalData.updateData.Add_ap3;
                 }
                 break;
             default:
                 break;
         }
     }
+    void UpdataData_Def(int _level)
+    {
+        switch (_level)
+        {
+            case (1):
+                if (originalData.DEF_Level != _level)
+                {
+                    originalData.DEF_Level = _level;
+                    originalData.def_base += originalData.updateData.Add_def1;
+                    originalData.Hp_Max += originalData.updateData.Add_hp1;
+                    originalData.Hp_original += originalData.updateData.Add_hp1;
+
+                    playerData.def_base += originalData.updateData.Add_def1;
+                    playerData.Hp_Max += originalData.updateData.Add_hp1;
+                    playerData.Hp_original += originalData.updateData.Add_hp1;
+                }
+                break;
+            case (2):
+                if (originalData.DEF_Level != _level)
+                {
+                    originalData.DEF_Level = _level;
+                    originalData.def_base += originalData.updateData.Add_def2;
+                    originalData.Hp_Max += originalData.updateData.Add_hp2;
+                    originalData.Hp_original += originalData.updateData.Add_hp2;
+
+                    playerData.def_base += originalData.updateData.Add_def2;
+                    playerData.Hp_Max += originalData.updateData.Add_hp2;
+                    playerData.Hp_original += originalData.updateData.Add_hp2;
+                }
+                break;
+            case (3):
+                if (originalData.DEF_Level != _level)
+                {
+                    originalData.DEF_Level = _level;
+                    originalData.def_base += originalData.updateData.Add_def3;
+                    originalData.Hp_Max += originalData.updateData.Add_hp3;
+                    originalData.Hp_original += originalData.updateData.Add_hp3;
+
+                    playerData.def_base += originalData.updateData.Add_def3;
+                    playerData.Hp_Max += originalData.updateData.Add_hp3;
+                    playerData.Hp_original += originalData.updateData.Add_hp3;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    void UpdataData_Skill_Q(int _level)
+    { }
+    void UpdataData_Skill_W(int _level)
+    { }
+    void UpdataData_Skill_E(int _level)
+    { }
+    void UpdataData_Skill_R(int _level)
+    { }
+    #endregion
+
+    #region 士兵
+    [PunRPC]
+    public void UpdataSoldier(int _level, int _whatAbility)
+    {
+        if (photonView.isMine)
+            SceneObjManager.Instance.UpdataMySoldier(_level, _whatAbility);
+        else
+            SceneObjManager.Instance.UpdataClientSoldier(_level, _whatAbility);
+    }
+    #endregion
+
+    #region 塔防
+    [PunRPC]
+    public void UpdataTower(int _level, int _whatAbility)
+    {
+        if (photonView.isMine)
+            SceneObjManager.Instance.UpdataMyTower(_level, _whatAbility);
+        else
+            SceneObjManager.Instance.UpdataClientTower(_level, _whatAbility);
+    }
+    #endregion
     #endregion
 
     private void Update()
@@ -274,7 +383,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             nowCanDo();
             ///
             if (Input.GetKeyDown(KeyCode.LeftShift))
-            { 
+            {
                 transform.position = MousePosition;
             }
         }
@@ -599,7 +708,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
         {
-            GetDeBuff_Stun(1f);
+            GetDeBuff_Stun(1.2f);
         }
     }
     #endregion
@@ -764,9 +873,10 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
 
     public void TeleportPos(Vector3 _pos)
     {
-        nav.enabled = false;
+        nav.Warp(_pos);
+        /*nav.enabled = false;
         transform.position = _pos;
-        nav.enabled = true;
+        nav.enabled = true;*/
     }
     #endregion
 
@@ -776,25 +886,6 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         return nav.hasPath;
     }
     #endregion
-
-    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.isWriting)
-        {
-            stream.SendNext(playerData.Hp_original);
-            stream.SendNext(playerData.Hp_Max);
-            stream.SendNext(playerData.Atk_Damage);
-        }
-        else
-        {
-            playerData.Hp_original = (float)stream.ReceiveNext();
-            playerData.Hp_Max = (float)stream.ReceiveNext();
-            playerData.Atk_Damage = (float)stream.ReceiveNext();
-            if (playerData.Hp_Max != originalData.Hp_Max)
-                GetComponent<Attribute_HP>().UI_HpBar.fillAmount = playerData.Hp_original / playerData.Hp_Max;
-        }
-    }
-
 
     #region 死亡
     public IEnumerator Death()

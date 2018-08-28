@@ -342,6 +342,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
+  - {fileID: 1404947821}
   - {fileID: 1311097342}
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -1870,14 +1871,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &52914766
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5239,14 +5248,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &177953534
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5489,6 +5506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 11
   unLockObj: 13
   myLevel: 1
@@ -9143,6 +9161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 1
   abilityData: 1
   unLockObj: 0
   myLevel: 2
@@ -9282,6 +9301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 0
   unLockObj: 0
   myLevel: 0
@@ -9533,14 +9553,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &292727118
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9786,6 +9814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 1
   abilityData: 1
   unLockObj: 0
   myLevel: 1
@@ -10850,6 +10879,11 @@ Prefab:
     - target: {fileID: 4496255108372480, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
       propertyPath: m_RootOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114661278304269300, guid: 11e0376524b45cb4bb172fae14bf9035,
+        type: 2}
+      propertyPath: panSpeed
+      value: 160
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 11e0376524b45cb4bb172fae14bf9035, type: 2}
@@ -12986,14 +13020,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &400016070
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14159,7 +14201,6 @@ MonoBehaviour:
     Atk_Damage: 0
     Atk_maxDamage: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     Hp_Max: 50
@@ -14168,21 +14209,23 @@ MonoBehaviour:
     Ap_original: 0
     add_APValue: 4.5
     skillCD_Q: 4
-    skillCD_W: 2
+    skillCD_W: 3.5
     skillCD_E: 6
-    skillCD_R: 3
-    Add_hp1: 0
-    Add_hp2: 0
-    Add_hp3: 0
-    Add_ap1: 0
-    Add_ap2: 0
-    Add_ap3: 0
-    Add_atk1: 5
-    Add_atk2: 0
-    Add_atk3: 0
-    Add_def1: 0
-    Add_def2: 0
-    Add_def3: 0
+    skillCD_R: 8
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_ap1: 0
+      Add_ap2: 0
+      Add_ap3: 0
+      Add_atk1: 5
+      Add_atk2: 10
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   Queen:
     objectName: Queen
     headImage: {fileID: 21300000, guid: c4f792fe18d5990489f078ba7c5c6539, type: 3}
@@ -14195,7 +14238,6 @@ MonoBehaviour:
     Atk_Damage: 0
     Atk_maxDamage: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     Hp_Max: 50
@@ -14203,22 +14245,24 @@ MonoBehaviour:
     Ap_Max: 100
     Ap_original: 0
     add_APValue: 4.5
-    skillCD_Q: 2
-    skillCD_W: 2
-    skillCD_E: 2
-    skillCD_R: 2
-    Add_hp1: 0
-    Add_hp2: 0
-    Add_hp3: 0
-    Add_ap1: 0
-    Add_ap2: 0
-    Add_ap3: 0
-    Add_atk1: 0
-    Add_atk2: 0
-    Add_atk3: 0
-    Add_def1: 0
-    Add_def2: 0
-    Add_def3: 0
+    skillCD_Q: 3.5
+    skillCD_W: 2.5
+    skillCD_E: 4
+    skillCD_R: 3
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_ap1: 0
+      Add_ap2: 0
+      Add_ap3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!1 &443656664
 GameObject:
   m_ObjectHideFlags: 0
@@ -15043,7 +15087,7 @@ RectTransform:
   m_Children:
   - {fileID: 1995220282}
   m_Father: {fileID: 1191354692}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -21717,7 +21761,7 @@ RectTransform:
   m_Children:
   - {fileID: 2107235950}
   m_Father: {fileID: 1191354692}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -24058,14 +24102,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &868211723
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25146,14 +25198,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &898249861
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25930,14 +25990,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &920337672
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27535,14 +27603,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &981671950
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27841,6 +27917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 1
   unLockObj: 0
   myLevel: 0
@@ -28222,14 +28299,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1019301674
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33371,6 +33456,11 @@ Prefab:
       propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 225515144273577360, guid: 666fa68c1f3c62f41a2582b01519a459,
+        type: 2}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 666fa68c1f3c62f41a2582b01519a459, type: 2}
   m_IsPrefabParent: 0
@@ -33790,6 +33880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 2
   unLockObj: 0
   myLevel: 2
@@ -34050,7 +34141,6 @@ RectTransform:
   - {fileID: 48889467}
   - {fileID: 1669191365}
   - {fileID: 645182892}
-  - {fileID: 1404947821}
   - {fileID: 767713826}
   - {fileID: 488415281}
   m_Father: {fileID: 0}
@@ -34551,6 +34641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 0
   unLockObj: 0
   myLevel: 0
@@ -35669,6 +35760,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 1
   abilityData: 1
   unLockObj: 0
   myLevel: 3
@@ -36846,7 +36938,7 @@ RectTransform:
   - {fileID: 213491251}
   - {fileID: 569929147}
   m_Father: {fileID: 14172380}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -37621,7 +37713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierGapTime: 0.55
   arraySoldier: {fileID: 1598956575}
-  bornSoldier: 0
+  bornSoldier: 1
 --- !u!114 &1332093344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37661,14 +37753,22 @@ MonoBehaviour:
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 1
     DEF_Level: 0
     population_need: 1
     soldier_CountDown: 2
-    UI_Name: 3
-    cost_Ore: 20
     cost_Money: 20
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 10
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   - objectName: "\u528D\u5175_2"
     _soldierName: 2
     headImage: {fileID: 21300000, guid: c4f792fe18d5990489f078ba7c5c6539, type: 3}
@@ -37685,14 +37785,22 @@ MonoBehaviour:
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0.5
     DEF_Level: 0
     population_need: 3
     soldier_CountDown: 2
-    UI_Name: 4
-    cost_Ore: 20
     cost_Money: 20
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   - objectName: "\u6E2C\u8A66\u7528_1"
     _soldierName: 13
     headImage: {fileID: 21300000, guid: ad524d422d0e25d4d88a15f2ea680474, type: 3}
@@ -37709,14 +37817,22 @@ MonoBehaviour:
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0.5
     DEF_Level: 0
     population_need: 1
     soldier_CountDown: 2
-    UI_Name: 4
-    cost_Ore: 20
     cost_Money: 20
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!1 &1332586149
 GameObject:
   m_ObjectHideFlags: 0
@@ -39214,14 +39330,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1391249605
 RectTransform:
   m_ObjectHideFlags: 0
@@ -39429,9 +39553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e37a40f7b963ca24d94314a7177ee6fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resource_Ore: 0
   resource_Money: 0
-  text_Ore: {fileID: 1839995553}
   text_Money: {fileID: 903753393}
 --- !u!4 &1398734225
 Transform:
@@ -39489,7 +39611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SecondsBeforeStart: 40.4
-  isAutoBorn: 0
+  isAutoBorn: 1
   allTimeText: {fileID: 738595691}
   nextWaveText: {fileID: 1898698680}
 --- !u!82 &1398734229
@@ -39684,7 +39806,7 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1404947820}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -39692,8 +39814,8 @@ RectTransform:
   - {fileID: 435912009}
   - {fileID: 610022838}
   - {fileID: 1439164699}
-  m_Father: {fileID: 1191354692}
-  m_RootOrder: 8
+  m_Father: {fileID: 14172380}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -39786,6 +39908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 2
   unLockObj: 0
   myLevel: 1
@@ -43239,14 +43362,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1526210314
 RectTransform:
   m_ObjectHideFlags: 0
@@ -44400,14 +44531,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!114 &1551764316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45333,14 +45472,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1583549548
 RectTransform:
   m_ObjectHideFlags: 0
@@ -45571,7 +45718,6 @@ MonoBehaviour:
     detectObjPrefab: {fileID: 286091979}
     tspObject_Name: 12
     turret_delayTime: 0.5
-    cost_Ore: 30
     cost_Money: 30
     cost_Electricity: 20
   - objectName: "\u98A8\u7832"
@@ -45600,7 +45746,6 @@ MonoBehaviour:
     detectObjPrefab: {fileID: 880696479}
     tspObject_Name: 7
     turret_delayTime: 3
-    cost_Ore: 40
     cost_Money: 40
     cost_Electricity: 10
   - objectName: "\u96FB\u529B\u5854"
@@ -45629,7 +45774,6 @@ MonoBehaviour:
     detectObjPrefab: {fileID: 1440023200}
     tspObject_Name: 15
     turret_delayTime: 3
-    cost_Ore: 40
     cost_Money: 40
     cost_Electricity: 0
   - objectName: "\u8FFD\u8E64\u98DB\u5F48"
@@ -45658,7 +45802,6 @@ MonoBehaviour:
     detectObjPrefab: {fileID: 286091979}
     tspObject_Name: 12
     turret_delayTime: 3
-    cost_Ore: 40
     cost_Money: 40
     cost_Electricity: 10
 --- !u!1001 &1593562318
@@ -46693,14 +46836,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1645155987
 RectTransform:
   m_ObjectHideFlags: 0
@@ -53175,14 +53326,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1930348058
 RectTransform:
   m_ObjectHideFlags: 0
@@ -54209,14 +54368,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1960321061
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55637,14 +55804,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &1992316989
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55878,6 +56053,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fe71e4910578544996c12a36f590db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  whoUpdate: 0
   abilityData: 2
   unLockObj: 0
   myLevel: 3
@@ -57496,14 +57672,22 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
 --- !u!224 &2037852580
 RectTransform:
   m_ObjectHideFlags: 0

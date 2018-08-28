@@ -42,12 +42,12 @@ public class TurretData : MonoBehaviour
         public GameManager.whichObject tspObject_Name;
         [Header("花費")]
         public float turret_delayTime;
-        public int cost_Ore;
         public int cost_Money;
         public int cost_Electricity;
     }
 
-    public Dictionary<GameManager.whichObject, TowerDataBase> DataBase = new Dictionary<GameManager.whichObject, TowerDataBase>();
+    public Dictionary<GameManager.whichObject, TowerDataBase> myDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>();
+    public Dictionary<GameManager.whichObject, TowerDataBase> enemyDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>();
     public List<TowerDataBase> Towers;
 
     private void Awake()
@@ -64,17 +64,38 @@ public class TurretData : MonoBehaviour
     {
         for (int i = 0; i < Towers.Count; i++)
         {
-            DataBase.Add(Towers[i].TurretName, Towers[i]);
+            myDataBase.Add(Towers[i].TurretName, Towers[i]);
+            enemyDataBase.Add(Towers[i].TurretName, Towers[i]);
         }
     }
 
+    #region 改變塔防數據
+    //我方
+    public void changeMyData(GameManager.whichObject _name, TowerDataBase _data)
+    {
+        myDataBase[_name] = _data;
+    }
+    //敵方
+    public void changeEnemyData(GameManager.whichObject _name, TowerDataBase _data)
+    {
+        enemyDataBase[_name] = _data;
+    }
+    #endregion
+
+    #region 取得塔防數據
+    //我方
     public TowerDataBase getTowerData(GameManager.whichObject _name)
     {
-        if (!DataBase.ContainsKey(_name))
-        {
-            Debug.Log("沒有此塔防數據");
-            return new TowerDataBase();
-        }
-        return DataBase[_name];
+        TowerDataBase tmpData = new TowerDataBase();
+        myDataBase.TryGetValue(_name, out tmpData);
+        return tmpData;
     }
+    //敵方
+    public TowerDataBase getEnemyTowerData(GameManager.whichObject _name)
+    {
+        TowerDataBase tmpData = new TowerDataBase();
+        enemyDataBase.TryGetValue(_name, out tmpData);
+        return tmpData;
+    }
+    #endregion
 }

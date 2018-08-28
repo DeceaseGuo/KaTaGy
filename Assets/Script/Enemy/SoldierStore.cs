@@ -8,12 +8,12 @@ public class SoldierStore : MonoBehaviour
     {
         if (!BuildManager.instance.nowBuilding)
         {
-            MyEnemyData.Enemies tmpSoldier = MyEnemyData.instance.getEnemyData(_name);
+            MyEnemyData.Enemies tmpSoldier = MyEnemyData.instance.getMySoldierData(_name);
             if (tmpSoldier._soldierName != GameManager.whichObject.None)
             {
-                if (PlayerObtain.instance.Check_OreAmount(tmpSoldier.cost_Ore) && PlayerObtain.instance.Check_MoneyAmount(tmpSoldier.cost_Money))
+                if (PlayerObtain.instance.Check_MoneyAmount(tmpSoldier.cost_Money))
                 {
-                    PlayerObtain.instance.consumeResource(tmpSoldier.cost_Ore, tmpSoldier.cost_Money);
+                    PlayerObtain.instance.consumeResource(tmpSoldier.cost_Money);
                     EnemyManager.instance.getEnemyQueue(tmpSoldier);
                     
                 }

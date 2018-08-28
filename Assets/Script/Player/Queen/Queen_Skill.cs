@@ -239,7 +239,7 @@ public class Queen_Skill : SkillBase
         if (firstQAtk && !endQAtk)
         {
             Collider[] tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
-            if (tmpEnemy != null)
+            if (tmpEnemy.Length != 0)
             {
                 foreach (var target in tmpEnemy)
                 {
@@ -249,17 +249,20 @@ public class Queen_Skill : SkillBase
                     isDead who = target.GetComponent<isDead>();
                     if (who != null)
                     {
+                        PhotonView Net = target.GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
                                 target.transform.forward = -transform.forward.normalized;
-                                target.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 4.5f, Vector3.zero, false);
-                                target.GetComponent<PhotonView>().RPC("pushOtherTarget", PhotonTargets.All);
+                                Net.RPC("takeDamage", PhotonTargets.All, 4.5f, Vector3.zero, false);
+                                Net.RPC("pushOtherTarget", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Soldier:
-                                //catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
+                                Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
+                                Net.RPC("pushOtherTarget", PhotonTargets.All, -transform.forward.normalized, 10f);
                                 break;
                             case GameManager.NowTarget.Tower:
+                                Net.RPC("takeDamage", PhotonTargets.All, 4.5f);
                                 break;
                             case GameManager.NowTarget.Core:
                                 target.transform.forward = -transform.forward.normalized;
@@ -279,29 +282,29 @@ public class Queen_Skill : SkillBase
         {
             endQAtk = false;
             Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 9, aniScript.canAtkMask);
-            if (tmpEnemy != null)
+            if (tmpEnemy.Length != 0)
             {
                 foreach (var target in tmpEnemy)
                 {
                     isDead who = target.GetComponent<isDead>();
                     if (who != null)
                     {
+                        PhotonView Net = target.GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
                                 target.transform.forward = -transform.forward.normalized;
-                                target.GetComponent<PhotonView>().RPC("HitFlayUp", PhotonTargets.All);
-                                target.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
-                                
-                                //target.GetComponent<PhotonView>().RPC("pushOtherTarget", PhotonTargets.All);
+                                Net.RPC("HitFlayUp", PhotonTargets.All);
+                                Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
                                 break;
                             case GameManager.NowTarget.Soldier:
-                                //catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
+                                Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
+                                Net.RPC("HitFlayUp", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Tower:
+                                Net.RPC("takeDamage", PhotonTargets.All, 5.5f);
                                 break;
                             case GameManager.NowTarget.Core:
-                                target.transform.forward = -transform.forward.normalized;
                                 break;
                             case GameManager.NowTarget.NoChange:
                                 return;
@@ -331,27 +334,30 @@ public class Queen_Skill : SkillBase
         if (!photonView.isMine)
         {
             Collider[] tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 7f, aniScript.canAtkMask);
-            if (tmpEnemy != null)
+            if (tmpEnemy.Length != 0)
             {
                 foreach (var target in tmpEnemy)
                 {
                     isDead who = target.GetComponent<isDead>();
                     if (who != null)
                     {
+                        PhotonView Net = target.GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
-                                target.GetComponent<PhotonView>().RPC("HitFlayUp", PhotonTargets.All);
-                                target.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8f, Vector3.zero, false);
-                                target.GetComponent<PhotonView>().RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
+                                Net.RPC("HitFlayUp", PhotonTargets.All);
+                                Net.RPC("takeDamage", PhotonTargets.All, 8f, Vector3.zero, false);
+                                Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
                                 break;
                             case GameManager.NowTarget.Soldier:
-                                //catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
+                                Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
+                                Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
+                                Net.RPC("HitFlayUp", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Tower:
+                                Net.RPC("takeDamage", PhotonTargets.All, 5f);
                                 break;
                             case GameManager.NowTarget.Core:
-                                target.transform.forward = -transform.forward.normalized;
                                 break;
                             case GameManager.NowTarget.NoChange:
                                 return;
@@ -376,7 +382,6 @@ public class Queen_Skill : SkillBase
             skillE_CT = Timer.FirstAction(0.23f, () =>
             {
                 Collider[] tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
-                Debug.Log("偵測e技能打到誰中");
                 if (tmpEnemy != null)
                 {
                     foreach (var target in tmpEnemy)
@@ -388,18 +393,19 @@ public class Queen_Skill : SkillBase
                         isDead who = target.GetComponent<isDead>();
                         if (who != null)
                         {
+                            PhotonView Net = target.GetComponent<PhotonView>();
                             switch (who.myAttributes)
                             {
                                 case GameManager.NowTarget.Player:
-                                    target.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 2f, dirToTarget, true);
+                                    Net.RPC("takeDamage", PhotonTargets.All, 2f, dirToTarget, true);
                                     break;
                                 case GameManager.NowTarget.Soldier:
-                                    //catchObj.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
+                                    Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
                                     break;
                                 case GameManager.NowTarget.Tower:
+                                    Net.RPC("takeDamage", PhotonTargets.All, 3f);
                                     break;
                                 case GameManager.NowTarget.Core:
-                                    target.transform.forward = -transform.forward.normalized;
                                     break;
                                 case GameManager.NowTarget.NoChange:
                                     return;

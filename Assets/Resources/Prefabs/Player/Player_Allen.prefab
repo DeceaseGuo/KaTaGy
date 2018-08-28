@@ -1004,7 +1004,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4190764901086212}
   - component: {fileID: 119295043759139164}
-  m_Layer: 0
+  m_Layer: 27
   m_Name: arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4388,7 +4388,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
@@ -4493,7 +4493,6 @@ MonoBehaviour:
   ownershipTransfer: 0
   ObservedComponents:
   - {fileID: 114995539984100544}
-  - {fileID: 114869468751166232}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -4655,6 +4654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f053209f914ee4188ef8f0e3036496, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meIs: 0
   playerData:
     objectName: 
     headImage: {fileID: 0}
@@ -4667,7 +4667,6 @@ MonoBehaviour:
     Atk_Damage: 0
     Atk_maxDamage: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     Hp_Max: 200
@@ -4679,18 +4678,20 @@ MonoBehaviour:
     skillCD_W: 0
     skillCD_E: 0
     skillCD_R: 0
-    Add_hp1: 0
-    Add_hp2: 0
-    Add_hp3: 0
-    Add_ap1: 0
-    Add_ap2: 0
-    Add_ap3: 0
-    Add_atk1: 0
-    Add_atk2: 0
-    Add_atk3: 0
-    Add_def1: 0
-    Add_def2: 0
-    Add_def3: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_ap1: 0
+      Add_ap2: 0
+      Add_ap3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   originalData:
     objectName: 
     headImage: {fileID: 0}
@@ -4703,7 +4704,6 @@ MonoBehaviour:
     Atk_Damage: 0
     Atk_maxDamage: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     Hp_Max: 0
@@ -4715,18 +4715,20 @@ MonoBehaviour:
     skillCD_W: 0
     skillCD_E: 0
     skillCD_R: 0
-    Add_hp1: 0
-    Add_hp2: 0
-    Add_hp3: 0
-    Add_ap1: 0
-    Add_ap2: 0
-    Add_ap3: 0
-    Add_atk1: 0
-    Add_atk2: 0
-    Add_atk3: 0
-    Add_def1: 0
-    Add_def2: 0
-    Add_def3: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_ap1: 0
+      Add_ap2: 0
+      Add_ap3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   AniControll: {fileID: 0}
   buildManager: {fileID: 0}
   deadManager: {fileID: 0}
@@ -4741,6 +4743,7 @@ MonoBehaviour:
   CharacterRot: {x: 0, y: 0, z: 0, w: 0}
   Net: {fileID: 0}
   arrow: {fileID: 4519076505986922}
+  arrowProjector: {fileID: 119295043759139164}
   skill_Q:
     m_PersistentCalls:
       m_Calls: []
@@ -5250,7 +5253,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1392877743622432}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 1.1
   m_Speed: 22
   m_Acceleration: 300
   avoidancePriority: 30

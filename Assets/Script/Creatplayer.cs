@@ -25,10 +25,6 @@ public class Creatplayer : Photon.MonoBehaviour
     private Player player_Script;
     public Player Player_Script { get { return player_Script; } private set { player_Script = value; } }
 
-    //玩家動畫腳本
-    private PlayerAni player_AniScript;
-    public PlayerAni Player_AniScript { get { return player_AniScript; } private set { player_AniScript = value; } }
-
     //玩家Gameobject
     private GameObject myNowPlayer;
     public GameObject MyNowPlayer { get { return myNowPlayer; } private set { myNowPlayer = value; } }
@@ -123,16 +119,6 @@ public class Creatplayer : Photon.MonoBehaviour
         MyNowPlayer.transform.SetParent(MyPlayer);
         //GameManager.instance.changeNowMask();
         Player_Script = myNowPlayer.GetComponent<Player>();
-
-        switch (GameManager.instance.Meis)
-        {
-            case GameManager.meIs.Allen:
-                Player_AniScript = myNowPlayer.GetComponent<Allen_Ani>();
-                break;
-            case GameManager.meIs.Queen:
-                Player_AniScript = myNowPlayer.GetComponent<Queen_Ani>();
-                break;
-        }
     }
 
     #region 玩家重生

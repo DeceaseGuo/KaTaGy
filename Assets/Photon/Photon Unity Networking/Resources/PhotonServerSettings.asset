@@ -14,11 +14,11 @@ MonoBehaviour:
   AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
   VoiceAppID: 
   ChatAppID: 
-  HostType: 2
+  HostType: 1
   PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
-  ServerAddress: 120.113.98.111
+  ServerAddress: 120.113.99.215
   ServerPort: 5055
   VoiceServerPort: 5055
   JoinLobby: 0
@@ -28,18 +28,20 @@ MonoBehaviour:
   RunInBackground: 1
   RpcList:
   - Ani_Run
-  - changeColor
   - changeLayer
   - changeMask_1
   - changeMask_2
   - Chat
-  - checkCurrentPlay
   - DestroyRpc
-  - Die
   - getAtkAnimator
+  - GetDeBuff_Stun
   - getFirestPlayer
+  - GetSkillPos
   - GoDodge
+  - HitFlayUp
+  - HitNull
   - InstantiateRpc
+  - NowShield
   - OutGame
   - PickupItemInit
   - PunPickup
@@ -48,18 +50,22 @@ MonoBehaviour:
   - pushOtherTarget
   - RequestForPickupItems
   - RequestForPickupTimes
-  - returnBulletPool
   - SetActiveF
   - SetActiveT
-  - showHeatBar
-  - Skill_Q
+  - Skill_E_Fun
+  - Skill_Q_Fun
+  - Skill_R_Fun
+  - Skill_W_Fun
   - takeDamage
   - TP_Combo
   - TP_Data
-  - TP_resetHp
   - TP_stopAni
+  - UpdataData
+  - UpdataSoldier
+  - UpdataTower
   - waitBuild
   - weaponOC
+<<<<<<< HEAD
   - GetDeBuff_Stun
   - Skill_Q_Fun
   - Skill_W_Fun
@@ -70,4 +76,6 @@ MonoBehaviour:
   - GetSkillPos
   - HitFlayUp
   - OverheatChange
+=======
+>>>>>>> f58cdcaf5536c2affbc3f6334c8029fe880c42f7
   DisableAutoOpenWizard: 1

@@ -6,7 +6,13 @@ using UnityEngine.UI;
 public class GameManager : Photon.MonoBehaviour
 {
     public static GameManager instance;
-    
+
+    private UIManager uiManagerScript;
+    private UIManager UIManagerScript { get { if (uiManagerScript == null) uiManagerScript = UIManager.instance; return uiManagerScript; } }
+
+    private SmoothFollow smoothFollowScript;
+    private SmoothFollow SmoothFollowScript { get { if (smoothFollowScript == null) smoothFollowScript = SmoothFollow.instance; return smoothFollowScript; } }
+
     //單人
     public Toggle singleToggle;
     public void IsSingleToggle()
@@ -75,10 +81,10 @@ public class GameManager : Photon.MonoBehaviour
         player_2
     }
 
-    public enum meIs
+    public enum meIs : int
     {
-        Allen,
-        Queen
+        Allen=0,
+        Queen=1
     }
     public meIs Meis;
     public MyNowPlayer firstPlayer;
@@ -130,14 +136,19 @@ public class GameManager : Photon.MonoBehaviour
             InGameSetMenu();
         }
 
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            UIManagerScript.switch_Warehouse();
+        }
+
         if (Input.GetKeyDown(KeyCode.T))
         {
-            SmoothFollow.instance.switch_UAV();
+            SmoothFollowScript.switch_UAV();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            SmoothFollow.instance.GoBackMyPos();
+            SmoothFollowScript.GoBackMyPos();
         }
     }
 

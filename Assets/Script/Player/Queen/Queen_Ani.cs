@@ -73,10 +73,6 @@ public class Queen_Ani : PlayerAni
                 player.lockDodge = true;
                 redressOpen = true;
                 brfore_shaking = true;
-               /* if (!nextComboBool)
-                    canClick = true;
-                if (anim.GetBool("Action"))
-                    anim.SetBool("Action", false);*/
                 break;
             //後搖點
             case (4):
@@ -106,12 +102,12 @@ public class Queen_Ani : PlayerAni
         //鐮刀本身
        if (startDetect_1)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(5.0f, 1f, 1.3f));
+            ProduceCheckBox(weapon_Detect, new Vector3(3.5f, 1f, 1.5f));
         }
        //轉刀
          if (startDetect_2)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(5.0f, 1f, 4.5f));
+            ProduceCheckBox(weapon_Detect, new Vector3(3.5f, 1f, 3.5f));
         }
     }
 

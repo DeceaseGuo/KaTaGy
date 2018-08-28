@@ -46,7 +46,7 @@ public class Sort_Soldier : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void ResetSoldierData()
     {
         if (DataName != GameManager.whichObject.None)
-            SoldierData = MyEnemyData.instance.getEnemyData(DataName);
+            SoldierData = MyEnemyData.instance.getMySoldierData(DataName);
     }
 
     #region 顯示資訊

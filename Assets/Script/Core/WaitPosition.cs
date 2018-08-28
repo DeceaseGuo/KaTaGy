@@ -40,7 +40,7 @@ public class WaitPosition : MonoBehaviour
     {
         cnacle = null;
         selectSort.Overto_UnLock();
-        UpdateScript.Update_ThisAbility(selectSort.abilityData, selectSort.myLevel, selectSort.unLockObj);
+        UpdateScript.Update_ThisAbility(selectSort.whoUpdate, selectSort.abilityData, selectSort.myLevel, selectSort.unLockObj);
         ResetData();
     }
     //返回金錢

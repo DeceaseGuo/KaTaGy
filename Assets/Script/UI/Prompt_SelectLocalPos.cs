@@ -116,9 +116,9 @@ public class Prompt_SelectLocalPos : MonoBehaviour
     }
 
     //取得需求表-1
-    public void setMoInBtMenu_Need(float _ore, float _money, float _elect, float _needTime)
+    public void setMoInBtMenu_Need(/*float _ore,*/ float _money, float _elect, float _needTime)
     {
-        DataBase.need_ore.text = _ore.ToString();
+       // DataBase.need_ore.text = _ore.ToString();
         DataBase.need_money.text = _money.ToString();
         DataBase.need_electricity.text = _elect.ToString();
         DataBase.need_time.text = _needTime.ToString();

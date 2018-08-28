@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
-using DG.Tweening;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(isDead))]
@@ -15,12 +14,12 @@ public class EnemyControl : Photon.MonoBehaviour
     private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
 
     private MatchTimer matchTime;
-    private MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+    protected MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
     #endregion
     //數據
     public GameManager.whichObject DataName;
     public MyEnemyData.Enemies enemyData;
-    protected MyEnemyData.Enemies originalData;
+    public MyEnemyData.Enemies originalData;
     [HideInInspector]
     public isDead deadManager;  
 
@@ -45,7 +44,6 @@ public class EnemyControl : Photon.MonoBehaviour
     public List<GameObject> myTarget;
     //尋路
     protected NavMeshAgent nav;
-    protected NavMeshObstacle stopNav;
     protected RandomNodeManager randomNodeManager;
     public Node[] agentPoints;
   //  protected Transform targetPoint;
@@ -57,10 +55,13 @@ public class EnemyControl : Photon.MonoBehaviour
     protected bool firstAtk;
     protected bool ifAtkMoveStop;
 
+    private bool nowCC;
+    public bool NowCC { get { return nowCC; } set { nowCC = value; } }
+
     //血量
     private float maxValue;
     [SerializeField] Renderer myRender;
-    [SerializeField] CanvasGroup UI_HpObj;
+    [SerializeField] protected CanvasGroup UI_HpObj;
     [SerializeField] Image UI_HpBar;
 
     public enum states
@@ -105,7 +106,6 @@ public class EnemyControl : Photon.MonoBehaviour
             if (photonView.isMine)
             {
                 StartDetectT();
-                stopNav.enabled = false;
                 nav.enabled = true;
                 nowState = states.Move;
                 selectRoad();
@@ -116,6 +116,7 @@ public class EnemyControl : Photon.MonoBehaviour
 
     private void Start()
     {
+        AtkDetectSet();
         randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();    
         Net = GetComponent<PhotonView>();
         ani = GetComponent<Animator>();
@@ -126,13 +127,7 @@ public class EnemyControl : Photon.MonoBehaviour
             checkCurrentPlay();
             SetCoroutine();
         }
-        else
-        {
-            nav.enabled = false;
-            return;
-        }
         nav.updateRotation = false;
-        stopNav = GetComponent<NavMeshObstacle>();
 
         selectRoad();
         getNextPoint();
@@ -149,9 +144,6 @@ public class EnemyControl : Photon.MonoBehaviour
             if (nowState != states.Atk && nowState != states.Wait_Move && nowState != states.Wait_TargetDie)
                 DetectState();
 
-            if (haveHit && targetDeadScript != null && !targetDeadScript.checkDead)
-                TouchTarget();
-
             if ((nowState == states.Wait_TargetDie && nowTarget == GameManager.NowTarget.Null) || currentTarget != null)
                 delayCancelTarget();
         }
@@ -164,29 +156,32 @@ public class EnemyControl : Photon.MonoBehaviour
         {
             deadManager = GetComponent<isDead>();
             soldierCollider = GetComponent<CapsuleCollider>();
-            deadManager.ifDead(false);
         }
         else
         {
-            soldierCollider.enabled = true;
-            deadManager.ifDead(false);
             if (photonView.isMine)
             {
+                originalData = MyEnemyData.instance.getMySoldierData(DataName);
                 SceneManager.AddMyList(gameObject, deadManager.myAttributes);
-                nav.speed = enemyData.moveSpeed;
             }
             else
+            {
+                originalData = MyEnemyData.instance.getEnemySoldierData(DataName);
                 SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
-        }
+            }
 
+            soldierCollider.enabled = true;
+            deadManager.ifDead(false);
+            enemyData = originalData;
+        }
         if (nav != null)
             nav.speed = enemyData.moveSpeed;
-
-        originalData = MyEnemyData.instance.getEnemyData(DataName);
-        enemyData = originalData;
         nowPoint = Find_PathPoint;
     }
     #endregion
+
+    protected virtual void AtkDetectSet()
+    { }
 
     #region 尋找正確敵人(協成設定)
     //開始尋找目標
@@ -354,18 +349,29 @@ public class EnemyControl : Photon.MonoBehaviour
         if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 28);
-            currentMask = GameManager.instance.getPlayer1_Mask;
+            Net.RPC("changeMask_1", PhotonTargets.All);
             nowPoint = 0;
             Find_PathPoint = nowPoint;
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
             Net.RPC("changeLayer", PhotonTargets.All, 29);
-            currentMask = GameManager.instance.getPlayer2_Mask;
+            Net.RPC("changeMask_2", PhotonTargets.All);
             nowPoint = 9;
             Find_PathPoint = nowPoint;
             
         }
+    }
+
+    [PunRPC]
+    public void changeMask_1()
+    {
+        currentMask = GameManager.instance.getPlayer1_Mask;
+    }
+    [PunRPC]
+    public void changeMask_2()
+    {
+        currentMask = GameManager.instance.getPlayer2_Mask;
     }
     #endregion
 
@@ -424,8 +430,8 @@ public class EnemyControl : Photon.MonoBehaviour
     #region 士兵移動
     void enemyMove()
     {
-        stopNav.enabled = false;
-        nav.enabled = true;
+       // stopNav.enabled = false;
+        //nav.enabled = true;
 
         if (nowState == states.Move)
         {
@@ -555,8 +561,6 @@ public class EnemyControl : Photon.MonoBehaviour
                 {
                     shortPos = correctPos;
                     points.RemovePoint(enemyData.atk_Range, correctPos);
-                    stopNav.enabled = false;
-                    nav.enabled = true;
                     OverAtkDis = true;
                 }
 
@@ -583,8 +587,6 @@ public class EnemyControl : Photon.MonoBehaviour
                 }
                 else //沒超過攻擊範圍 士兵不自動換點
                 {
-                    nav.enabled = false;
-                    stopNav.enabled = true;
                     rotToTarget();
                     if (!ani.GetBool("Stop"))
                         Net.RPC("TP_stopAni", PhotonTargets.All, true);
@@ -610,6 +612,10 @@ public class EnemyControl : Photon.MonoBehaviour
     {
         if (ani == null)
             ani = GetComponent<Animator>();
+        if (t)
+            nav.avoidancePriority = 10;
+        else
+            nav.avoidancePriority = 40;
         ani.SetBool("Stop", t);
     }
     #endregion
@@ -618,22 +624,15 @@ public class EnemyControl : Photon.MonoBehaviour
     protected void rotToTarget()
     {
         atkDir = currentTarget.transform.position - transform.position;
-        atkDir.y = 0;
+        atkDir.y = transform.position.y;
         CharacterRot = Quaternion.LookRotation(atkDir.normalized);
         transform.rotation = CharacterRot;
     }
     #endregion
 
     #region 攻擊動畫判定開關
-    public virtual void changeCanHit(int c)
-    {
-
-    }
-    #endregion
-
-    #region 攻擊是否打中
     public List<GameObject> alreadytakeDamage = new List<GameObject>();
-    protected virtual void TouchTarget()
+    public virtual void changeCanHit(int c)
     {
 
     }
@@ -658,40 +657,45 @@ public class EnemyControl : Photon.MonoBehaviour
 
     #region 負面效果
     //暈眩
+    [PunRPC]
     protected virtual void GetDeBuff_Stun(float _time)
-    {
-        nowState = states.Null;
-        ani.SetBool("Stop", false);
-        StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
-    }
+    { }
     //緩速
     protected virtual void GetDeBuff_Slow()
-    {
-
-    }
+    { }
     //破甲
     protected virtual void GetDeBuff_DestoryDef()
-    {
-
-    }
+    { }
     //燒傷
     protected virtual void GetDeBuff_Burn()
-    {
-
-    }
+    { }
     //擊退
     [PunRPC]
     protected virtual void pushOtherTarget(Vector3 _dir, float _dis)
-    {
-        this.transform.DOMove(transform.localPosition + _dir.normalized * _dis, .8f).SetEase(Ease.OutBounce);
-        Quaternion Rot = Quaternion.LookRotation(-_dir.normalized);
-        this.transform.rotation = Rot;
-    }
+    { }
+    //往上擊飛
+    [PunRPC]
+    protected virtual void HitFlayUp()
+    { }
 
-    void Recover_Stun()
+    //負面狀態恢復
+    protected void Recover_Stun()
     {
-        getNextPoint();
-        nowState = states.Move;
+        ani.SetBool("StunRock", false);
+        if (photonView.isMine)
+        {
+            if (currentTarget != null && currentTarget.activeSelf)
+            {
+                nowState = states.AtkWait;
+                resetChaseTime();
+            }
+            else
+            {
+                cancelSelectTarget(true);
+                getNextPoint();
+                nowState = states.Move;
+            }
+        }
     }
     #endregion
 
@@ -734,8 +738,6 @@ public class EnemyControl : Photon.MonoBehaviour
     public void getNextPoint()
     {
         nextPos = false;
-        stopNav.enabled = false;
-        nav.enabled = true;
 
         if (photonView.isMine)
         {
@@ -789,10 +791,19 @@ public class EnemyControl : Photon.MonoBehaviour
                 {
                     CreatPoints tmpPoint = _isdead.gameObject.GetComponent<CreatPoints>();
                     firstAtk = true;
-                    nowState = states.BeAtk;
-                    goAtkPos(tmpPoint, _isdead);
-                    beAttackStop();
                     resetChaseTime();
+                    if (!NowCC)
+                    {
+                        nowState = states.BeAtk;
+                        goAtkPos(tmpPoint, _isdead);
+                        beAttackStop();
+                    }
+                    else
+                    {
+                        currentTarget = _isdead.gameObject;
+                        points = tmpPoint;
+                        targetDeadScript = _isdead;
+                    }                    
                 }
             }
         }
@@ -801,7 +812,7 @@ public class EnemyControl : Photon.MonoBehaviour
         MyHelath(tureDamage);
     }
 
-    void MyHelath(float _damage)
+    protected virtual void MyHelath(float _damage)
     {
         //血量顯示與消失
         UI_HpObj.alpha = 1;
@@ -829,7 +840,7 @@ public class EnemyControl : Photon.MonoBehaviour
 
     }
 
-    void BeHitChangeColor()
+    protected void BeHitChangeColor()
     {
         if (maxValue == 0)
         {
@@ -898,7 +909,7 @@ public class EnemyControl : Photon.MonoBehaviour
     #endregion
 
     #region 死亡
-    void Death()
+    protected void Death()
     {
         StartCoroutine(Timer.Start_MoreFunction(0f, () =>
         {
@@ -997,6 +1008,12 @@ public class EnemyControl : Photon.MonoBehaviour
     }
     #endregion
 
+    protected void StopAll()
+    {
+        nav.ResetPath();
+        nowState = states.Null;
+        ani.SetBool("Stop", false);
+    }
     //回歸時間
     public void resetChaseTime()
     {
