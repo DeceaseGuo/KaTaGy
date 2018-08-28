@@ -11,11 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3758f8f58fdef43803eb9be1df0608, type: 3}
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
-  AppID: 
+  AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
   VoiceAppID: 
   ChatAppID: 
-  HostType: 0
-  PreferredRegion: 0
+  HostType: 1
+  PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
   ServerAddress: 
@@ -26,5 +26,44 @@ MonoBehaviour:
   PunLogging: 0
   NetworkLogging: 1
   RunInBackground: 1
-  RpcList: []
-  DisableAutoOpenWizard: 0
+  RpcList:
+  - Ani_Run
+  - changeLayer
+  - changeMask_1
+  - changeMask_2
+  - Chat
+  - DestroyRpc
+  - getAtkAnimator
+  - GetDeBuff_Stun
+  - getFirestPlayer
+  - GetSkillPos
+  - GoDodge
+  - HitFlayUp
+  - HitNull
+  - InstantiateRpc
+  - NowShield
+  - OutGame
+  - OverheatChange
+  - PickupItemInit
+  - PunPickup
+  - PunPickupSimple
+  - PunRespawn
+  - pushOtherTarget
+  - RequestForPickupItems
+  - RequestForPickupTimes
+  - SetActiveF
+  - SetActiveT
+  - Skill_E_Fun
+  - Skill_Q_Fun
+  - Skill_R_Fun
+  - Skill_W_Fun
+  - takeDamage
+  - TP_Combo
+  - TP_Data
+  - TP_stopAni
+  - UpdataData
+  - UpdataSoldier
+  - UpdataTower
+  - waitBuild
+  - weaponOC
+  DisableAutoOpenWizard: 1
