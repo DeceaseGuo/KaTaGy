@@ -21294,7 +21294,8 @@ GameObject:
   - component: {fileID: 760086966}
   - component: {fileID: 760086965}
   - component: {fileID: 760086969}
-  m_Layer: 30
+  - component: {fileID: 760086970}
+  m_Layer: 31
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21382,6 +21383,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myAttributes: 4
   notFeedBack: 0
+--- !u!114 &760086970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 760086964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  OwnerShipWasTransfered: 0
+  prefixBackup: -1
+  synchronization: 0
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 0}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 3
+  instantiationId: 3
+  currentMasterID: -1
+  isRuntimeInstantiated: 0
 --- !u!1 &761035117
 GameObject:
   m_ObjectHideFlags: 0
@@ -45575,7 +45602,7 @@ MonoBehaviour:
     turret_delayTime: 3
     cost_Ore: 40
     cost_Money: 40
-    cost_Electricity: 60
+    cost_Electricity: 10
   - objectName: "\u96FB\u529B\u5854"
     TurretName: 14
     headImage: {fileID: 21300000, guid: afffe7a1cc18cae4d95b7665d36567a5, type: 3}

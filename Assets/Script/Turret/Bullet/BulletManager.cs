@@ -50,7 +50,6 @@ public class BulletManager : Photon.MonoBehaviour {
         Vector3 targetPos = target.position;
         targetPos.y = target.position.y + targetOffsetY;
         dir = targetPos - transform.position;
-        transform.LookAt(targetPos);
     }
 
     #region 子彈移動
@@ -67,7 +66,7 @@ public class BulletManager : Photon.MonoBehaviour {
             transform.LookAt(targetPos);
         }
         
-        transform.Translate(dir.normalized * distanceThisFrame, Space.World);        
+        transform.Translate(dir.normalized * distanceThisFrame, Space.World);
     }
     #endregion
 

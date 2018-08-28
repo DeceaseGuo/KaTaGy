@@ -56,17 +56,15 @@ public class Bullet_WindTower : BulletManager
 
     #region 子彈移動
     protected override void BulletMove()
-    {
-        
+    {       
         Vector3 _targetPoint = dir.normalized * Data.bullet_Speed * flyTime;
         _targetPoint.y = targetDead.transform.localPosition.y;
-        transform.LookAt(_targetPoint/*new Vector3(dir.x, transform.position.y, dir.z)*/);
         myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
         if (!photonView.isMine)
         {
             myTweener.OnUpdate(Hit);
-        }      
+        }
     }
     #endregion
 
