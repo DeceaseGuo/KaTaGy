@@ -2050,7 +2050,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1842215869857276
 GameObject:
   m_ObjectHideFlags: 1
@@ -5578,6 +5578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 1
+  noCC: 0
   notFeedBack: 0
 --- !u!114 &114853035508966626
 MonoBehaviour:

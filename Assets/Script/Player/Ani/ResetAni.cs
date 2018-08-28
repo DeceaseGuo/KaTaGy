@@ -14,6 +14,7 @@ public class ResetAni : StateMachineBehaviour
         if(player==null)
             player= animator.gameObject.GetComponent<Player>();
         player.NowCC = false;
+        player.deadManager.noCC = false;
         ani.GoBackIdle_canMove();
         animator.SetBool("Run", false);
         animator.SetInteger("comboIndex", 0);

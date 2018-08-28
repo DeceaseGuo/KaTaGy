@@ -2,8 +2,6 @@
 
 public class Allen_Ani : PlayerAni
 {
-    private Collider[] checkBox;
-
     #region Combo
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
@@ -112,7 +110,7 @@ public class Allen_Ani : PlayerAni
 
     void ProduceCheckBox(Transform _pos , Vector3 _size)
     {
-        checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
+        Collider[] checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
         GetCurrentTarget(checkBox);
     }
     #endregion

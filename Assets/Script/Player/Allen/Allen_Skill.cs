@@ -199,7 +199,7 @@ public class Allen_Skill : SkillBase
 
         if (catchObj == null && isForward)
         {
-            Collider[] tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.2f, 2f, 2f), Quaternion.identity, aniScript.canAtkMask);
+            Collider[] tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.35f, 1.6f, 1.9f), Quaternion.identity, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
                 catchObj = tmpEnemy[0].gameObject;
@@ -228,8 +228,8 @@ public class Allen_Skill : SkillBase
                             if (!photonView.isMine)
                             {
                                 Net.RPC("takeDamage", PhotonTargets.All, 4f);
-                                catchObj = null;
                             }
+                            catchObj = null;
                             break;
                         case GameManager.NowTarget.Core:
                             catchObj = null;
