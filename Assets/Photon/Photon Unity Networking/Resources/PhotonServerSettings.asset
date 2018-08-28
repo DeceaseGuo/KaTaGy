@@ -11,14 +11,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3758f8f58fdef43803eb9be1df0608, type: 3}
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
-  AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
+  AppID: 
   VoiceAppID: 
   ChatAppID: 
-  HostType: 1
-  PreferredRegion: 3
+  HostType: 0
+  PreferredRegion: 0
   EnabledRegions: -1
   Protocol: 0
-  ServerAddress: 120.113.99.215
+  ServerAddress: 
   ServerPort: 5055
   VoiceServerPort: 5055
   JoinLobby: 0
@@ -26,56 +26,5 @@ MonoBehaviour:
   PunLogging: 0
   NetworkLogging: 1
   RunInBackground: 1
-  RpcList:
-  - Ani_Run
-  - changeLayer
-  - changeMask_1
-  - changeMask_2
-  - Chat
-  - DestroyRpc
-  - getAtkAnimator
-  - GetDeBuff_Stun
-  - getFirestPlayer
-  - GetSkillPos
-  - GoDodge
-  - HitFlayUp
-  - HitNull
-  - InstantiateRpc
-  - NowShield
-  - OutGame
-  - PickupItemInit
-  - PunPickup
-  - PunPickupSimple
-  - PunRespawn
-  - pushOtherTarget
-  - RequestForPickupItems
-  - RequestForPickupTimes
-  - SetActiveF
-  - SetActiveT
-  - Skill_E_Fun
-  - Skill_Q_Fun
-  - Skill_R_Fun
-  - Skill_W_Fun
-  - takeDamage
-  - TP_Combo
-  - TP_Data
-  - TP_stopAni
-  - UpdataData
-  - UpdataSoldier
-  - UpdataTower
-  - waitBuild
-  - weaponOC
-<<<<<<< HEAD
-  - GetDeBuff_Stun
-  - Skill_Q_Fun
-  - Skill_W_Fun
-  - Skill_E_Fun
-  - NowShield
-  - HitNull
-  - Skill_R_Fun
-  - GetSkillPos
-  - HitFlayUp
-  - OverheatChange
-=======
->>>>>>> f58cdcaf5536c2affbc3f6334c8029fe880c42f7
-  DisableAutoOpenWizard: 1
+  RpcList: []
+  DisableAutoOpenWizard: 0
