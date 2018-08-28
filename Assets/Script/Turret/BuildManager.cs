@@ -71,7 +71,7 @@ public class BuildManager : MonoBehaviour
     {
         if (_paid)
         {
-            playerObtain.consumeResource(turretToBuild.cost_Ore, turretToBuild.cost_Money);
+            playerObtain.consumeResource(turretToBuild.cost_Money);
         }
         return true;
     }
@@ -205,10 +205,9 @@ public class BuildManager : MonoBehaviour
     #region 返回資源懲罰
     public void cancelPunish(float _percent)
     {
-        int _ore = Mathf.RoundToInt(turretToBuild.cost_Ore * _percent);
         int _Money = Mathf.RoundToInt(turretToBuild.cost_Money * _percent);
 
-        playerObtain.obtaniResource(_ore, _Money);
+        playerObtain.obtaniResource(_Money);
         closeTmpObj();
     }
     #endregion

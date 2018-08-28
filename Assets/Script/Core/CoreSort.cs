@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class CoreSort : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private MyCore coreManager;
+    public GameManager.NowTarget whoUpdate;
     public UpdateManager.Myability abilityData;
     public GameManager.whichObject unLockObj;
 

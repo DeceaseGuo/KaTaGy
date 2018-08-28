@@ -288,13 +288,12 @@ GameObject:
   - component: {fileID: 114355912679350634}
   - component: {fileID: 114255498974454520}
   - component: {fileID: 95760345036603966}
-  - component: {fileID: 208166547933268356}
   - component: {fileID: 114216425240220552}
   - component: {fileID: 114718134706677820}
   - component: {fileID: 114629190544440194}
   - component: {fileID: 136860591904145872}
   - component: {fileID: 54243955843698080}
-  m_Layer: 28
+  m_Layer: 29
   m_Name: test22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -552,7 +551,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1575617476525614
 GameObject:
   m_ObjectHideFlags: 1
@@ -1269,8 +1268,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1299396737225026}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 5.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4156251370817592}
@@ -1280,7 +1279,7 @@ Transform:
   - {fileID: 224084190830665458}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4353939617135250
 Transform:
   m_ObjectHideFlags: 1
@@ -1314,15 +1313,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1786186729607458}
-  m_LocalRotation: {x: -0.000000028367875, y: -0.00000010505203, z: -0.0034164723,
-    w: 0.9999942}
-  m_LocalPosition: {x: -0.06203147, y: 2.4500332, z: -0.00003716706}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.06, y: 1.97, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4534965828607804}
   m_Father: {fileID: 4677628440688530}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.39200002}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4470692337160578
 Transform:
   m_ObjectHideFlags: 1
@@ -1378,7 +1376,7 @@ Transform:
   m_LocalRotation: {x: -0.000000008771366, y: -0.000000091977896, z: -0.000000048428742,
     w: 1}
   m_LocalPosition: {x: -0, y: 0, z: -0}
-  m_LocalScale: {x: 0.5, y: 2.8, z: 0.3}
+  m_LocalScale: {x: 1.2, y: 4.8, z: 1}
   m_Children: []
   m_Father: {fileID: 4413834106641588}
   m_RootOrder: 0
@@ -1933,7 +1931,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 16a97df83c2413c4e859139d8b0f1fe3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2510,14 +2508,55 @@ MonoBehaviour:
     atk_delay: 0
     beAtk_delay: 0
     ATK_Level: 0
-    def_maxDEF: 0
     def_base: 0
     DEF_Level: 0
     population_need: 0
     soldier_CountDown: 0
-    UI_Name: 0
-    cost_Ore: 0
     cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
+  originalData:
+    objectName: 
+    _soldierName: 0
+    headImage: {fileID: 0}
+    firstAtk: {fileID: 0}
+    width: 0
+    moveSpeed: 0
+    rotSpeed: 0
+    stoppingDst: 0
+    UI_MaxHp: 0
+    UI_HP: 0
+    atk_maxDamage: 0
+    atk_Damage: 0
+    atk_Range: 0
+    atk_delay: 0
+    beAtk_delay: 0
+    ATK_Level: 0
+    def_base: 0
+    DEF_Level: 0
+    population_need: 0
+    soldier_CountDown: 0
+    cost_Money: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+      moveSpeed: 0
   deadManager: {fileID: 0}
   firstPriority: 3
   viewRadius: 18
@@ -2687,21 +2726,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!208 &208166547933268356
-NavMeshObstacle:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1299396737225026}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 1.49, y: 1, z: 1.49}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 0
-  m_Center: {x: 0, y: 3, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!222 &222122494930303974
 CanvasRenderer:
   m_ObjectHideFlags: 1

@@ -48,7 +48,7 @@ public class Prompt_SelectObj : MonoBehaviour
                 Player_Data = PlayerData.instance.getPlayerData(GameManager.instance.Meis);
                 return;
             case Prompt_SelectLocalPos.whois.Soldier:
-                SoldierData = MyEnemyData.instance.getEnemyData(DataName);
+               // SoldierData = MyEnemyData.instance.getEnemyData(DataName);
                 return;
             case Prompt_SelectLocalPos.whois.Tower:
                 TowerData = TurretData.instance.getTowerData(DataName);

@@ -30,7 +30,7 @@ public class SmoothFollow : MonoBehaviour
 
     [Header("不鎖視角需要")]
     public bool isLockCamera = true;
-    [SerializeField] float panSpeed = 115f;
+    [SerializeField] float panSpeed = 160f;
     [SerializeField] float panBorder = 15f;
     private Vector3 nOLockPos;
     [SerializeField] float maxZ_Border = 96f;

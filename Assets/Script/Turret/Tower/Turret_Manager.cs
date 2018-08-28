@@ -35,8 +35,7 @@ namespace AtkTower
         private void Awake()
         {
             Net = GetComponent<PhotonView>();
-            floatingText = FloatingTextController.instance;
-            originalTurretData = TurretData.instance.getTowerData(DataName);
+            floatingText = FloatingTextController.instance;            
         }
 
         private void Start()
@@ -90,25 +89,28 @@ namespace AtkTower
             if (deadManager == null)
             {
                 deadManager = GetComponent<isDead>();
-                deadManager.ifDead(false);
             }
             else
             {
-                deadManager.ifDead(false);
                 if (photonView.isMine)
                 {
+                    originalTurretData = TurretData.instance.getTowerData(DataName);
                     SceneManager.AddMyList(gameObject, deadManager.myAttributes);
                 }
                 else
                 {
+                    originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
                     SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
                 }
+
+                deadManager.ifDead(false);
+                turretData = originalTurretData;
+                nowCD = turretData.Atk_Gap;
+                turretData.UI_Hp = turretData.UI_maxHp;
+                turretData.Fad_thermalEnergy = 0;
             }
-            nowCD = turretData.Atk_Gap;
-            turretData = originalTurretData;
-            turretData.UI_Hp = turretData.UI_maxHp;
+
             healthBar.fillAmount = 1;
-            turretData.Fad_thermalEnergy = 0;
             Fad_energyBar.fillAmount = 0.0f;
         }
         #endregion

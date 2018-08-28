@@ -28,19 +28,18 @@ public class MyEnemyData : MonoBehaviour
         public float beAtk_delay;
         public int ATK_Level;
         [Header("防禦")]
-        public float def_maxDEF;
         public float def_base;
         public int DEF_Level;
         [Header("生產所需")]
         public int population_need;
         public float soldier_CountDown;
-        public GameManager.whichObject UI_Name;
         [Header("花費")]
-        public int cost_Ore;
         public int cost_Money;
+        public UpdateDataBase.SoldierUpdateData updateData;
     }
-    [SerializeField]
-    public Dictionary<GameManager.whichObject, Enemies> DataBase = new Dictionary<GameManager.whichObject, Enemies>();
+
+    public Dictionary<GameManager.whichObject, Enemies> myDataBase = new Dictionary<GameManager.whichObject, Enemies>();
+    public Dictionary<GameManager.whichObject, Enemies> enemyDataBase = new Dictionary<GameManager.whichObject, Enemies>();
     public List<Enemies> Soldiers;
 
     private void Awake()
@@ -52,33 +51,42 @@ public class MyEnemyData : MonoBehaviour
         addToDictionary();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown("z"))
-        {
-            Enemies aaa= getEnemyData(GameManager.whichObject.Soldier_1);
-            aaa.atk_Damage += 5;
-            changeData(GameManager.whichObject.Soldier_1, aaa);         
-        }
-    }
-
     void addToDictionary()
     {
         for (int i = 0; i < Soldiers.Count; i++)
         {
-            DataBase.Add(Soldiers[i]._soldierName, Soldiers[i]);
+            myDataBase.Add(Soldiers[i]._soldierName, Soldiers[i]);
+            enemyDataBase.Add(Soldiers[i]._soldierName, Soldiers[i]);
         }
     }
 
-    public void changeData(GameManager.whichObject _name, Enemies _data)
+    #region 改變士兵數據
+    //我方
+    public void changeMyData(GameManager.whichObject _name, Enemies _data)
     {
-        DataBase[_name] = _data;
-    }  
+        myDataBase[_name] = _data;
+    }
+    //敵方
+    public void changeEnemyData(GameManager.whichObject _name, Enemies _data)
+    {
+        enemyDataBase[_name] = _data;
+    }
+    #endregion
 
-    public Enemies getEnemyData(GameManager.whichObject _name)
+    #region 取得士兵數據
+    //我方
+    public Enemies getMySoldierData(GameManager.whichObject _name)
     {
         Enemies tmpData = new Enemies();
-        DataBase.TryGetValue(_name, out tmpData);
+        myDataBase.TryGetValue(_name, out tmpData);
         return tmpData;
     }
+    //敵方
+    public Enemies getEnemySoldierData(GameManager.whichObject _name)
+    {
+        Enemies tmpData = new Enemies();
+        enemyDataBase.TryGetValue(_name, out tmpData);
+        return tmpData;
+    }
+    #endregion
 }

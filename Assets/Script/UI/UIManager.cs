@@ -105,12 +105,6 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region 開啟倉庫與交換區按鈕
-    private void click_Warehouse()
-    {
-        //快捷鍵
-        //if (Input.GetKeyDown(KeyCode.RightShift))
-    }
-
     public void switch_Warehouse()
     {
         if (!isOpen)
@@ -136,7 +130,7 @@ public class UIManager : MonoBehaviour
         prompt_localPos.ClearPrompt();
 
         prompt_localPos.setMoInBtMenu(_data.headImage, _data.firstAtk, _data.objectName);
-        prompt_localPos.setMoInBtMenu_Need(_data.cost_Ore, _data.cost_Money, 0, _data.soldier_CountDown);
+        prompt_localPos.setMoInBtMenu_Need(/*_data.cost_Ore,*/ _data.cost_Money, 0, _data.soldier_CountDown);
         prompt_localPos.setMoInBtMenu_Bar(_data.atk_Damage, _data.atk_delay, _data.def_base, _data.moveSpeed);
 
         prompt_localPos.openMenu(Prompt_SelectLocalPos.allMenu.MoinB_atk);

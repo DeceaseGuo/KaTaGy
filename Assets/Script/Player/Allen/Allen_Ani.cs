@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 
 public class Allen_Ani : PlayerAni
 {
+    private Collider[] checkBox;
+
     #region Combo
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
@@ -113,7 +112,7 @@ public class Allen_Ani : PlayerAni
 
     void ProduceCheckBox(Transform _pos , Vector3 _size)
     {
-        Collider[] checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
+        checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
         GetCurrentTarget(checkBox);
     }
     #endregion
