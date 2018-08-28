@@ -198,6 +198,9 @@ public class Queen_Skill : SkillBase
     #region Q技能
     public void Q_Skill()
     {
+        if (!playerScript.deadManager.noCC)
+            playerScript.deadManager.noCC = true;
+
         if (!photonView.isMine)
             OpenDetect(true);
     }

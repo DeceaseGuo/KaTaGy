@@ -166,7 +166,7 @@ public class Mini_Soldier : EnemyControl
     [PunRPC]
     protected override void HitFlayUp()
     {
-        flyUp = transform.DOMoveY(transform.position.y + 7.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
+        flyUp = transform.DOMoveY(transform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
         flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
         {

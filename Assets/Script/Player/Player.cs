@@ -195,6 +195,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             leftTopPowerBar.fillAmount = 1;
         }
 
+        if (AniControll != null)
+            AniControll.WeaponChangePos(1);
+
         originalData = PlayerData.instance.getPlayerData(meIs);
         playerData = originalData;
         playerData.Ap_original = playerData.Ap_Max;
@@ -653,6 +656,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     [PunRPC]
     public void GetDeBuff_Stun(float _time)
     {
+        if (deadManager.noCC)
+            return;
+
         if (!deadManager.checkDead)
         {
             if (photonView.isMine)
@@ -688,6 +694,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     [PunRPC]
     public void pushOtherTarget()
     {
+        if (deadManager.noCC)
+            return;
+
         if (!deadManager.checkDead)
         {
             CancelNowSkill();
@@ -704,6 +713,9 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     [PunRPC]
     public void HitFlayUp()
     {
+        if (deadManager.noCC)
+            return;
+
         flyUp = transform.DOMoveY(transform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
         flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
