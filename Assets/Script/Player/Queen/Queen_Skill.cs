@@ -256,7 +256,8 @@ public class Queen_Skill : SkillBase
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
-                                target.transform.forward = -transform.forward.normalized;
+                                if (!who.noCC)
+                                    target.transform.forward = -transform.forward.normalized;
                                 Net.RPC("takeDamage", PhotonTargets.All, 4.5f, Vector3.zero, false);
                                 Net.RPC("pushOtherTarget", PhotonTargets.All);
                                 break;
@@ -296,7 +297,8 @@ public class Queen_Skill : SkillBase
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
-                                target.transform.forward = -transform.forward.normalized;
+                                if (!who.noCC)
+                                    target.transform.forward = -transform.forward.normalized;
                                 Net.RPC("HitFlayUp", PhotonTargets.All);
                                 Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
                                 break;
@@ -454,7 +456,7 @@ public class Queen_Skill : SkillBase
     public override void ResetQ_GoCD()
     {
         if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
+            skillCD_CT[0] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
         else
             OpenDetect(false);
 
@@ -467,13 +469,13 @@ public class Queen_Skill : SkillBase
         allSkillRange.enabled = false;
 
         if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
+            skillCD_CT[1] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
     }
     //E
     public override void ResetE_GoCD()
     {
         if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
+            skillCD_CT[2] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
         else
             End_E_skill();
     }
@@ -483,7 +485,7 @@ public class Queen_Skill : SkillBase
         allSkillRange.enabled = false;
 
         if (photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
+            skillCD_CT[3] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
     }
     #endregion
 
@@ -495,6 +497,13 @@ public class Queen_Skill : SkillBase
 
         if (!photonView.isMine)
             OpenDetect(false);
+        else
+        {
+            if (skillCD_CT[0] != null)
+                StopCoroutine(skillCD_CT[0]);
+            SkillIconManager.ClearSkillCD(0);
+        }
+
         firstQAtk = false;
         endQAtk = false;
     }
@@ -503,6 +512,13 @@ public class Queen_Skill : SkillBase
     {
         allSkillRange.enabled = false;
         playerScript.CountDown_W();
+
+        if (photonView.isMine)
+        {
+            if (skillCD_CT[1] != null)
+                StopCoroutine(skillCD_CT[1]);
+            SkillIconManager.ClearSkillCD(1);
+        }
     }
     //E
     public override void ClearE_Skill()
@@ -511,12 +527,24 @@ public class Queen_Skill : SkillBase
 
         if (!photonView.isMine)
             End_E_skill();
+        else
+        {
+            if (skillCD_CT[2] != null)
+                StopCoroutine(skillCD_CT[2]);
+            SkillIconManager.ClearSkillCD(2);
+        }
     }
     //R
     public override void ClearR_Skill()
     {
         allSkillRange.enabled = false;
         playerScript.CountDown_R();
+        if (photonView.isMine)
+        {
+            if (skillCD_CT[3] != null)
+                StopCoroutine(skillCD_CT[3]);
+            SkillIconManager.ClearSkillCD(3);
+        }
     }
     #endregion
 

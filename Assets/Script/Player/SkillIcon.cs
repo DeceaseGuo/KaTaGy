@@ -47,6 +47,15 @@ public class SkillIcon : MonoBehaviour
     {
         SetStatesCT();
     }
+
+    #region 清除技能顯示的CD
+    public void ClearSkillCD(int _i)
+    {
+        skillContainer[_i].nowTime.text = "";
+        skillContainer[_i].cdBar.fillAmount = 0;
+    }
+    #endregion
+
     #region 左上顯示狀態列
     //初始容器
     void SetStatesCT()

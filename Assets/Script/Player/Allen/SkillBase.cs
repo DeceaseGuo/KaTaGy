@@ -15,6 +15,8 @@ public class SkillBase : Photon.MonoBehaviour
     public float skillE_needAP = 1;
     public float skillR_needAP = 1;
 
+    protected Coroutine[] skillCD_CT = new Coroutine[4]; 
+
     public enum SkillAction
     {
         None,
