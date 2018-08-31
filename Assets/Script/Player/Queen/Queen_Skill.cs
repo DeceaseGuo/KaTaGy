@@ -237,27 +237,26 @@ public class Queen_Skill : SkillBase
     public List<Collider> alreadyDamage;
     void SetQ_CT()
     {
-        Debug.Log("Q技能施放中");
         //第一次刷
         if (firstQAtk && !endQAtk)
         {
             Collider[] tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                foreach (var target in tmpEnemy)
+                for (int i = 0; i < tmpEnemy.Length; i++)
                 {
-                    if (alreadyDamage.Contains(target))
+                    if (alreadyDamage.Contains(tmpEnemy[i]))
                         continue;
 
-                    isDead who = target.GetComponent<isDead>();
+                    isDead who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = target.GetComponent<PhotonView>();
+                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
                                 if (!who.noCC)
-                                    target.transform.forward = -transform.forward.normalized;
+                                    tmpEnemy[i].transform.forward = -transform.forward.normalized;
                                 Net.RPC("takeDamage", PhotonTargets.All, 4.5f, Vector3.zero, false);
                                 Net.RPC("pushOtherTarget", PhotonTargets.All);
                                 break;
@@ -269,7 +268,6 @@ public class Queen_Skill : SkillBase
                                 Net.RPC("takeDamage", PhotonTargets.All, 4.5f);
                                 break;
                             case GameManager.NowTarget.Core:
-                                target.transform.forward = -transform.forward.normalized;
                                 break;
                             case GameManager.NowTarget.NoChange:
                                 return;
@@ -277,8 +275,8 @@ public class Queen_Skill : SkillBase
                                 break;
                         }
                     }
-                    alreadyDamage.Add(target);
-                }                
+                    alreadyDamage.Add(tmpEnemy[i]);
+                }            
             }
         }
         //第二次攻擊
@@ -288,17 +286,17 @@ public class Queen_Skill : SkillBase
             Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 9, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                foreach (var target in tmpEnemy)
+                for (int i = 0; i < tmpEnemy.Length; i++)
                 {
-                    isDead who = target.GetComponent<isDead>();
+                    isDead who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = target.GetComponent<PhotonView>();
+                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
                                 if (!who.noCC)
-                                    target.transform.forward = -transform.forward.normalized;
+                                    tmpEnemy[i].transform.forward = -transform.forward.normalized;
                                 Net.RPC("HitFlayUp", PhotonTargets.All);
                                 Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
                                 break;
@@ -341,12 +339,12 @@ public class Queen_Skill : SkillBase
             Collider[] tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 7f, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                foreach (var target in tmpEnemy)
+                for (int i = 0; i < tmpEnemy.Length; i++)
                 {
-                    isDead who = target.GetComponent<isDead>();
+                    isDead who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = target.GetComponent<PhotonView>();
+                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
@@ -387,18 +385,18 @@ public class Queen_Skill : SkillBase
             skillE_CT = Timer.FirstAction(0.23f, () =>
             {
                 Collider[] tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
-                if (tmpEnemy != null)
+                if (tmpEnemy.Length != 0)
                 {
-                    foreach (var target in tmpEnemy)
+                    for (int i = 0; i < tmpEnemy.Length; i++)
                     {
-                        Vector3 dirToTarget = (target.transform.position - transform.position).normalized;
+                        Vector3 dirToTarget = (tmpEnemy[i].transform.position - transform.position).normalized;
                         if (Vector3.Angle(transform.forward, dirToTarget) > 42)
                             continue;
 
-                        isDead who = target.GetComponent<isDead>();
+                        isDead who = tmpEnemy[i].GetComponent<isDead>();
                         if (who != null)
                         {
-                            PhotonView Net = target.GetComponent<PhotonView>();
+                            PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
                             switch (who.myAttributes)
                             {
                                 case GameManager.NowTarget.Player:

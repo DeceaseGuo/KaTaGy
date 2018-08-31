@@ -71,14 +71,17 @@ public class Electricity : Photon.MonoBehaviour
         {
             Collider[] ColliderGrids = Physics.OverlapSphere(transform.position, range, GridMask);
 
-            foreach (var grid in ColliderGrids)
+            if (ColliderGrids.Length != 0)
             {
-                if (Vector3.Distance(grid.transform.position, transform.position) <= range)
+                for (int i = 0; i < ColliderGrids.Length; i++)
                 {
-                    gridparent = grid.transform.parent;
-                    gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
-                    grid.gameObject.layer = 25;
-                    gridList.Add(grid);
+                    if (Vector3.Distance(ColliderGrids[i].transform.position, transform.position) <= range)
+                    {
+                        gridparent = ColliderGrids[i].transform.parent;
+                        gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
+                        ColliderGrids[i].gameObject.layer = 25;
+                        gridList.Add(ColliderGrids[i]);
+                    }
                 }
             }
         }
@@ -220,11 +223,11 @@ public class Electricity : Photon.MonoBehaviour
     Transform gridparent = null;
     void ShowElectricitRange(bool _open)
     {
-        foreach (var grid in gridList)
+        for (int i = 0; i < gridList.Count; i++)
         {
-            gridparent = grid.transform.parent;
+            gridparent = gridList[i].transform.parent;
             gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = _open;
-            grid.gameObject.layer = (_open) ? 25 : 10;
+            gridList[i].gameObject.layer = (_open) ? 25 : 10;
         }
     }
     #endregion
@@ -267,21 +270,21 @@ public class Electricity : Photon.MonoBehaviour
     {
         if (playerObtain.Check_ElectricityAmount(resource_Electricity, _electricity))
         {
-            foreach (var grid in gridList)
+            for (int i = 0; i < gridList.Count; i++)
             {
-                gridparent = grid.transform.parent;
-                grid.gameObject.layer = 25;
-                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", origonalColor); 
+                gridparent = gridList[i].transform.parent;
+                gridList[i].gameObject.layer = 25;
+                gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", origonalColor);
             }
         }
         else
         {
-            foreach (var grid in gridList)
+            for (int i = 0; i < gridList.Count; i++)
             {
-                gridparent = grid.transform.parent;
-                grid.gameObject.layer = 10;
+                gridparent = gridList[i].transform.parent;
+                gridList[i].gameObject.layer = 10;
                 gridparent.Find("_grid").GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", notBuildColor);
-            }           
+            }         
         }
     }
     #endregion

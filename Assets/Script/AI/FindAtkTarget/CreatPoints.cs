@@ -146,11 +146,11 @@ public class CreatPoints : MonoBehaviour
     
     private void LateUpdate()
     {
-        foreach (var item in atkPoints.Keys)
+        for (int i = 0; i < atkPoints.Keys.Count; i++)
         {
-            foreach (var _point in atkPoints[item])
+            for (int a = 0; a < atkPoints[i].Count; a++)
             {
-                _point.point.position = this.transform.position + _point.Dir * Vector3.forward * _point.atkDistance;
+                atkPoints[i][a].point.position = this.transform.position + atkPoints[i][a].Dir * Vector3.forward * atkPoints[i][a].atkDistance;
             }
         }
     }

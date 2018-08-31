@@ -121,55 +121,59 @@ public class Allen_Ani : PlayerAni
         if (!photonView.isMine)
             return;
 
-        foreach (Collider beAtk_Obj in _enemies)
+        for (int i = 0; i < _enemies.Length; i++)
         {
-            if (checkIf(beAtk_Obj.gameObject))
-                return;
+            if (checkIf(_enemies[i].gameObject))
+                continue;
 
-            isDead checkTag = beAtk_Obj.GetComponent<isDead>();
-            if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
+            isDead checkTag = _enemies[i].GetComponent<isDead>();
+            if (checkTag != null)
             {
-                SwitchAtkRange(8);
-                player.Net.RPC("HitNull", PhotonTargets.All);
-                return;
-            }
-            PhotonView Net = beAtk_Obj.GetComponent<PhotonView>();
-            switch (checkTag.myAttributes)
-            {                 
-                case (GameManager.NowTarget.Soldier):
-                    if (startDetect_1)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 2.5f);
-                    }
-                    if (startDetect_2)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 6.0f);
-                    }
+                //攻擊無效化
+                if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
+                {
+                    SwitchAtkRange(8);
+                    player.Net.RPC("HitNull", PhotonTargets.All);
+                    return;
+                }
+                PhotonView Net = _enemies[i].GetComponent<PhotonView>();
+                switch (checkTag.myAttributes)
+                {
+                    case (GameManager.NowTarget.Soldier):
+                        if (startDetect_1)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 2.5f);
+                        }
+                        if (startDetect_2)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 6.0f);
+                        }
 
-                    break;
-                case (GameManager.NowTarget.Tower):
-                    Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
-                    break;
-                case (GameManager.NowTarget.Player):
-                    if (startDetect_2)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);
-                        //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
                         break;
-                    }
-                    else
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
-                    }
-                    break;
-                case (GameManager.NowTarget.Core):
-                    Debug.Log("還沒寫");
-                    break;             
-                default:
-                    Debug.Log("錯誤");
-                    break;
+                    case (GameManager.NowTarget.Tower):
+                        Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
+                        break;
+                    case (GameManager.NowTarget.Player):
+                        if (startDetect_2)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);
+                            //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
+                            break;
+                        }
+                        else
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
+                        }
+                        break;
+                    case (GameManager.NowTarget.Core):
+                        Debug.Log("還沒寫");
+                        break;
+                    default:
+                        Debug.Log("錯誤");
+                        break;
+                }
+                alreadyDamage.Add(_enemies[i].gameObject);
             }
-            alreadyDamage.Add(beAtk_Obj.gameObject);
         }
     }
     #endregion

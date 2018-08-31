@@ -15,14 +15,18 @@
 
         public static void Setsize(Projector[] _projectors, float _scale, float _width, bool _open)
         {
-            foreach (Projector p in _projectors)
-                Setsize(p, _scale, _width, _open);
+            for (int i = 0; i < _projectors.Length; i++)
+            {
+                Setsize(_projectors[i], _scale, _width, _open);
+            }
         }
 
         public static void SwitchPorjector(Projector[] _projectors, bool _open)
         {
-            foreach (Projector p in _projectors)
-                p.enabled = _open;
+            for (int i = 0; i < _projectors.Length; i++)
+            {
+                _projectors[i].enabled = _open;
+            }
         }
 
         public static void ChangePos(Projector _projector, Transform _originalPos, Vector3 _pos, float _maxRange)

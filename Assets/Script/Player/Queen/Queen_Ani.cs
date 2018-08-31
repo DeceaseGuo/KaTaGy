@@ -124,50 +124,59 @@ public class Queen_Ani : PlayerAni
         if (!photonView.isMine )
             return;
 
-        foreach (Collider beAtk_Obj in _enemies)
+        for (int i = 0; i < _enemies.Length; i++)
         {
+            if (checkIf(_enemies[i].gameObject))
+                continue;
 
-            if (checkIf(beAtk_Obj.gameObject))
-                return;
-
-            isDead checkTag = beAtk_Obj.GetComponent<isDead>();
-            PhotonView Net = beAtk_Obj.GetComponent<PhotonView>();
-            switch (checkTag.myAttributes)
+            isDead checkTag = _enemies[i].GetComponent<isDead>();
+            if (checkTag != null)
             {
-                case (GameManager.NowTarget.Soldier):
-                    if (startDetect_1)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
-                    }
+                //攻擊無效化
+                if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
+                {
+                    SwitchAtkRange(8);
+                    player.Net.RPC("HitNull", PhotonTargets.All);
+                    return;
+                }
+                PhotonView Net = _enemies[i].GetComponent<PhotonView>();
+                switch (checkTag.myAttributes)
+                {
+                    case (GameManager.NowTarget.Soldier):
+                        if (startDetect_1)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
+                        }
 
-                    if (startDetect_2)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
-                    }
-                    break;
-                case (GameManager.NowTarget.Tower):
-                    Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
-                    break;
-                case (GameManager.NowTarget.Player):
-                    if (startDetect_2)
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);
-                        //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
+                        if (startDetect_2)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 3.0f);
+                        }
                         break;
-                    }
-                    else
-                    {
-                        Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
-                    }
-                    break;
-                case (GameManager.NowTarget.Core):
-                    Debug.Log("還沒寫");
-                    break;
-                default:
-                    Debug.Log("錯誤");
-                    break;
+                    case (GameManager.NowTarget.Tower):
+                        Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
+                        break;
+                    case (GameManager.NowTarget.Player):
+                        if (startDetect_2)
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);
+                            //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
+                            break;
+                        }
+                        else
+                        {
+                            Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
+                        }
+                        break;
+                    case (GameManager.NowTarget.Core):
+                        Debug.Log("還沒寫");
+                        break;
+                    default:
+                        Debug.Log("錯誤");
+                        break;
+                }
+                alreadyDamage.Add(_enemies[i].gameObject);
             }
-            alreadyDamage.Add(beAtk_Obj.gameObject);
         }
     }
     #endregion

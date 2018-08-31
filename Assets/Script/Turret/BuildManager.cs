@@ -291,27 +291,23 @@ public class BuildManager : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < electricities.Count; i++)
+        for (int a = 0; a < electricities.Count; a++)
         {
-
-        }
-        foreach (var item in electricities)
-        {
-            if (_build == item)
+            if (_build == electricities[a])
             {
                 //Debug.Log(_build.name + "_build == item");
                 continue;
             }
 
-            if (Vector3.Distance(_build.transform.position, item.transform.position) <= _build.range * 2)
+            if (Vector3.Distance(_build.transform.position, electricities[a].transform.position) <= _build.range * 2)
             {
-                if (!_build.myTouch.Contains(item))
+                if (!_build.myTouch.Contains(electricities[a]))
                 {
-                    _build.myTouch.Add(item);
-                    item.myTouch.Add(_build);
+                    _build.myTouch.Add(electricities[a]);
+                    electricities[a].myTouch.Add(_build);
                 }
 
-                if (item.firstE == null)
+                if (electricities[a].firstE == null)
                 {
                     if (_build.firstE == null)
                         _build.firstE = _build;
@@ -322,35 +318,35 @@ public class BuildManager : MonoBehaviour
                 #region 改變firstE
                 if (_build.firstE == null)
                 {
-                    _build.firstE = item.firstE;
+                    _build.firstE = electricities[a].firstE;
                     _build.firstE.connectElectricitys.Add(_build);
                     _build.firstE.resource_Electricity += _build.resource_Electricity;
 
                     //Debug.Log(_build.name + "_build.firstE == null");
                 }
-                else if (item.firstE != _build.firstE)
+                else if (electricities[a].firstE != _build.firstE)
                 {
-                    _build.firstE.resource_Electricity += item.firstE.resource_Electricity;
-                    _build.firstE.connectElectricitys.Add(item.firstE);
+                    _build.firstE.resource_Electricity += electricities[a].firstE.resource_Electricity;
+                    _build.firstE.connectElectricitys.Add(electricities[a].firstE);
 
-                    for (int i = 0; i < item.firstE.connectTowers.Count; i++)
+                    for (int i = 0; i < electricities[a].firstE.connectTowers.Count; i++)
                     {
-                        _build.firstE.connectTowers.Add(item.firstE.connectTowers[i]);
+                        _build.firstE.connectTowers.Add(electricities[a].firstE.connectTowers[i]);
                     }
 
-                    item.firstE.connectTowers.Clear();
-                    for (int i = 0; i < item.firstE.connectElectricitys.Count; i++)
+                    electricities[a].firstE.connectTowers.Clear();
+                    for (int i = 0; i < electricities[a].firstE.connectElectricitys.Count; i++)
                     {
-                        _build.firstE.connectElectricitys.Add(item.firstE.connectElectricitys[i]);
-                        if (item.firstE.connectElectricitys[i] != item)
-                            item.firstE.connectElectricitys[i].firstE = _build.firstE;
+                        _build.firstE.connectElectricitys.Add(electricities[a].firstE.connectElectricitys[i]);
+                        if (electricities[a].firstE.connectElectricitys[i] != electricities[a])
+                            electricities[a].firstE.connectElectricitys[i].firstE = _build.firstE;
                     }
-                    item.firstE.connectElectricitys.Clear();
+                    electricities[a].firstE.connectElectricitys.Clear();
 
-                    if (item != item.firstE)
-                        item.firstE.firstE = _build.firstE;
+                    if (electricities[a] != electricities[a].firstE)
+                        electricities[a].firstE.firstE = _build.firstE;
 
-                    item.firstE = _build.firstE;
+                    electricities[a].firstE = _build.firstE;
                     //Debug.Log(_build.name + "item.firstE != _build.firstE");
                 }
                 #endregion

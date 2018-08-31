@@ -209,12 +209,15 @@ public class EnemyControl : Photon.MonoBehaviour
             if (!firstAtk && !ifAtkMoveStop && !ifFirstAtkTarget())
             {
                 SetFindT();
-                for (int i = 0; i < myTarget.Count; i++)
+                if (myTarget.Count != 0)
                 {
-                    isDead _attributes = myTarget[i].GetComponent<isDead>();
-                    if (!_attributes.checkDead)
+                    for (int i = 0; i < myTarget.Count; i++)
                     {
-                        getCurrentTarget(_attributes);
+                        isDead _attributes = myTarget[i].GetComponent<isDead>();
+                        if (!_attributes.checkDead)
+                        {
+                            getCurrentTarget(_attributes);
+                        }
                     }
                 }
             }

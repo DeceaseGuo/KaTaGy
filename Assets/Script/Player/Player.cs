@@ -561,7 +561,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
 
             if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
             {
-                if (hit.transform.tag == "CanClickMove")
+                if (hit.transform.CompareTag("CanClickMove"))
                 {
                     clickPointPos.transform.position = hit.point;
                     getTatgetPoint(clickPointPos.transform.position);

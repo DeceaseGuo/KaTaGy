@@ -136,13 +136,14 @@ namespace AtkTower
         {
             float d = 9999;
             GameObject _target = null;
-            foreach (var enemy in SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true))
+            List<GameObject> tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true);
+            for (int i = 0; i < tmpTarget.Count; i++)
             {
-                float dis = Vector3.Distance(enemy.transform.position, transform.position);
+                float dis = Vector3.Distance(tmpTarget[i].transform.position, transform.position);
                 if (dis > turretData.Atk_MinRange && dis < d)
                 {
                     d = dis;
-                    _target = enemy;
+                    _target = tmpTarget[i];
                 }
             }
 
