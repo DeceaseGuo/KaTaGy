@@ -37742,15 +37742,15 @@ MonoBehaviour:
     _soldierName: 1
     headImage: {fileID: 21300000, guid: e5cda53eaa6d514419c74a62810eb026, type: 3}
     firstAtk: {fileID: 0}
-    width: 2.8
+    width: 4
     moveSpeed: 12
     rotSpeed: 0.09
-    stoppingDst: 2
+    stoppingDst: 1.5
     UI_MaxHp: 30
     UI_HP: 30
     atk_maxDamage: 0
     atk_Damage: 3
-    atk_Range: 2.7
+    atk_Range: 4.5
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0
@@ -37774,7 +37774,7 @@ MonoBehaviour:
     _soldierName: 2
     headImage: {fileID: 21300000, guid: c4f792fe18d5990489f078ba7c5c6539, type: 3}
     firstAtk: {fileID: 0}
-    width: 2.8
+    width: 4
     moveSpeed: 12
     rotSpeed: 0.15
     stoppingDst: 2
@@ -37782,7 +37782,7 @@ MonoBehaviour:
     UI_HP: 30
     atk_maxDamage: 0
     atk_Damage: 3
-    atk_Range: 2.7
+    atk_Range: 4.5
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0
@@ -37814,7 +37814,7 @@ MonoBehaviour:
     UI_HP: 30
     atk_maxDamage: 0
     atk_Damage: 3
-    atk_Range: 2.7
+    atk_Range: 2.8
     atk_delay: 5
     beAtk_delay: 1.5
     ATK_Level: 0

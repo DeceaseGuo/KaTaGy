@@ -32,10 +32,10 @@ namespace Mytest
             if (pos != null)
                 nav.SetDestination(pos.position);
         }
+        public int testNum;
 
-        public EnemyControl aaa;
-        public GameObject target;
 
+        public Transform pointParent;
         private void Update()
         {
             /* if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -47,20 +47,26 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-               /* aaa.currentTarget = target;
-                aaa.nowState = EnemyControl.states.Atk;
-                StartCoroutine(aaa.enemyAttack());*/
+
+                Transform _tmpPpoint = new GameObject("Point").transform;
+                _tmpPpoint.gameObject.AddComponent<test>();
+                _tmpPpoint.transform.SetParent(pointParent);
+                _tmpPpoint.GetComponent<test>().jjj();
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             { 
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-
-                
+            {        
 
             }
+        }
 
+        void jjj()
+        {
+            testNum = 666;
+            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            this.enabled = false;
         }
 
     }

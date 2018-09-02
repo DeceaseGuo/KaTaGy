@@ -64,14 +64,13 @@ public class Mini_Soldier : EnemyControl
         }
     }
     #endregion
-    private Collider[] enemies;
     protected override void AtkDetectSet()
     {
         atkCT = Timer.NextFrame(() =>
           {
               if (haveHit)
               {
-                  enemies = Physics.OverlapBox(sword_1.position, new Vector3(.5f, .6f, 2.4f), Quaternion.identity, currentMask);
+                  Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.65f, .6f, 2.4f), Quaternion.identity, currentMask);
                   if (enemies.Length != 0)
                   {
                       giveCurrentDamage(enemies[0].gameObject.GetComponent<isDead>());

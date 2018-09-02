@@ -313,6 +313,14 @@ public class EnemyControl : Photon.MonoBehaviour
         resetChaseTime();
         nowState = states.AtkMove;
     }
+
+    /*protected void goAtkPos(isDead _isdaed)
+    {
+        if (deadManager.checkDead)
+            return;
+        CreatPoints tmpScript = _isdaed.GetComponent<CreatPoints>();
+        goAtkPos(tmpScript, _isdaed);
+    }*/
     #endregion
 
     #region 前往攻擊點
@@ -453,7 +461,7 @@ public class EnemyControl : Photon.MonoBehaviour
 
         if (nowState == states.AtkMove)
         {
-            if (!ifAtkMoveStop)
+           // if (!ifAtkMoveStop)
             {
                 Transform ABC = points.GoComparing(enemyData.atk_Range, transform, correctPos, true);
                 if (ABC != null)
@@ -588,7 +596,7 @@ public class EnemyControl : Photon.MonoBehaviour
                         shortPos = null;
                     }
                 }
-                else //沒超過攻擊範圍 士兵不自動換點
+                else //沒超過攻擊範圍 士兵自動換點
                 {
                     rotToTarget();
                     if (!ani.GetBool("Stop"))
@@ -785,12 +793,12 @@ public class EnemyControl : Photon.MonoBehaviour
         #region 反擊判斷
         if (photonView.isMine && _id != 0)
         {
-            PhotonView _Photon = PhotonView.Find(_id);
-            isDead _isdead = _Photon.gameObject.GetComponent<isDead>();
-
-            if (_isdead.myAttributes != GameManager.NowTarget.Tower)
+            if (!firstAtk && !ifFirstAtkTarget())
             {
-                if (!firstAtk && !ifFirstAtkTarget())
+                PhotonView _Photon = PhotonView.Find(_id);
+                isDead _isdead = _Photon.gameObject.GetComponent<isDead>();
+
+                if (_isdead.myAttributes != GameManager.NowTarget.Tower)
                 {
                     CreatPoints tmpPoint = _isdead.gameObject.GetComponent<CreatPoints>();
                     firstAtk = true;
@@ -806,7 +814,7 @@ public class EnemyControl : Photon.MonoBehaviour
                         currentTarget = _isdead.gameObject;
                         points = tmpPoint;
                         targetDeadScript = _isdead;
-                    }                    
+                    }
                 }
             }
         }

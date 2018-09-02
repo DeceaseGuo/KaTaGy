@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 223187220839314740}
   - component: {fileID: 114076245024534590}
   - component: {fileID: 114479064614795876}
-  m_Layer: 28
+  m_Layer: 0
   m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2295,6 +2295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 2
+  noCC: 0
   notFeedBack: 0
 --- !u!114 &114454684593881948
 MonoBehaviour:
@@ -2546,7 +2547,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.42
+  m_Radius: 2.1
   m_Height: 4.5
   m_Direction: 1
   m_Center: {x: 0, y: 2.3, z: 0}

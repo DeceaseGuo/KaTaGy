@@ -2340,17 +2340,6 @@ RectTransform:
   m_AnchoredPosition: {x: 2311.5, y: 138}
   m_SizeDelta: {x: 5583.7, y: 151.2}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &632009147 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114778807515949006, guid: 492eb2a95030c7846a75a95ad60008e6,
-    type: 2}
-  m_PrefabInternal: {fileID: 682075263}
-  m_Script: {fileID: 11500000, guid: 13a36920a33658c418185942afc8cdef, type: 3}
---- !u!1 &638285714 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1299396737225026, guid: 90eed5d074b49af4eb81b5af8f738ef2,
-    type: 2}
-  m_PrefabInternal: {fileID: 1534122433}
 --- !u!1 &648233098
 GameObject:
   m_ObjectHideFlags: 0
@@ -2369,7 +2358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &648233099
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2445,15 +2434,15 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 648233098}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc69015dd149356458d6964ac542494b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   nowTest: 0
   pos: {fileID: 0}
-  aaa: {fileID: 632009147}
-  target: {fileID: 638285714}
+  testNum: 0
+  pointParent: {fileID: 0}
 --- !u!1 &662101243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2723,14 +2712,15 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1124102973876672, guid: 492eb2a95030c7846a75a95ad60008e6, type: 2}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 195114745189652652, guid: 492eb2a95030c7846a75a95ad60008e6,
+    - target: {fileID: 114255498974454520, guid: 492eb2a95030c7846a75a95ad60008e6,
         type: 2}
-      propertyPath: m_Enabled
-      value: 0
+      propertyPath: testTesttest_1
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114255498974454520, guid: 492eb2a95030c7846a75a95ad60008e6,
+        type: 2}
+      propertyPath: testTesttest_2
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 492eb2a95030c7846a75a95ad60008e6, type: 2}

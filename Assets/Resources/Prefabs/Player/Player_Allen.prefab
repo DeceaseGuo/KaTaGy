@@ -4586,6 +4586,8 @@ MonoBehaviour:
   extraRange: 2
   TestNext: []
   alreadyFull: []
+  testTesttest_1: 0
+  testTesttest_2: 0
 --- !u!114 &114447975691306418
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5177,7 +5179,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.63
+  m_Radius: 1.1
   m_Height: 5.1
   m_Direction: 1
   m_Center: {x: 0, y: 2.71, z: 0.15}

@@ -17,6 +17,7 @@ public class CreatPoints : MonoBehaviour
             atkDistance = _atkDis;
         }
     }
+    public List<float> keysList = new List<float>();
     /// <param name="_soldier">士兵本身</param>
     /// <param name="range">攻擊距離</param>
     [SerializeField] float extraRange = 0;
@@ -47,7 +48,7 @@ public class CreatPoints : MonoBehaviour
     Transform findPoint(float _range, Transform _soldierPos ,bool _obsDet)
     {
         int near = -1;
-        float neardis = 10000000;
+        float neardis = 1000000;
 
         for (int i = 0; i < atkPoints[_range].Count; i++)
         {
@@ -76,10 +77,7 @@ public class CreatPoints : MonoBehaviour
 
         Transform tmpPos = findPoint(_range, _soldierPos, _obsDet);
 
-        if (tmpPos == null)
-            return null;
-
-        if (_soldierPos == null || _firstPoint == null)
+        if (tmpPos == null || _soldierPos == null || _firstPoint == null)
             return null;
 
         if (!TestNext.Contains(tmpPos) && !alreadyFull.Contains(tmpPos))
@@ -143,16 +141,28 @@ public class CreatPoints : MonoBehaviour
         if (alreadyFull.Contains(_node))
             alreadyFull.Remove(_node);      
     }
-    
+    public float testTesttest_1;
+    public float testTesttest_2;
     private void LateUpdate()
     {
-        for (int i = 0; i < atkPoints.Keys.Count; i++)
+        for (int i = 0; i < keysList.Count; i++)
         {
-            for (int a = 0; a < atkPoints[i].Count; a++)
+            for (int a = 0; a < atkPoints[keysList[i]].Count; a++)
             {
-                atkPoints[i][a].point.position = this.transform.position + atkPoints[i][a].Dir * Vector3.forward * atkPoints[i][a].atkDistance;
+                atkPoints[keysList[i]][a].point.position = transform.position + atkPoints[keysList[i]][a].Dir * Vector3.forward * atkPoints[keysList[i]][a].atkDistance;
             }
         }
+
+
+
+
+
+        //觀看生成點用
+        /*if (Input.GetKeyDown("f"))
+        {
+            CalculatePoint(testTesttest_1, testTesttest_2);
+            Debug.Log(atkPoints.Keys);
+        }*/
     }
 
     public bool IFDis(float _dis ,float _nowDis)
@@ -181,6 +191,7 @@ public class CreatPoints : MonoBehaviour
             _tmpLlist.Add(tmpPointData);
         }
         atkPoints.Add(_range, _tmpLlist);
+        keysList.Add(_range);
     }
 
     bool CheckObstacle(Transform _pos ,bool _obsDet)
@@ -201,9 +212,9 @@ public class CreatPoints : MonoBehaviour
    /* private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        if (atkPoints.ContainsKey(2.7f))
-        {
-            foreach (var item in atkPoints[2.7f])
+        if (atkPoints.ContainsKey(testTesttest_1))
+        { 
+            foreach (var item in atkPoints[testTesttest_1])
             {
                 Gizmos.DrawSphere(item.point.position, .5f);
 
