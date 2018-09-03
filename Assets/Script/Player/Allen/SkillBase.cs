@@ -28,6 +28,14 @@ public class SkillBase : Photon.MonoBehaviour
     public bool brfore_shaking = true;
     public SkillAction nowSkill = SkillAction.None;
 
+    #region 偵測敵人用變數
+    protected Collider[] tmpEnemy;
+    protected isDead who;
+    protected PhotonView Net;
+    protected Vector3 dirToTarget;
+    protected int targetAmount;
+    #endregion
+
     private void Awake()
     {
         playerScript = GetComponent<Player>();

@@ -27,7 +27,7 @@ public class ObjectPooler : MonoBehaviour
 
     [SerializeField] List<pool> pools;
     [SerializeField] Dictionary<GameManager.whichObject, Queue<GameObject>> poolDictionary;
-
+    GameManager.WhichObjectEnumComparer myEnumComparer = new GameManager.WhichObjectEnumComparer();
     private void Start()
     {
         producePool();
@@ -36,31 +36,31 @@ public class ObjectPooler : MonoBehaviour
     #region 產生物件池
     void producePool()
     {
-        poolDictionary = new Dictionary<GameManager.whichObject, Queue<GameObject>>();
+        poolDictionary = new Dictionary<GameManager.whichObject, Queue<GameObject>>(myEnumComparer);
 
-        foreach (pool pool in pools)
+        for (int a = 0; a < pools.Count; a++)
         {
             Queue<GameObject> objectPool = new Queue<GameObject>();
 
-            for (int i = 0; i < pool.pool_amount; i++)
+            for (int i = 0; i < pools[a].pool_amount; i++)
             {
                 GameObject obj = null;
-                if (pool.pool_Prefab.GetComponent<PhotonView>() == null)
+                if (pools[a].pool_Prefab.GetComponent<PhotonView>() == null)
                 {
-                    obj = Instantiate(pool.pool_Prefab);
+                    obj = Instantiate(pools[a].pool_Prefab);
                     obj.SetActive(false);
                     obj.transform.SetParent(transform);
                 }
                 else
                 {
-                    obj = PhotonNetwork.Instantiate(pool.filePath, Vector3.zero, Quaternion.identity, 0);
+                    obj = PhotonNetwork.Instantiate(pools[a].filePath, Vector3.zero, Quaternion.identity, 0);
                     obj.GetComponent<PhotonView>().RPC("SetActiveF", PhotonTargets.All);
                 }
 
                 obj.transform.position = Vector3.zero;
                 objectPool.Enqueue(obj);
             }
-            poolDictionary.Add(pool.pool_Name, objectPool);
+            poolDictionary.Add(pools[a].pool_Name, objectPool);
         }
     }
     #endregion

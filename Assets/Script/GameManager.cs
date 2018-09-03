@@ -64,6 +64,19 @@ public class GameManager : Photon.MonoBehaviour
         SoldierIcon = 20
     }
 
+    public class WhichObjectEnumComparer : IEqualityComparer<whichObject>
+    {
+        public bool Equals(whichObject x, whichObject y)
+        {
+            return x == y; 
+        }
+
+        public int GetHashCode(whichObject x)
+        {
+            return (int)x;
+        }
+    }
+
     public enum NowTarget
     {
         Null,

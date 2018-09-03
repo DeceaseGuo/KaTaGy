@@ -49,6 +49,7 @@ public class Allen_Skill : SkillBase
     [Tooltip("大絕傷害半徑")]
     [SerializeField] float skillR_radius;
 
+
     private void Start()
     {
 
@@ -199,15 +200,16 @@ public class Allen_Skill : SkillBase
 
         if (catchObj == null && isForward)
         {
-            Collider[] tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.35f, 1.6f, 1.9f), Quaternion.identity, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.35f, 1.6f, 1.9f), Quaternion.identity, aniScript.canAtkMask);
+
             if (tmpEnemy.Length != 0)
             {
                 catchObj = tmpEnemy[0].gameObject;
 
-                isDead who = catchObj.GetComponent<isDead>();
+                who = catchObj.GetComponent<isDead>();
                 if (who != null)
                 {
-                    PhotonView Net = catchObj.GetComponent<PhotonView>();
+                    Net = catchObj.GetComponent<PhotonView>();
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
@@ -291,33 +293,33 @@ public class Allen_Skill : SkillBase
         if (photonView.isMine)
             return;
 
-        Collider[] tmpEnemy = Physics.OverlapBox(whirlwindPos.position, new Vector3(10, 1, 11), Quaternion.identity, aniScript.canAtkMask);
+        tmpEnemy = Physics.OverlapBox(whirlwindPos.position, new Vector3(10, 1, 11), Quaternion.identity, aniScript.canAtkMask);
         if (tmpEnemy.Length != 0)
         {
-            for (int i = 0; i < tmpEnemy.Length; i++)
+            targetAmount = tmpEnemy.Length;
+            for (int i = 0; i < targetAmount; i++)
             {
-                isDead who = tmpEnemy[i].GetComponent<isDead>();
+                who = tmpEnemy[i].GetComponent<isDead>();
                 if (who != null)
                 {
-                    PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
-                    Vector3 tmpDir = transform.position - tmpEnemy[i].transform.position;
+                    Net = tmpEnemy[i].GetComponent<PhotonView>();
+                    dirToTarget = transform.position - tmpEnemy[i].transform.position;
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
                             if (!who.noCC)
-                                tmpEnemy[i].transform.forward = tmpDir.normalized;
+                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
                             Net.RPC("takeDamage", PhotonTargets.All, 5.5f, Vector3.zero, false);
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, tmpDir.normalized, 10f);
+                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized, 10f);
                             break;
                         case GameManager.NowTarget.Tower:
                             Net.RPC("takeDamage", PhotonTargets.All, 2.5f);
                             break;
                         case GameManager.NowTarget.Core:
-                            //target.transform.forward = tmpDir.normalized;
                             break;
                         case GameManager.NowTarget.NoChange:
                             // playerScript.Net.RPC("HitNull", PhotonTargets.All);
@@ -342,7 +344,6 @@ public class Allen_Skill : SkillBase
             canShield = true;
             SwitchShieldIcon(true);
             shieldCoroutine = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f, null, shieldIcon.cdBar));
-            Debug.Log("技能E  " + "開始減商");
         }
         //特效
     }
@@ -450,29 +451,30 @@ public class Allen_Skill : SkillBase
 
     public void R_Skill()
     {
-        Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition, skillR_radius, aniScript.canAtkMask);
+        tmpEnemy = Physics.OverlapSphere(transform.localPosition, skillR_radius, aniScript.canAtkMask);
         if (tmpEnemy.Length != 0)
          {
+            targetAmount = tmpEnemy.Length;
             Vector3 hitPoint = transform.position + new Vector3(0, 0, 4f);
-            for (int i = 0; i < tmpEnemy.Length; i++)
+            for (int i = 0; i < targetAmount; i++)
             {
-                isDead who = tmpEnemy[i].GetComponent<isDead>();
+                who = tmpEnemy[i].GetComponent<isDead>();
                 if (who != null)
                 {
                     hitPoint.y = tmpEnemy[i].transform.position.y;
-                    Vector3 tmpDir = hitPoint - tmpEnemy[i].transform.position;
-                    PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
+                    dirToTarget = hitPoint - tmpEnemy[i].transform.position;
+                    Net = tmpEnemy[i].GetComponent<PhotonView>();
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
                             if (!who.noCC)
-                                tmpEnemy[i].transform.forward = tmpDir.normalized;
+                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
                             Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 9f);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, tmpDir.normalized, 10f);
+                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized, 10f);
                             break;
                         case GameManager.NowTarget.Tower:
                             Net.RPC("takeDamage", PhotonTargets.All, 9f);

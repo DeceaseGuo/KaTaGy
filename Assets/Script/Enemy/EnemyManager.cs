@@ -72,7 +72,7 @@ public class EnemyManager : MonoBehaviour
     #region 協成
     public void SetCoroution()
     {
-        soldierBorn = Timer.Start(soldierGapTime, true, () =>
+        soldierBorn = Timer.FirstAction(soldierGapTime,() =>
         {
             arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint);
             nowNum += 1;

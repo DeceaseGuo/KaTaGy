@@ -922,34 +922,35 @@ public class EnemyControl : Photon.MonoBehaviour
     #region 死亡
     protected void Death()
     {
-        StartCoroutine(Timer.Start_MoreFunction(0f, () =>
+        if (photonView.isMine)
         {
-            if (photonView.isMine)
-            {
-                haveHit = false;
-                alreadytakeDamage.Clear();
-                cancelSelectTarget(true);
-                SceneManager.RemoveMyList(gameObject, deadManager.myAttributes);
-                ifAtkMoveStop = false;
-                firstAtk = false;
-                canAtking = true;
+            haveHit = false;
+            alreadytakeDamage.Clear();
+            cancelSelectTarget(true);
+            SceneManager.RemoveMyList(gameObject, deadManager.myAttributes);
+            ifAtkMoveStop = false;
+            firstAtk = false;
+            canAtking = true;
 
-                nextPos = false;
-                nav.enabled = false;
-            }
-            else
-            {
-                SceneManager.RemoveEnemyList(gameObject, deadManager.myAttributes);
-            }
-            soldierCollider.enabled = false;
-            ani.SetTrigger("Death");
-        }, 2.5f, () =>
+            nextPos = false;
+            nav.enabled = false;
+        }
+        else
         {
-            if (photonView.isMine)
-                ObjectPooler.instance.Repool(enemyData._soldierName, this.gameObject);
-            else
-                Net.RPC("SetActiveF", PhotonTargets.All);
-        }));
+            SceneManager.RemoveEnemyList(gameObject, deadManager.myAttributes);
+        }
+        soldierCollider.enabled = false;
+        ani.SetTrigger("Death");
+
+        Invoke("Return_ObjPool", 2.5f);
+    }
+
+    void Return_ObjPool()
+    {
+        if (photonView.isMine)
+            ObjectPooler.instance.Repool(enemyData._soldierName, this.gameObject);
+        else
+            Net.RPC("SetActiveF", PhotonTargets.All);
     }
     #endregion
 

@@ -43,6 +43,23 @@ public class PlayerAni : Photon.MonoBehaviour
     //武器打中防禦特效
     [SerializeField] ParticleSystem hitNullEffect;
 
+    #region combo目標判斷所需變數
+    //combo的Overlap使用
+    protected Collider[] checkBox;
+    protected PhotonView Net;
+    protected isDead checkTag;
+    protected int arrayAmount;
+    #endregion
+
+    #region 攻擊矯正方向所需變數
+    public float viewRadius;
+    [Range(0, 360)]
+    public int viewAngle;
+    private Collider[] Enemy;
+    private Vector3 dirToTarget;
+    private int targetAmount;
+    #endregion
+
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -198,22 +215,18 @@ public class PlayerAni : Photon.MonoBehaviour
     #endregion
 
     #region 攻擊矯正方向
-    public float viewRadius;
-    [Range(0, 360)]
-    public int viewAngle;
-
     void RedressDir()
     {
         if (redressOpen)
         {
-            Collider[] Enemy = Physics.OverlapSphere(transform.position, viewRadius, canAtkMask);
+            Enemy = Physics.OverlapSphere(transform.position, viewRadius, canAtkMask);
             if (Enemy.Length != 0)
             {
-                for (int i = 0; i < Enemy.Length; i++)
+                targetAmount = Enemy.Length;
+                for (int i = 0; i < targetAmount; i++)
                 {
-                    Transform target = Enemy[i].transform;
-                    Vector3 dirToTarget = (target.position - transform.position).normalized;
-                    if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                    dirToTarget = (Enemy[i].transform.position - transform.position).normalized;
+                    if (Vector3.Angle(transform.forward, dirToTarget) < (viewAngle * 0.5f))
                     {
                         player.CharacterRot = Quaternion.LookRotation(dirToTarget.normalized);
                         transform.rotation = player.CharacterRot;
@@ -272,16 +285,6 @@ public class PlayerAni : Photon.MonoBehaviour
     {
 
     }
-
-    #region 檢查敵人是否已得到傷害 
-    protected bool checkIf(GameObject _enemy)
-    {
-        if (alreadyDamage.Contains(_enemy))
-            return true;
-        else
-            return false;
-    }
-    #endregion
 
     [PunRPC]
     public void HitNull()

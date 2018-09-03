@@ -51,6 +51,7 @@ public class Allen_Ani : PlayerAni
                 {
                     goNextCombo();
                     SwitchAtkRange(8);
+                    player.lockDodge = false;
                 }
                 else
                 {
@@ -110,7 +111,7 @@ public class Allen_Ani : PlayerAni
 
     void ProduceCheckBox(Transform _pos , Vector3 _size)
     {
-        Collider[] checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
+        checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
         GetCurrentTarget(checkBox);
     }
     #endregion
@@ -118,15 +119,16 @@ public class Allen_Ani : PlayerAni
     #region 給予正確目標傷害
     protected override void GetCurrentTarget(Collider[] _enemies)
     {
-        if (!photonView.isMine)
+        if (!photonView.isMine || _enemies.Length == 0)
             return;
 
-        for (int i = 0; i < _enemies.Length; i++)
+        arrayAmount = _enemies.Length;
+        for (int i = 0; i < arrayAmount; i++)
         {
-            if (checkIf(_enemies[i].gameObject))
+            if (alreadyDamage.Contains(_enemies[i].gameObject))
                 continue;
 
-            isDead checkTag = _enemies[i].GetComponent<isDead>();
+            checkTag = _enemies[i].GetComponent<isDead>();
             if (checkTag != null)
             {
                 //攻擊無效化
@@ -136,7 +138,7 @@ public class Allen_Ani : PlayerAni
                     player.Net.RPC("HitNull", PhotonTargets.All);
                     return;
                 }
-                PhotonView Net = _enemies[i].GetComponent<PhotonView>();
+                Net = _enemies[i].GetComponent<PhotonView>();
                 switch (checkTag.myAttributes)
                 {
                     case (GameManager.NowTarget.Soldier):
@@ -144,25 +146,20 @@ public class Allen_Ani : PlayerAni
                         {
                             Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 2.5f);
                         }
-                        if (startDetect_2)
-                        {
+                        else
                             Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 6.0f);
-                        }
-
                         break;
                     case (GameManager.NowTarget.Tower):
                         Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                         break;
                     case (GameManager.NowTarget.Player):
-                        if (startDetect_2)
+                        if (startDetect_1)
                         {
-                            Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);
-                            //Net.RPC("pushOtherTarget", PhotonTargets.All, currentAtkDir.normalized, 6.0f);
-                            break;
+                            Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
                         }
                         else
                         {
-                            Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
+                            Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);                            
                         }
                         break;
                     case (GameManager.NowTarget.Core):

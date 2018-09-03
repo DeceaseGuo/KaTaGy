@@ -46,8 +46,9 @@ public class TurretData : MonoBehaviour
         public int cost_Electricity;
     }
 
-    public Dictionary<GameManager.whichObject, TowerDataBase> myDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>();
-    public Dictionary<GameManager.whichObject, TowerDataBase> enemyDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>();
+    GameManager.WhichObjectEnumComparer myEnumComparer = new GameManager.WhichObjectEnumComparer();
+    public Dictionary<GameManager.whichObject, TowerDataBase> myDataBase;
+    public Dictionary<GameManager.whichObject, TowerDataBase> enemyDataBase;
     public List<TowerDataBase> Towers;
 
     private void Awake()
@@ -62,6 +63,8 @@ public class TurretData : MonoBehaviour
 
     void addToDictionary()
     {
+        myDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>(myEnumComparer);
+        enemyDataBase = new Dictionary<GameManager.whichObject, TowerDataBase>(myEnumComparer);
         for (int i = 0; i < Towers.Count; i++)
         {
             myDataBase.Add(Towers[i].TurretName, Towers[i]);

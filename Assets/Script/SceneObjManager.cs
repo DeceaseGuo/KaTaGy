@@ -39,6 +39,9 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     ObjectPooler pool;
 
+    private int towerAmount;
+    private int soldierAmount;
+
     private void Start()
     {
         if (Instance != this)
@@ -75,33 +78,29 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
     {
-        List<GameObject> tmpObj = new List<GameObject>();
-        float nowDis = 0;
+        List<GameObject> tmpObj = new List<GameObject>();        
 
         if (canAtkPlay && enemy_Player != null)
         {
             if (!enemy_Player.GetComponent<isDead>().checkDead)//player不會被移出去，所以要判斷死了沒
             {
-                nowDis = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
-                if (nowDis < _dis)
+                if (Vector3.Distance(enemy_Player.transform.position, _me.transform.position) < _dis)
                     tmpObj.Add(enemy_Player);
             }           
         }
 
         if (canAtkTower)
         {
-            for (int i = 0; i < enemyTowerObjs.Count; i++)
+            for (int i = 0; i < towerAmount; i++)
             {
-                nowDis = Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position);
-                if (nowDis < _dis)
+                if (Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position) < _dis)
                     tmpObj.Add(enemyTowerObjs[i]);
             }
         }
 
-        for (int i = 0; i < enemySoldierObjs.Count; i++)
+        for (int i = 0; i < soldierAmount; i++)
         {
-            nowDis = Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position);
-            if (nowDis < _dis)
+            if (Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position) < _dis)
                 tmpObj.Add(enemySoldierObjs[i]);            
         }
 
@@ -182,12 +181,15 @@ public class SceneObjManager : Photon.MonoBehaviour
             case GameManager.NowTarget.Soldier:
                 {
                     enemySoldierObjs.Add(_obj);
+                    soldierAmount= enemySoldierObjs.Count;
                   //  GetIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons);
                 }
                 break;
             case GameManager.NowTarget.Tower:
                 {
+                    
                     enemyTowerObjs.Add(_obj);
+                    towerAmount = enemyTowerObjs.Count;
                     if (_obj.GetComponent<Electricity>() != null)
                     {
                        // GetIcon(GameManager.whichObject.EIcon, minmap.enemyTowerIcons);
@@ -250,13 +252,15 @@ public class SceneObjManager : Photon.MonoBehaviour
                 {
                    // ReIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons, enemySoldierObjs.IndexOf(_obj));
                     enemySoldierObjs.Remove(_obj);
+                    soldierAmount= enemySoldierObjs.Count;
                 }
                 break;
             case GameManager.NowTarget.Tower:
                 if (enemyTowerObjs.Contains(_obj))
                 {
-                   // ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
+                    // ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
                     enemyTowerObjs.Remove(_obj);
+                    towerAmount= enemyTowerObjs.Count;
                 }
                 break;
             default:

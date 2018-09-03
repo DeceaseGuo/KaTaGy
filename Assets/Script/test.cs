@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using MyCode.Timer;
 using UnityEngine.AI;
+using System;
+
 namespace Mytest
 {
     public class test : MonoBehaviour
@@ -21,21 +23,13 @@ namespace Mytest
         public kkk nowTest;
 
         NavMeshAgent nav;
-        [SerializeField] Transform pos;
+        [SerializeField] Collider[] pos;
         private void Start()
         {
             nav = GetComponent<NavMeshAgent>();
         }
 
-        void SetPos()
-        {
-            if (pos != null)
-                nav.SetDestination(pos.position);
-        }
-        public int testNum;
 
-
-        public Transform pointParent;
         private void Update()
         {
             /* if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -48,26 +42,24 @@ namespace Mytest
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
 
-                Transform _tmpPpoint = new GameObject("Point").transform;
-                _tmpPpoint.gameObject.AddComponent<test>();
-                _tmpPpoint.transform.SetParent(pointParent);
-                _tmpPpoint.GetComponent<test>().jjj();
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
-            { 
+            {
+                if (pos.Length != 0)
+                    Debug.Log("不等於0");
+                else
+                    Debug.Log("等於0");
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
-            {        
-
+            {
+               
             }
         }
 
-        void jjj()
+       /* private void OnDrawGizmos()
         {
-            testNum = 666;
-            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            this.enabled = false;
-        }
+            Gizmos.DrawWireSphere(transform.position, testNum);
+        }*/
 
     }
 }

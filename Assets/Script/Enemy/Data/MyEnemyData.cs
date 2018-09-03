@@ -38,8 +38,9 @@ public class MyEnemyData : MonoBehaviour
         public UpdateDataBase.SoldierUpdateData updateData;
     }
 
-    public Dictionary<GameManager.whichObject, Enemies> myDataBase = new Dictionary<GameManager.whichObject, Enemies>();
-    public Dictionary<GameManager.whichObject, Enemies> enemyDataBase = new Dictionary<GameManager.whichObject, Enemies>();
+    GameManager.WhichObjectEnumComparer myEnumComparer = new GameManager.WhichObjectEnumComparer();
+    public Dictionary<GameManager.whichObject, Enemies> myDataBase;
+    public Dictionary<GameManager.whichObject, Enemies> enemyDataBase;
     public List<Enemies> Soldiers;
 
     private void Awake()
@@ -53,6 +54,9 @@ public class MyEnemyData : MonoBehaviour
 
     void addToDictionary()
     {
+        myDataBase = new Dictionary<GameManager.whichObject, Enemies>(myEnumComparer);
+        enemyDataBase = new Dictionary<GameManager.whichObject, Enemies>(myEnumComparer);
+
         for (int i = 0; i < Soldiers.Count; i++)
         {
             myDataBase.Add(Soldiers[i]._soldierName, Soldiers[i]);

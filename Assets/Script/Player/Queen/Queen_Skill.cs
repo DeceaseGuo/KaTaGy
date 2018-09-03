@@ -25,6 +25,8 @@ public class Queen_Skill : SkillBase
     //E技能
     IEnumerator skillE_CT;
 
+
+
     private void Start()
     {
         if (photonView.isMine)
@@ -240,18 +242,19 @@ public class Queen_Skill : SkillBase
         //第一次刷
         if (firstQAtk && !endQAtk)
         {
-            Collider[] tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                for (int i = 0; i < tmpEnemy.Length; i++)
+                targetAmount = tmpEnemy.Length;
+                for (int i = 0; i < targetAmount; i++)
                 {
                     if (alreadyDamage.Contains(tmpEnemy[i]))
                         continue;
 
-                    isDead who = tmpEnemy[i].GetComponent<isDead>();
+                    who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
+                        Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
@@ -283,15 +286,16 @@ public class Queen_Skill : SkillBase
         if (endQAtk)
         {
             endQAtk = false;
-            Collider[] tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 9, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapSphere(transform.localPosition + transform.forward * 2.2f, 9, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                for (int i = 0; i < tmpEnemy.Length; i++)
+                targetAmount = tmpEnemy.Length;
+                for (int i = 0; i < targetAmount; i++)
                 {
-                    isDead who = tmpEnemy[i].GetComponent<isDead>();
+                    who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
+                        Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
@@ -336,15 +340,16 @@ public class Queen_Skill : SkillBase
     {
         if (!photonView.isMine)
         {
-            Collider[] tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 7f, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapSphere(allSkillRange.transform.position, 7f, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
-                for (int i = 0; i < tmpEnemy.Length; i++)
+                targetAmount = tmpEnemy.Length;
+                for (int i = 0; i < targetAmount; i++)
                 {
-                    isDead who = tmpEnemy[i].GetComponent<isDead>();
+                    who = tmpEnemy[i].GetComponent<isDead>();
                     if (who != null)
                     {
-                        PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
+                        Net = tmpEnemy[i].GetComponent<PhotonView>();
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
@@ -384,19 +389,20 @@ public class Queen_Skill : SkillBase
         {
             skillE_CT = Timer.FirstAction(0.23f, () =>
             {
-                Collider[] tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
+                tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
                 if (tmpEnemy.Length != 0)
                 {
-                    for (int i = 0; i < tmpEnemy.Length; i++)
+                    targetAmount = tmpEnemy.Length;
+                    for (int i = 0; i < targetAmount; i++)
                     {
-                        Vector3 dirToTarget = (tmpEnemy[i].transform.position - transform.position).normalized;
+                        dirToTarget = (tmpEnemy[i].transform.position - transform.position).normalized;
                         if (Vector3.Angle(transform.forward, dirToTarget) > 42)
                             continue;
 
-                        isDead who = tmpEnemy[i].GetComponent<isDead>();
+                        who = tmpEnemy[i].GetComponent<isDead>();
                         if (who != null)
                         {
-                            PhotonView Net = tmpEnemy[i].GetComponent<PhotonView>();
+                            Net = tmpEnemy[i].GetComponent<PhotonView>();
                             switch (who.myAttributes)
                             {
                                 case GameManager.NowTarget.Player:
@@ -619,7 +625,6 @@ public class Queen_Skill : SkillBase
                     break;
             }
         }
-
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;

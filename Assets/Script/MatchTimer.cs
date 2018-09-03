@@ -44,8 +44,10 @@ public class MatchTimer : PunBehaviour
     public bool TotalTimeShow { get { return totalTimeShow; } set { totalTimeShow = value; } }
 
     [Header("時間存放")]
-    [SerializeField] Text allTimeText;
+    [SerializeField] Text allTimeText_min;
+    [SerializeField] Text allTimeText_sec;
     [SerializeField] Text nextWaveText;
+    double delta;
     int timeMin;
     int timeSec;
 
@@ -69,7 +71,7 @@ public class MatchTimer : PunBehaviour
     private void LateUpdate()
     {
         if (totalTimeShow)
-            allTimeText.text = CorrectTimeText();
+            CorrectTimeText();
 
         if (IsTimeToStop)
             nextWaveText.text = SecondsToNextWave.ToString("0");
@@ -82,13 +84,14 @@ public class MatchTimer : PunBehaviour
         TotalTimeShow = true;
     }
 
-    string CorrectTimeText()
+    void CorrectTimeText()
     {
         timeSec = (int)SecondsUntilItsTime - (timeMin * 60);
         if (timeSec == 60)
             timeMin++;
-        
-        return timeMin.ToString("0") + "分" + timeSec.ToString("0") + "秒";
+
+        allTimeText_min.text = timeMin.ToString("0");
+        allTimeText_sec.text = timeSec.ToString("0");
     }
     #endregion
 
@@ -136,9 +139,9 @@ public class MatchTimer : PunBehaviour
     {
         get
         {
-            if (this.IsTimeToStop)
+            if (IsTimeToStop)
             {
-                double delta = timeToBornSoldier - PhotonNetwork.time;
+                delta = timeToBornSoldier - PhotonNetwork.time;
                 if (delta > 0.0f)
                     return delta;
                 else
@@ -162,13 +165,14 @@ public class MatchTimer : PunBehaviour
     public IEnumerator SetCountDown(methods _function, float a, Text _text, Image _img)
     {
         float firstTime = (float)SecondsUntilItsTime + a;
+        float nowTime = 0;
         while (true)
         {
-            float nowTime = firstTime - (float)SecondsUntilItsTime;
+            nowTime = firstTime - (float)SecondsUntilItsTime;
             if (nowTime <= 0)
             {
                 if (_text != null)
-                    _text.text = ""/*0.ToString("0")*/;
+                    _text.text = "";
                 if (_function != null)
                     _function();
                 if (_img != null)
@@ -192,8 +196,7 @@ public class MatchTimer : PunBehaviour
         float firstTime = (float)SecondsUntilItsTime + a;
         while (true)
         {
-            float nowTime = firstTime - (float)SecondsUntilItsTime;
-            if (nowTime <= 0)
+            if (firstTime - (float)SecondsUntilItsTime <= 0)
             {
                 if (_function != null)
                     _function();

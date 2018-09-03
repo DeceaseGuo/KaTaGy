@@ -43,9 +43,7 @@ public class Player : Photon.MonoBehaviour
     #endregion
     private bool stopClick;
     public bool StopClick { get { return stopClick; } set { stopClick = value; } }
-
-    [HideInInspector]
-    public Quaternion CharacterRot;
+        
     public PhotonView Net;
     //方向
     private Vector3 mousePosition;
@@ -85,14 +83,6 @@ public class Player : Photon.MonoBehaviour
 
     private bool nowCC;
     public bool NowCC { get { return nowCC; } set { nowCC = value; } }
-
-    /* public enum buffData
-{
-    None,
-    NowCC,
-}
-private buffData nowBuff = buffData.None;
-public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value; } }*/
     #endregion
     private CapsuleCollider CharaCollider;
     public BoxCollider shieldCollider;
@@ -111,13 +101,26 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //負面
     private Tweener flyUp;
 
+    #region 移動所需變量
+    private Vector3 tmpNextPos;
+    [HideInInspector]
+    public Quaternion CharacterRot;
+    private Vector3 maxDisGap;
+    #endregion
+
+    #region 小地圖所需
+    RectTransform map;
+    private float mapX;
+    private float mapY;
+    #endregion
+
     private void Awake()
     {
         CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
     }
     //    
-    RectTransform map;
+    
     //
     private void Start()
     {
@@ -437,11 +440,11 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //切換攻擊與建造模式
     private void ATK_Build_Btn()
     {
-        if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") || 
-            AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
-            || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_run")))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
+            if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") ||
+             AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
+             || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_run")))
             {
                 if (SkillState != SkillData.None)
                     CancelNowSkill();
@@ -450,41 +453,46 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
                 StopClick = true;
             }
         }
+
     }
     //閃避
     private void Dodge_Btn()
     {
-        if (canDodge && (Input.GetKeyDown(KeyCode.LeftAlt) && !lockDodge))
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
-
-            if (ConsumeAP(10f, true))
+            if (canDodge && !lockDodge)
             {
-                stopAnything_Switch(true);
-                Dodge_FCN(nowMouseDir());
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
+
+                if (ConsumeAP(10f, true))
+                {
+                    stopAnything_Switch(true);
+                    Dodge_FCN(nowMouseDir());
+                }
             }
         }
     }
     //按下F→目前為combo
     private void CharacterAtk_F()
     {
-        if (Input.GetKeyDown(KeyCode.F) && AniControll.canClick)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
-
-            Vector3 tmpDir = transform.forward;
-            if (MyState != statesData.Combo)
+            if (AniControll.canClick)
             {
-                getIsRunning = false;
-                nav.ResetPath();
-                MyState = statesData.Combo;
-                tmpDir = nowMouseDir();
-                transform.forward = tmpDir.normalized;
-            }
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
 
-            AniControll.TypeCombo(tmpDir);
+                if (MyState != statesData.Combo)
+                {
+                    getIsRunning = false;
+                    nav.ResetPath();
+                    MyState = statesData.Combo;
+                    transform.forward = nowMouseDir().normalized;
+                }
+
+                AniControll.TypeCombo(transform.forward);
+            }
         }
     }
     #endregion
@@ -500,25 +508,31 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //Q
     private void Character_Skill_Q()
     {
-        if (SkillState != SkillData.skill_Q && canSkill_Q && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
+            if (SkillState != SkillData.skill_Q && canSkill_Q && skillManager.nowSkill == SkillBase.SkillAction.None)
+            {
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
 
-            skillManager.Skill_Q_Click();
+                skillManager.Skill_Q_Click();
+            }
         }
 
         if (SkillState == SkillData.skill_Q)
-            skillManager.In_Skill_Q();
+            skillManager.In_Skill_Q();    
     }
     //W
     private void Character_Skill_W()
     {
-        if (SkillState != SkillData.skill_W && canSkill_W && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
-            skillManager.Skill_W_Click();
+            if (SkillState != SkillData.skill_W && canSkill_W && skillManager.nowSkill == SkillBase.SkillAction.None)
+            {
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
+                skillManager.Skill_W_Click();
+            }
         }
 
         if (SkillState == SkillData.skill_W)
@@ -527,11 +541,14 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //E
     private void Character_Skill_E()
     {
-        if (SkillState != SkillData.skill_E && canSkill_E && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
-            skillManager.Skill_E_Click();
+            if (SkillState != SkillData.skill_E && canSkill_E && skillManager.nowSkill == SkillBase.SkillAction.None)
+            {
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
+                skillManager.Skill_E_Click();
+            }
         }
 
         if (SkillState == SkillData.skill_E)
@@ -540,11 +557,14 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     //R
     private void Character_Skill_R()
     {
-        if (SkillState != SkillData.skill_R && canSkill_R && skillManager.nowSkill == SkillBase.SkillAction.None && Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (SkillState != SkillData.None)
-                CancelNowSkill();
-            skillManager.Skill_R_Click();
+            if (SkillState != SkillData.skill_R && canSkill_R && skillManager.nowSkill == SkillBase.SkillAction.None)
+            {
+                if (SkillState != SkillData.None)
+                    CancelNowSkill();
+                skillManager.Skill_R_Click();
+            }
         }
 
         if (SkillState == SkillData.skill_R)
@@ -571,8 +591,8 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     }
     bool IsMap()
     {
-        float mapX = Input.mousePosition.x - (map.position.x - (map.rect.width * 0.5f));
-        float mapY = Input.mousePosition.y - (map.position.y - (map.rect.height * 0.5f));
+        mapX = Input.mousePosition.x - (map.position.x - (map.rect.width * 0.5f));
+        mapY = Input.mousePosition.y - (map.position.y - (map.rect.height * 0.5f));
 
         return (mapX < map.rect.width && mapX > 0 && mapY < map.rect.height && mapY > 0);
     }
@@ -592,8 +612,7 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     public Vector3 nowMouseDir()
     {
         MousePosition = new Vector3(MousePosition.x, transform.localPosition.y, MousePosition.z);
-        Vector3 tmpDir = MousePosition - transform.position;
-        arrow.rotation = Quaternion.LookRotation(tmpDir);
+        arrow.rotation = Quaternion.LookRotation(MousePosition - transform.position);
         return arrow.forward;
     }
     #endregion
@@ -613,18 +632,14 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
         if (getIsRunning)
         {
             #region 尋找下一個位置方向
-            Vector3 tmpNextPos = nav.steeringTarget - transform.localPosition;
+            tmpNextPos = nav.steeringTarget - transform.localPosition;
             tmpNextPos.y = transform.localPosition.y;
-            if (tmpNextPos != Vector3.zero)
-            {
-                CharacterRot = Quaternion.LookRotation(tmpNextPos);
-            }
+            CharacterRot = Quaternion.LookRotation(tmpNextPos);
             #endregion
 
             #region 判斷是否到最終目標點→否則執行移動
-            Vector3 maxDisGap = nav.destination - transform.localPosition;
-            float maxDis = maxDisGap.sqrMagnitude;
-            if (maxDis < Mathf.Pow(playerData.stoppingDst, 2))
+            maxDisGap = nav.destination - transform.localPosition;            
+            if (maxDisGap.sqrMagnitude < Mathf.Pow(playerData.stoppingDst, 2))
             {
                 isStop();
             }
@@ -876,19 +891,16 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
             Net.RPC("waitBuild", PhotonTargets.All, _t);
     }
 
-    //改變碰撞
+    //改變碰撞(無敵用)
     public void ChangeMyCollider(bool _myCollider)
     {
         CharaCollider.enabled = _myCollider;
         shieldCollider.enabled = !_myCollider;
     }
-
+    //精靈王傳送用
     public void TeleportPos(Vector3 _pos)
     {
         nav.Warp(_pos);
-        /*nav.enabled = false;
-        transform.position = _pos;
-        nav.enabled = true;*/
     }
     #endregion
 
@@ -900,22 +912,26 @@ public buffData NowBuff { get { return nowBuff; } private set { nowBuff = value;
     #endregion
 
     #region 死亡
-    public IEnumerator Death()
+    public void Death()
     {
         stopAnything_Switch(true);
         CharaCollider.enabled = false;
         AniControll.Die();
         if (photonView.isMine)
         {
+            Invoke("Return_ObjPool", 3f);
             CancelNowSkill();
             cancelSkill.Invoke();
             CameraEffect.instance.nowDie(true);
             Creatplayer.instance.player_ReBorn(playerData.ReBorn_CountDown);
         }
-        yield return new WaitForSeconds(3f);
+    }
+
+    void Return_ObjPool()
+    {
         if (photonView.isMine)
         {
-            Net.RPC("SetActiveF", PhotonTargets.All);            
+            Net.RPC("SetActiveF", PhotonTargets.All);
         }
     }
     #endregion

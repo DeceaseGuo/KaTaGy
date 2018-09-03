@@ -6,11 +6,9 @@ using UnityEngine.UI;
 public class Attribute_HP : Photon.MonoBehaviour
 {
     private Player player;
-    private GameObject displayHpBarPos;
     [Header("左上螢幕血量UI")]
     private Image leftTopHpBar;
-    [Header("角色頭上UI")]
-    public GameObject UI_HpObj;
+    //角色頭上血量
     public Image UI_HpBar;
     private Animator ani;
     [Header("改變顏色")]
@@ -20,15 +18,11 @@ public class Attribute_HP : Photon.MonoBehaviour
     private void Awake()
     {
         player = GetComponent<Player>();
-        displayHpBarPos = GameObject.Find("Display_HpBarPos");
-        UI_HpObj.transform.SetParent(displayHpBarPos.transform, false);
         ani = GetComponent<Animator>();
     }
 
     private void OnEnable()
     {
-        Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 7.5f, 0));
-        UI_HpObj.transform.position = screenPos;
         GetComponent<PhotonTransformView>().enabled = true;
         UI_HpBar.fillAmount = 1;
         if (photonView.isMine)
@@ -40,14 +34,10 @@ public class Attribute_HP : Photon.MonoBehaviour
         }
         if (player != null)
             player.formatData();
-
-        UI_HpObj.SetActive(true);
     }
 
     private void LateUpdate()
     {
-        displayHpBar();
-
         if (Input.GetKeyDown("z"))
         {
             takeDamage(15f, Vector3.zero, true);
@@ -88,17 +78,6 @@ public class Attribute_HP : Photon.MonoBehaviour
     }
     #endregion
 
-    #region 顯示血條
-    void displayHpBar()
-    {
-        if (UI_HpObj.activeInHierarchy)
-        {
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 7.5f, 0));
-            UI_HpObj.transform.position = screenPos;
-        }
-    }
-    #endregion
-
     #region 受到傷害
     [PunRPC]
     public void takeDamage(float _damage, Vector3 _dir, bool ifHit)
@@ -117,8 +96,7 @@ public class Attribute_HP : Photon.MonoBehaviour
             {
                 player.deadManager.ifDead(true);
                 ani.SetBool("Die", true);
-                StartCoroutine(player.Death());
-                UI_HpObj.SetActive(false);
+                player.Death();
             }
             openPopupObject(tureDamage);
             if (ifHit && !player.deadManager.checkDead && !player.deadManager.notFeedBack && !player.NowCC)
