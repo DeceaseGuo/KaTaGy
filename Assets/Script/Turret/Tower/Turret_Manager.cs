@@ -57,18 +57,15 @@ namespace AtkTower
 
         private void Update()
         {
-            if (deadManager.checkDead || power == null || power.resource_Electricity < 0)  //死亡或沒電
-            {
-                return;
-            }
-
             if (turretData.Fad_thermalEnergy > 0)
             {
                 overHeat();
             }
 
-            if (turretData.Fad_overHeat) //過熱
+            if (deadManager.checkDead || turretData.Fad_overHeat || power == null || power.resource_Electricity < 0)  //死亡、沒電、過熱
+            {
                 return;
+            }
 
             if (target == null)
             {
@@ -131,12 +128,14 @@ namespace AtkTower
         }
         #endregion
 
+        GameObject _target;
+        List<GameObject> tmpTarget;
         #region 尋找敵人
         public void FindEnemy()
         {
             float d = 9999;
-            GameObject _target = null;
-            List<GameObject> tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true);
+            _target = null;
+            tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true);
             for (int i = 0; i < tmpTarget.Count; i++)
             {
                 float dis = Vector3.Distance(tmpTarget[i].transform.position, transform.position);
@@ -180,10 +179,9 @@ namespace AtkTower
             {
                 return;
             }
-            //砲台與敵人位置方向
-            Vector3 dir = target.position - Pos_attack.position;
-            //轉向dir
-            Quaternion lookRotation = Quaternion.LookRotation(dir);
+
+            //轉向
+            Quaternion lookRotation = Quaternion.LookRotation(target.position - Pos_attack.position);
             Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
             Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
             float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
@@ -334,7 +332,7 @@ namespace AtkTower
         }
         #endregion
 
-        #region 血量、過熱和顏色同步
+        #region 過熱同步
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.isWriting)

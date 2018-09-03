@@ -6,7 +6,7 @@ public class BulletManager : Photon.MonoBehaviour {
 
     public GameManager.whichObject DataName;
     protected PhotonView Net;
-    private Transform target;
+    //private Transform target;
     protected TurretData.TowerDataBase Data;
     protected LayerMask atkMask;
     protected bool hit;
@@ -44,15 +44,15 @@ public class BulletManager : Photon.MonoBehaviour {
     public virtual void TP_Data(int _id)
     {
         PhotonView _Photon = PhotonView.Find(_id);
-        target = _Photon.gameObject.transform;
-        targetDead = target.gameObject.GetComponent<isDead>();
+        targetDead = _Photon.gameObject.GetComponent<isDead>();
 
-        Vector3 targetPos = target.position;
-        targetPos.y = target.position.y + targetOffsetY;
+        targetPos = targetDead.transform.position;
+        targetPos.y += targetOffsetY;
         dir = targetPos - transform.position;
     }
 
     #region 子彈移動
+    protected Vector3 targetPos;
     protected Vector3 dir;
     [SerializeField] float targetOffsetY;
     protected float distanceThisFrame;
@@ -60,8 +60,8 @@ public class BulletManager : Photon.MonoBehaviour {
     {
         if (Isfllow)
         {
-            Vector3 targetPos = target.position;
-            targetPos.y = target.position.y + targetOffsetY;
+            targetPos = targetDead.transform.position;
+            targetPos.y = targetDead.transform.position.y + targetOffsetY;
             dir = targetPos - transform.position;
             transform.LookAt(targetPos);
         }
@@ -75,18 +75,17 @@ public class BulletManager : Photon.MonoBehaviour {
     {
         //print("傷害");
         GameManager.NowTarget _who = targetDead.myAttributes;
-        PhotonView nn = targetDead.gameObject.GetComponent<PhotonView>();
 
         switch (_who)
         {
             case (GameManager.NowTarget.Soldier):
-                nn.RPC("takeDamage", PhotonTargets.All, 0, Data.Atk_Damage);
+                targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 0, Data.Atk_Damage);
                 break;
             case (GameManager.NowTarget.Player):
-                nn.RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage, Vector3.zero, false);
+                targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage, Vector3.zero, false);
                 break;
             case (GameManager.NowTarget.Tower):
-                nn.RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage);
+                targetDead.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Data.Atk_Damage);
                 break;
             case (GameManager.NowTarget.Core):
                 break;
