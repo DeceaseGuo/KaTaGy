@@ -6,9 +6,8 @@ public class Bullet_Missile : BulletManager
 {
     [SerializeField] float DamageRange;
     [SerializeField] float pushDis;
-    [SerializeField] Collider[] colliders;
+    Collider[] colliders;
     
-
     protected override void OnEnable()
     {
         base.OnEnable();

@@ -9,6 +9,7 @@ public class Bullet_WindTower : BulletManager
     [SerializeField] Vector3 pushBox_Size;
     [SerializeField] Vector3 offset;
     [SerializeField] Vector3 pushBox_Offset;
+    Collider[] colliders;
 
     [Header("飛行與傷害間隔時間")]
     [SerializeField] float flyTime;
@@ -25,9 +26,10 @@ public class Bullet_WindTower : BulletManager
 
         //StartCoroutine("GetCollider");
     }
+   
     void Hit()
     {
-        Collider[] colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
+        colliders = Physics.OverlapBox(transform.position + offset, pushBox_Size, Quaternion.identity, atkMask);
         //print("抓攻擊對象");
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -57,9 +59,9 @@ public class Bullet_WindTower : BulletManager
     #region 子彈移動
     protected override void BulletMove()
     {       
-        Vector3 _targetPoint = dir.normalized * Data.bullet_Speed * flyTime;
-        _targetPoint.y = targetDead.transform.localPosition.y;
-        myTweener = transform.DOBlendableMoveBy(_targetPoint, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
+        targetPos = dir.normalized * Data.bullet_Speed * flyTime;
+        targetPos.y = targetDead.transform.localPosition.y;
+        myTweener = transform.DOBlendableMoveBy(targetPos, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
         if (!photonView.isMine)
         {
@@ -68,9 +70,10 @@ public class Bullet_WindTower : BulletManager
     }
     #endregion
 
+    Quaternion tmpRot;
     public void Reset_Rot()
     {
-        Quaternion tmpRot = Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
+        tmpRot = Quaternion.Euler(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
         transform.rotation = Quaternion.Lerp(transform.rotation, tmpRot, .1f);
     }
 
