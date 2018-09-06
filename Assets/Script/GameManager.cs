@@ -138,8 +138,9 @@ public class GameManager : Photon.MonoBehaviour
             instance = this;
         else
             Destroy(this);
-        
-       DontDestroyOnLoad(this.gameObject);
+
+        DontDestroyOnLoad(this.gameObject);
+        Application.targetFrameRate = 70;
     }
 
     private void Update()

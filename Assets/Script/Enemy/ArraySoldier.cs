@@ -317,9 +317,6 @@ public class ArraySoldier : MonoBehaviour
                 space += sort_list[i].nowPopulation;
         }
 
-        if ((MaxPopulation - nowPopulation) + space >= _needSpace)
-            return true;
-        else
-            return false;
+        return ((MaxPopulation - nowPopulation) + space >= _needSpace) ? true : false;
     }
 }

@@ -72,7 +72,7 @@ public class PhotonTransformView : MonoBehaviour, IPunObservable
 
         this.UpdatePosition();
         this.UpdateRotation();
-        this.UpdateScale();
+      //  this.UpdateScale();
     }
 
     void UpdatePosition()

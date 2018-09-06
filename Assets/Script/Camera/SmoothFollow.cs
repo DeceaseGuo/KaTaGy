@@ -24,6 +24,7 @@ public class SmoothFollow : MonoBehaviour
     [SerializeField] float maxZoomY = 41f;
     [SerializeField] float scrollSpeed = 100f;
     private float scroll;
+    private Vector3 tmpScrollPos;
 
 
     //private Camera followControll;
@@ -103,8 +104,7 @@ public class SmoothFollow : MonoBehaviour
     #region camera自動跟隨
     private void camera_Move()
     {
-        Vector3 desiredPosition = (target.position + target.up * 5f) + offsetPos;
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, ((target.position + target.up * 5f) + offsetPos), smoothSpeed * Time.deltaTime);
     }
     #endregion
 
@@ -113,11 +113,10 @@ public class SmoothFollow : MonoBehaviour
     {
         if (scroll != 0 )
         {
-            float _Rot = scroll * scrollSpeed * 20 * Time.deltaTime;
-            Vector3 tmpPos = transform.forward * _Rot;
+            tmpScrollPos = transform.forward * scroll * scrollSpeed * 20 * Time.deltaTime;
             if (isLockCamera)
             {
-                offsetPos += tmpPos;
+                offsetPos += tmpScrollPos;
                 offsetPos.z = Mathf.Clamp(offsetPos.z, minZoomZ, maxZoomZ);
                 offsetPos.y = Mathf.Clamp(offsetPos.y, minZoomY, maxZoomY);
             }
@@ -125,12 +124,12 @@ public class SmoothFollow : MonoBehaviour
             {
                 if (nOLockPos.y > maxZoomY -1 || nOLockPos.y < 10)
                 {
-                    nOLockPos += new Vector3(0, tmpPos.y, 0);
+                    nOLockPos += new Vector3(0, tmpScrollPos.y, 0);
                     nOLockPos.y = Mathf.Clamp(nOLockPos.y, 9.9f, maxZoomY+4.9f);
                     return;
                 }
 
-                nOLockPos += tmpPos;
+                nOLockPos += tmpScrollPos;
                 nOLockPos.y = Mathf.Clamp(nOLockPos.y, minZoomY, maxZoomY);
             }
         }

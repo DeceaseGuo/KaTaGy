@@ -9,6 +9,33 @@ public class Mini_Soldier : EnemyControl
     private IEnumerator atkCT;
     private Tweener flyUp;
 
+    #region 取得動畫雜湊值
+    protected override void SetAniHash()
+    {
+        base.SetAniHash();
+        aniHashValue[3] = Animator.StringToHash("StunRock");
+        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.Stun");
+        aniHashValue[5] = Animator.StringToHash("Base Layer.DeBuff.HitFly");
+    }
+    #endregion
+
+    protected override void AtkDetectSet()
+    {
+        atkCT = Timer.NextFrame(() =>
+          {
+              if (haveHit)
+              {
+                  //checkBox (.65 .6 2.7)
+                  enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
+                  if (enemiesCon.Length != 0)
+                  {
+                      giveCurrentDamage(enemiesCon[0].gameObject.GetComponent<isDead>());
+                      changeCanHit(0);
+                  }
+              }
+          });
+    }
+
     #region 小兵攻擊
     protected override IEnumerator enemyAttack()
     {
@@ -35,7 +62,7 @@ public class Mini_Soldier : EnemyControl
     [PunRPC]
     public void getAtkAnimator()
     {
-        if (!deadManager.checkDead && !ani.GetBool("StunRock"))
+        if (!deadManager.checkDead && !NowCC)
             ani.CrossFade("attack", 0.01f, 0);
 
         if (!photonView.isMine)
@@ -64,21 +91,6 @@ public class Mini_Soldier : EnemyControl
         }
     }
     #endregion
-    protected override void AtkDetectSet()
-    {
-        atkCT = Timer.NextFrame(() =>
-          {
-              if (haveHit)
-              {
-                  Collider[] enemies = Physics.OverlapBox(sword_1.position, new Vector3(.65f, .6f, 2.4f), Quaternion.identity, currentMask);
-                  if (enemies.Length != 0)
-                  {
-                      giveCurrentDamage(enemies[0].gameObject.GetComponent<isDead>());
-                      changeCanHit(0);
-                  }
-              }
-          });
-    }
 
     #region 給與正確目標傷害
     protected override void giveCurrentDamage(isDead _target)
@@ -112,7 +124,7 @@ public class Mini_Soldier : EnemyControl
         if (!deadManager.notFeedBack)
         {
             if (!deadManager.checkDead && !NowCC)
-                ani.SetTrigger("Hit");
+                ani.SetTrigger(aniHashValue[2]);
         }
     }
     #endregion
@@ -124,17 +136,11 @@ public class Mini_Soldier : EnemyControl
     {
         if (!deadManager.checkDead)
         {
-            // if (photonView.isMine)
-            {
-                StopAll();
-
-            }
+            StopAll();
             NowCC = true;
-            //if (!ani.GetBool("Die"))
-            {
-                ani.CrossFade("Stun", 0.01f, 0);
-                ani.SetBool("StunRock", true);
-            }
+            ani.CrossFade(aniHashValue[4], 0.01f, 0);
+            ani.SetBool(aniHashValue[3], true);
+
             StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
         }
     }
@@ -155,12 +161,21 @@ public class Mini_Soldier : EnemyControl
     }
     //擊退
     [PunRPC]
-    protected override void pushOtherTarget(Vector3 _dir, float _dis)
+    protected override void pushOtherTarget(Vector3 _dir)
     {
-        this.transform.DOMove(transform.localPosition + (_dir.normalized * -_dis), .7f).SetEase(Ease.OutBounce);
-        Quaternion Rot = Quaternion.LookRotation(_dir.normalized);
-        this.transform.rotation = Rot;
+        if (!deadManager.checkDead)
+        {
+            StopAll();
+            NowCC = true;
+            ani.CrossFade(aniHashValue[5], 0.01f, 0);
+            if (photonView.isMine)
+            {
+                transform.DOMove(transform.localPosition + (_dir.normalized * -15f), .65f);
+                transform.rotation = Quaternion.LookRotation(_dir.normalized);
+            }
+        }
     }
+
     //往上擊飛
     [PunRPC]
     protected override void HitFlayUp()

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba31a79715749d0499106f11d7bb5a81
+guid: 8e1d8424bea70a94c9256d7c9c5554b5
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -19,38 +19,39 @@ ModelImporter:
     100026: Circle016
     100028: Circle017
     100030: Circle018
-    100032: IK Chain001
-    100034: IK Chain002
-    100036: IK Chain003
-    100038: IK Chain004
-    100040: IK Chain005
-    100042: IK Chain006
-    100044: Line002
-    100046: Line003
-    100048: //RootNode
-    100050: Sphere001
-    100052: sword_head_bone
-    100054: sword_head_nub
-    100056: sword_L_ankle_bone
-    100058: sword_L_clavicle_bone
-    100060: sword_L_forearm_bone
-    100062: sword_L_knee_bone
-    100064: sword_L_shoulder_bone
-    100066: sword_L_thigh_bone
-    100068: sword_L_toe_bone
-    100070: sword_L_wrist_bone
-    100072: sword_R_ankle_bone
-    100074: sword_R_clavicle_bone
-    100076: sword_R_forearm_bone
-    100078: sword_R_knee_bone
-    100080: sword_R_shoulder_bone
-    100082: sword_R_thigh_bone
-    100084: sword_R_toe_bone
-    100086: sword_R_wrist_bone
-    100088: sword_spin2_bone
-    100090: sword_spin_bone
-    100092: sword_thivs_bone
-    100094: sword_thivs_nub
+    100032: Cylinder001
+    100034: Cylinder006
+    100036: IK Chain001
+    100038: IK Chain002
+    100040: IK Chain003
+    100042: IK Chain004
+    100044: IK Chain005
+    100046: IK Chain006
+    100048: Line002
+    100050: Line003
+    100052: //RootNode
+    100054: sword_head_bone
+    100056: sword_head_nub
+    100058: sword_L_ankle_bone
+    100060: sword_L_clavicle_bone
+    100062: sword_L_forearm_bone
+    100064: sword_L_knee_bone
+    100066: sword_L_shoulder_bone
+    100068: sword_L_thigh_bone
+    100070: sword_L_toe_bone
+    100072: sword_L_wrist_bone
+    100074: sword_R_ankle_bone
+    100076: sword_R_clavicle_bone
+    100078: sword_R_forearm_bone
+    100080: sword_R_knee_bone
+    100082: sword_R_shoulder_bone
+    100084: sword_R_thigh_bone
+    100086: sword_R_toe_bone
+    100088: sword_R_wrist_bone
+    100090: sword_spin2_bone
+    100092: sword_spin_bone
+    100094: sword_thivs_bone
+    100096: sword_thivs_nub
     400000: Bone001
     400002: Bone002
     400004: Circle001
@@ -67,47 +68,53 @@ ModelImporter:
     400026: Circle016
     400028: Circle017
     400030: Circle018
-    400032: IK Chain001
-    400034: IK Chain002
-    400036: IK Chain003
-    400038: IK Chain004
-    400040: IK Chain005
-    400042: IK Chain006
-    400044: Line002
-    400046: Line003
-    400048: //RootNode
-    400050: Sphere001
-    400052: sword_head_bone
-    400054: sword_head_nub
-    400056: sword_L_ankle_bone
-    400058: sword_L_clavicle_bone
-    400060: sword_L_forearm_bone
-    400062: sword_L_knee_bone
-    400064: sword_L_shoulder_bone
-    400066: sword_L_thigh_bone
-    400068: sword_L_toe_bone
-    400070: sword_L_wrist_bone
-    400072: sword_R_ankle_bone
-    400074: sword_R_clavicle_bone
-    400076: sword_R_forearm_bone
-    400078: sword_R_knee_bone
-    400080: sword_R_shoulder_bone
-    400082: sword_R_thigh_bone
-    400084: sword_R_toe_bone
-    400086: sword_R_wrist_bone
-    400088: sword_spin2_bone
-    400090: sword_spin_bone
-    400092: sword_thivs_bone
-    400094: sword_thivs_nub
+    400032: Cylinder001
+    400034: Cylinder006
+    400036: IK Chain001
+    400038: IK Chain002
+    400040: IK Chain003
+    400042: IK Chain004
+    400044: IK Chain005
+    400046: IK Chain006
+    400048: Line002
+    400050: Line003
+    400052: //RootNode
+    400054: sword_head_bone
+    400056: sword_head_nub
+    400058: sword_L_ankle_bone
+    400060: sword_L_clavicle_bone
+    400062: sword_L_forearm_bone
+    400064: sword_L_knee_bone
+    400066: sword_L_shoulder_bone
+    400068: sword_L_thigh_bone
+    400070: sword_L_toe_bone
+    400072: sword_L_wrist_bone
+    400074: sword_R_ankle_bone
+    400076: sword_R_clavicle_bone
+    400078: sword_R_forearm_bone
+    400080: sword_R_knee_bone
+    400082: sword_R_shoulder_bone
+    400084: sword_R_thigh_bone
+    400086: sword_R_toe_bone
+    400088: sword_R_wrist_bone
+    400090: sword_spin2_bone
+    400092: sword_spin_bone
+    400094: sword_thivs_bone
+    400096: sword_thivs_nub
     2100000: 'Material #3'
-    4300000: Sphere001
+    2100002: 'Material #4'
+    2300000: Cylinder001
+    3300000: Cylinder001
+    4300000: Cylinder001
+    4300002: Cylinder006
     7400000: Idle
     7400002: walk
     7400004: attack
     7400006: hit
     7400008: dead
+    7400010: hit fly
     9500000: //RootNode
-    13700000: Sphere001
+    13700000: Cylinder006
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -139,8 +146,8 @@ ModelImporter:
     - serializedVersion: 16
       name: Idle
       takeName: Take 001
-      firstFrame: 0
-      lastFrame: 16
+      firstFrame: 4
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -167,8 +174,8 @@ ModelImporter:
     - serializedVersion: 16
       name: walk
       takeName: Take 001
-      firstFrame: 20
-      lastFrame: 40
+      firstFrame: 24
+      lastFrame: 44
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -195,8 +202,8 @@ ModelImporter:
     - serializedVersion: 16
       name: attack
       takeName: Take 001
-      firstFrame: 45
-      lastFrame: 100
+      firstFrame: 49
+      lastFrame: 104
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -216,7 +223,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.43654114
+      - time: 0.4457832
         functionName: changeCanHit
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: d89a991e4010890448d39eef4e7daac6,
@@ -224,7 +231,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 1
         messageOptions: 0
-      - time: 0.50348675
+      - time: 0.6197356
         functionName: changeCanHit
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: d89a991e4010890448d39eef4e7daac6,
@@ -239,8 +246,8 @@ ModelImporter:
     - serializedVersion: 16
       name: hit
       takeName: Take 001
-      firstFrame: 100
-      lastFrame: 110
+      firstFrame: 105
+      lastFrame: 121
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -267,8 +274,8 @@ ModelImporter:
     - serializedVersion: 16
       name: dead
       takeName: Take 001
-      firstFrame: 110
-      lastFrame: 130
+      firstFrame: 122
+      lastFrame: 142
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -288,6 +295,42 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: hit fly
+      takeName: Take 001
+      firstFrame: 146
+      lastFrame: 200
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.9439607
+        functionName: ReturnState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: d89a991e4010890448d39eef4e7daac6,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

@@ -91,18 +91,18 @@ public class Attribute_HP : Photon.MonoBehaviour
         {
             player.playerData.Hp_original -= tureDamage;
             BeHitChangeColor();
-            ani.SetBool("PullSword", true);
+            ani.SetBool(player.AniControll.aniHashValue[8], true);
             if (player.playerData.Hp_original <= 0)
             {
                 player.deadManager.ifDead(true);
-                ani.SetBool("Die", true);
+                ani.SetBool(player.AniControll.aniHashValue[15], true);
                 player.Death();
             }
             openPopupObject(tureDamage);
             if (ifHit && !player.deadManager.checkDead && !player.deadManager.notFeedBack && !player.NowCC)
             {
                 player.CancelNowSkill();
-                ani.SetTrigger("Hit");
+                ani.SetTrigger(player.AniControll.aniHashValue[14]);
                 player.beHit(_dir);
             }
         }

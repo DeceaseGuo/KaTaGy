@@ -37798,7 +37798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierGapTime: 0.55
   arraySoldier: {fileID: 1598956575}
-  bornSoldier: 1
+  bornSoldier: 0
 --- !u!114 &1332093344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37829,14 +37829,14 @@ MonoBehaviour:
     width: 4
     moveSpeed: 12
     rotSpeed: 0.09
-    stoppingDst: 1.5
+    stoppingDst: 1
     UI_MaxHp: 30
     UI_HP: 30
     atk_maxDamage: 0
     atk_Damage: 3
     atk_Range: 4.5
     atk_delay: 5
-    beAtk_delay: 1.5
+    beAtk_delay: 0.65
     ATK_Level: 0
     def_base: 1
     DEF_Level: 0
@@ -39770,7 +39770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SecondsBeforeStart: 40.4
-  isAutoBorn: 1
+  isAutoBorn: 0
   allTimeText_min: {fileID: 1388970779}
   allTimeText_sec: {fileID: 1825677595}
   nextWaveText: {fileID: 1898698680}

@@ -114,6 +114,8 @@ public class Player : Photon.MonoBehaviour
     private float mapY;
     #endregion
 
+
+
     private void Awake()
     {
         CharaCollider = GetComponent<CapsuleCollider>();
@@ -142,6 +144,7 @@ public class Player : Photon.MonoBehaviour
 
             headImage.sprite = playerData.headImage;
             checkCurrentPlay();
+            GetComponent<CreatPoints>().enabled = false;
         }
         else
         {
@@ -514,7 +517,6 @@ public class Player : Photon.MonoBehaviour
             {
                 if (SkillState != SkillData.None)
                     CancelNowSkill();
-
                 skillManager.Skill_Q_Click();
             }
         }
@@ -621,8 +623,11 @@ public class Player : Photon.MonoBehaviour
     public void getTatgetPoint(Vector3 tragetPoint)
     {
         nav.SetDestination(tragetPoint);
-        getIsRunning = true;
-        Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);
+        if (!getIsRunning)
+        {
+            getIsRunning = true;
+            Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);
+        }
     }
     #endregion
 
@@ -682,10 +687,10 @@ public class Player : Photon.MonoBehaviour
                 CancelNowSkill();
             }
             NowCC = true;
-            if (!AniControll.anim.GetBool("Die"))
+            if (!AniControll.anim.GetBool(AniControll.aniHashValue[15]))
             {
-                AniControll.anim.CrossFade("Stun", 0.02f, 0);
-                AniControll.anim.SetBool("StunRock", true);
+                AniControll.anim.CrossFade(AniControll.aniHashValue[18], 0.02f, 0);
+                AniControll.anim.SetBool(AniControll.aniHashValue[9], true);
             }
             StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
         }
@@ -717,9 +722,9 @@ public class Player : Photon.MonoBehaviour
             CancelNowSkill();
             stopAnything_Switch(true);
             NowCC = true;
-            if (!AniControll.anim.GetBool("Die"))
+            if (!AniControll.anim.GetBool(AniControll.aniHashValue[15]))
             {
-                AniControll.anim.CrossFade("HitFly", 0.02f, 0);
+                AniControll.anim.CrossFade(AniControll.aniHashValue[19], 0.02f, 0);
             }
         }
     }
@@ -745,7 +750,7 @@ public class Player : Photon.MonoBehaviour
     void Recover_Stun()
     {
         GoBack_AtkState();
-        AniControll.anim.SetBool("StunRock", false);
+        AniControll.anim.SetBool(AniControll.aniHashValue[9], false);
     }
     //回到地上
     void EndFlyUp()
@@ -841,13 +846,14 @@ public class Player : Photon.MonoBehaviour
     //停止角色移動
     public void isStop()
     {
-        if (getIsRunning)
+        if (AniControll.anim.GetBool(AniControll.aniHashValue[2]))
         {
             getIsRunning = false;
             nav.ResetPath();
             Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);
         }
     }
+
     //停止一切行為(無法操控)
     public void stopAnything_Switch(bool _stop)
     {

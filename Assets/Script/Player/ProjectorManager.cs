@@ -37,8 +37,7 @@
                     _projector.transform.position = _pos;
                 else
                 {
-                    Vector3 tmpPos = _pos - _originalPos.position;
-                    _projector.transform.position = _originalPos.position + (tmpPos.normalized * _maxRange);
+                    _projector.transform.position = _originalPos.position + ((_pos - _originalPos.position).normalized * _maxRange);
                 }
             }
         }

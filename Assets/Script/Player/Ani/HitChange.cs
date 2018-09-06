@@ -13,17 +13,17 @@ public class HitChange : StateMachineBehaviour
             ani = animator.gameObject.GetComponent<PlayerAni>();
         }
         playerScript.stopAnything_Switch(true);
-        animator.SetBool("PullSword", false);
+        animator.SetBool(ani.aniHashValue[8], false);
         Debug.Log("進入");
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (animator.GetBool("PullSword"))
+        if (animator.GetBool(ani.aniHashValue[8]))
         {
-            animator.SetBool("PullSword", false);
-            animator.SetBool("NowBuild", false);
+            animator.SetBool(ani.aniHashValue[8], false);
+            animator.SetBool(ani.aniHashValue[1], false);
             playerScript.buildManager.nowBuilding = false;
             //
             playerScript.buildManager.uiManager.CloseTowerMenu();

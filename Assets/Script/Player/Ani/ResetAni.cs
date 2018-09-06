@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
 public class ResetAni : StateMachineBehaviour
 {
@@ -15,13 +12,14 @@ public class ResetAni : StateMachineBehaviour
             player= animator.gameObject.GetComponent<Player>();
         player.NowCC = false;
         player.deadManager.noCC = false;
+        player.lockDodge = false;
         ani.GoBackIdle_canMove();
-        animator.SetBool("Run", false);
-        animator.SetInteger("comboIndex", 0);
-        animator.SetBool("Action", false);
-        animator.SetBool("PullSword", false);
-        animator.SetBool("StunRock", false);
-        if (animator.GetBool("Die"))
-            animator.SetBool("Die", false);
+        animator.SetBool(ani.aniHashValue[2], false);
+        animator.SetInteger(ani.aniHashValue[3], 0);
+        animator.SetBool(ani.aniHashValue[6], false);
+        animator.SetBool(ani.aniHashValue[8], false);
+        animator.SetBool(ani.aniHashValue[9], false);
+        if (animator.GetBool(ani.aniHashValue[15]))
+            animator.SetBool(ani.aniHashValue[15], false);
     }
 }

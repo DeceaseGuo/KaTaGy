@@ -25,7 +25,8 @@ public class Queen_Skill : SkillBase
     //E技能
     IEnumerator skillE_CT;
 
-
+    //(持續偵測的) 0 是技能Q  1是技能E 
+    private Vector3[] checkEnemyBox = new Vector3[2];     
 
     private void Start()
     {
@@ -36,6 +37,8 @@ public class Queen_Skill : SkillBase
         }
         else
         {
+            checkEnemyBox[0] = new Vector3(3.1f, 1.5f, 4f);
+            checkEnemyBox[1] = new Vector3(12, 1, 8);
             allSkillRange = GameObject.Find("AllSkillRange_R").GetComponent<Projector>();
             skillQ_CT = Timer.NextFrame(SetQ_CT);
         }
@@ -242,7 +245,7 @@ public class Queen_Skill : SkillBase
         //第一次刷
         if (firstQAtk && !endQAtk)
         {
-            tmpEnemy = Physics.OverlapBox(q_DetectPos.position, new Vector3(3.1f, 1.5f, 4f), Quaternion.identity, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapBox(q_DetectPos.position, checkEnemyBox[0], Quaternion.identity, aniScript.canAtkMask);
             if (tmpEnemy.Length != 0)
             {
                 targetAmount = tmpEnemy.Length;
@@ -264,8 +267,8 @@ public class Queen_Skill : SkillBase
                                 Net.RPC("pushOtherTarget", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Soldier:
+                                Net.RPC("pushOtherTarget", PhotonTargets.All, -transform.forward.normalized);
                                 Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
-                                Net.RPC("pushOtherTarget", PhotonTargets.All, -transform.forward.normalized, 10f);
                                 break;
                             case GameManager.NowTarget.Tower:
                                 Net.RPC("takeDamage", PhotonTargets.All, 4.5f);
@@ -389,7 +392,7 @@ public class Queen_Skill : SkillBase
         {
             skillE_CT = Timer.FirstAction(0.23f, () =>
             {
-                tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, new Vector3(12, 1, 8), Quaternion.identity, aniScript.canAtkMask);
+                tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, checkEnemyBox[1], Quaternion.identity, aniScript.canAtkMask);
                 if (tmpEnemy.Length != 0)
                 {
                     targetAmount = tmpEnemy.Length;

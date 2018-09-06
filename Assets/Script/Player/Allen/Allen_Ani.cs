@@ -2,7 +2,22 @@
 
 public class Allen_Ani : PlayerAni
 {
-    #region Combo
+    #region 取得動畫雜湊值
+    protected override void SetAniHash()
+    {
+        base.SetAniHash();
+        aniHashValue[20] = Animator.StringToHash("Catch");
+    }
+    #endregion
+
+    #region 設定攻擊Collider
+    protected override void SetCheckBox()
+    {
+        checkEnemyBox[0] = new Vector3(1.7f, 4.5f, .85f);
+        checkEnemyBox[1] = new Vector3(4f, 4f, 2f);
+    }
+    #endregion     
+
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
     {
@@ -42,7 +57,7 @@ public class Allen_Ani : PlayerAni
                 if (!photonView.isMine)
                     return;
                 canClick = true;
-                anim.SetBool("Action", false);
+                anim.SetBool(aniHashValue[6], false);
                 player.lockDodge = false;
                 break;
             //結束點
@@ -55,10 +70,10 @@ public class Allen_Ani : PlayerAni
                 }
                 else
                 {
-                    if (!anim.GetBool("Action"))
+                    if (!anim.GetBool(aniHashValue[6]))
                     {
                         player.lockDodge = false;
-                        anim.SetTrigger("ExitCombo");
+                        anim.SetTrigger(aniHashValue[5]);
                         GoBackIdle_canMove();
                         SwitchAtkRange(8);
                     }
@@ -92,7 +107,6 @@ public class Allen_Ani : PlayerAni
         }
     }
     #endregion
-    #endregion
 
     #region 傷害判定
     public override void DetectAtkRanage()
@@ -101,11 +115,11 @@ public class Allen_Ani : PlayerAni
 
         if (startDetect_1)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(1.7f, 4.5f, .85f));
+            ProduceCheckBox(weapon_Detect, checkEnemyBox[0]);
         }
         if (startDetect_2)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(4f, 4f, 2f));
+            ProduceCheckBox(weapon_Detect, checkEnemyBox[1]);
         }
     }
 

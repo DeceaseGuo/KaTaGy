@@ -9,6 +9,7 @@ public class CreatPoints : MonoBehaviour
         public Transform point;
         public Quaternion Dir;
         public float atkDistance;
+        public Vector3 lastPoint;
 
         public pointData(Transform _point, Quaternion _Dir, float _atkDis)
         {
@@ -17,15 +18,45 @@ public class CreatPoints : MonoBehaviour
             atkDistance = _atkDis;
         }
     }
-    public List<float> keysList = new List<float>();
-    /// <param name="_soldier">士兵本身</param>
-    /// <param name="range">攻擊距離</param>
+    public List<pointData> keysList = new List<pointData>();
+    
     [SerializeField] float extraRange = 0;
-    //public Dictionary<float, List<Transform>> atkPoints = new Dictionary<float, List<Transform>>();
-    public Dictionary<float, List<pointData>> atkPoints = new Dictionary<float, List<pointData>>();
+    public Dictionary<float, List<pointData>> atkPoints /*= new Dictionary<float, List<pointData>>()*/;
     public List<Transform> TestNext;
     public List<Transform> alreadyFull;
 
+    [SerializeField] Vector3 myCheckBoxV3;
+        
+    class WhichfloatComparer : IEqualityComparer<float>
+    {
+        public bool Equals(float x, float y)
+        {
+            return x == y;
+        }
+
+        public int GetHashCode(float x)
+        {
+            return (int)x;
+        }
+    }
+
+    #region 找最近點
+    private int near = -1;
+    private float neardis = 1000000;
+    private float compareCon;
+    private List<pointData> tmpPointData;
+
+    //比較位子
+    private Transform comparPos;
+    //生點放置位子
+    private Transform pointParent;
+    #endregion
+
+    private void Start()
+    {
+        pointParent = GameObject.Find("PointData").transform;
+        atkPoints = new Dictionary<float, List<pointData>>(new WhichfloatComparer());
+    }
 
     /// <param name="_range">攻擊距離</param>
     /// <param name="_soldier">士兵本身</param>
@@ -47,19 +78,19 @@ public class CreatPoints : MonoBehaviour
     #region 找到離最近的空位
     Transform findPoint(float _range, Transform _soldierPos ,bool _obsDet)
     {
-        int near = -1;
-        float neardis = 1000000;
-
-        for (int i = 0; i < atkPoints[_range].Count; i++)
+        near = -1;
+        neardis = 1000000;
+        tmpPointData = atkPoints[_range];
+        for (int i = 0; i < tmpPointData.Count; i++)
         {
-            if (!CheckThisPointFull(atkPoints[_range][i].point) && !checkDetectPos(atkPoints[_range][i].point))
+            if (!alreadyFull.Contains(tmpPointData[i].point) && !checkDetectPos(tmpPointData[i].point))
             {
-                if (CheckObstacle(atkPoints[_range][i].point, _obsDet))
+                if (CheckObstacle(tmpPointData[i].point, _obsDet))
                 {
-                    float maxDisGap = Vector3.Distance(atkPoints[_range][i].point.position, _soldierPos.position);
-                    if (maxDisGap < neardis)
+                    compareCon = Vector3.Distance(tmpPointData[i].point.position, _soldierPos.position);
+                    if (compareCon < neardis)
                     {
-                        neardis = maxDisGap;
+                        neardis = compareCon;
                         near = i;
                     }
                 }
@@ -68,30 +99,21 @@ public class CreatPoints : MonoBehaviour
         if (near == -1)
             return null;
 
-        return atkPoints[_range][near].point;
+        return tmpPointData[near].point;
     }
     #endregion
 
     public Transform GoComparing(float _range, Transform _soldierPos, Transform _firstPoint ,bool _obsDet)
     {
 
-        Transform tmpPos = findPoint(_range, _soldierPos, _obsDet);
+        comparPos = findPoint(_range, _soldierPos, _obsDet);
 
-        if (tmpPos == null || _soldierPos == null || _firstPoint == null)
+        if (comparPos == null || _soldierPos == null || _firstPoint == null)
             return null;
 
-        if (!TestNext.Contains(tmpPos) && !alreadyFull.Contains(tmpPos))
+        if (!TestNext.Contains(comparPos) && !alreadyFull.Contains(comparPos))
         {
-            Vector3 maxDisGap = tmpPos.position - _soldierPos.position;
-            float maxDis = maxDisGap.sqrMagnitude;
-
-            Vector3 maxDisGap2 = _firstPoint.position - _soldierPos.position;
-            float maxDis2 = maxDisGap2.sqrMagnitude;
-
-            if (maxDis < maxDis2)
-                return tmpPos;
-            else
-                return null;
+            return ((comparPos.position - _soldierPos.position).sqrMagnitude < (_firstPoint.position - _soldierPos.position).sqrMagnitude) ? comparPos : null;
         }
         else
             return null;
@@ -102,32 +124,17 @@ public class CreatPoints : MonoBehaviour
         if (!atkPoints.ContainsKey(_dis))
             return false;
 
-        if (atkPoints[_dis].Count == alreadyFull.Count)
-            return true;
-        else
-            return false;
-    }
-
-    public bool CheckThisPointFull(Transform _pos)
-    {
-        if (alreadyFull.Contains(_pos))
-            return true;
-        else
-            return false;
+        return (atkPoints[_dis].Count == alreadyFull.Count) ? true : false;
     }
 
     public bool checkDetectPos(Transform _pos)
     {
-        if (TestNext.Contains(_pos))
-            return true;
-        else
-            return false;
+        return (TestNext.Contains(_pos)) ? true : false;
     }
 
     public void AddPoint(float _range, Transform _node)
     {
-      //  if (atkPoints[_range].Contains(_node))
-        if(!CheckThisPointFull(_node))
+        if(!alreadyFull.Contains(_node))
         {
             //if(!CheckFull(_node))
             alreadyFull.Add(_node);
@@ -141,22 +148,18 @@ public class CreatPoints : MonoBehaviour
         if (alreadyFull.Contains(_node))
             alreadyFull.Remove(_node);      
     }
-    public float testTesttest_1;
-    public float testTesttest_2;
+   // public float testTesttest_1;
+ //   public float testTesttest_2;
     private void LateUpdate()
     {
         for (int i = 0; i < keysList.Count; i++)
         {
-            for (int a = 0; a < atkPoints[keysList[i]].Count; a++)
+            if (transform.position != keysList[i].lastPoint)
             {
-                atkPoints[keysList[i]][a].point.position = transform.position + atkPoints[keysList[i]][a].Dir * Vector3.forward * atkPoints[keysList[i]][a].atkDistance;
+                keysList[i].lastPoint = transform.position;
+                keysList[i].point.position = transform.position + keysList[i].Dir * Vector3.forward * keysList[i].atkDistance;
             }
         }
-
-
-
-
-
         //觀看生成點用
         /*if (Input.GetKeyDown("f"))
         {
@@ -167,43 +170,39 @@ public class CreatPoints : MonoBehaviour
 
     public bool IFDis(float _dis ,float _nowDis)
     {
-        if (_nowDis <= atkPoints[_dis][0].atkDistance)
-            return true;
-        else
-            return false;
+        return (_nowDis <= atkPoints[_dis][0].atkDistance) ? true : false;
     }
 
-    void CalculatePoint(float _range ,float width)
+    void CalculatePoint(float _range, float width)
     {
         float angle = (width * 180) / (Mathf.PI * _range);
         int count = (int)(360 / angle);
+        Transform _tmpPpoint = null;
+        Quaternion q = Quaternion.identity;
         List<pointData> _tmpLlist = new List<pointData>();
-       Transform aaa = GameObject.Find("PointData").transform;
+        pointData tmpData = null;
         for (int i = 0; i < count; i++)
-        {            
-            Transform _tmpPpoint = new GameObject(i+"Point").transform;
-            _tmpPpoint.SetParent(/*transform*/aaa);
+        {
+            _tmpPpoint = new GameObject(i + "Point").transform;
+            _tmpPpoint.SetParent(/*transform*/pointParent);
             _tmpPpoint.position = Vector3.forward * (_range + extraRange);
-            Quaternion q = Quaternion.AngleAxis(angle * i, Vector3.up);
-            _tmpPpoint.position = q * _tmpPpoint.position + this.transform.position;
-
-            pointData tmpPointData = new pointData(_tmpPpoint, q, _range + extraRange);
-            _tmpLlist.Add(tmpPointData);
+            q = Quaternion.AngleAxis(angle * i, Vector3.up);
+            _tmpPpoint.position = q * _tmpPpoint.position + transform.position;
+            tmpData = new pointData(_tmpPpoint, q, _range + extraRange);
+            _tmpLlist.Add(tmpData);
+            keysList.Add(tmpData);
         }
         atkPoints.Add(_range, _tmpLlist);
-        keysList.Add(_range);
     }
 
-    bool CheckObstacle(Transform _pos ,bool _obsDet)
+    bool CheckObstacle(Transform _pos, bool _obsDet)
     {
         if (!_obsDet)
             return true;
 
-        bool walkable = (Physics.CheckBox(new Vector3(_pos.position.x, 0, _pos.position.z), new Vector3(.7f, 1f, .73f), Quaternion.identity, 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11));
-        if (!walkable)
+        if (!(Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11)))
         {
-            bool walkableTwo = (Physics.CheckBox(new Vector3(_pos.position.x, 0, _pos.position.z), new Vector3(.7f, 1f, .7f), Quaternion.identity, 1 << 9));
-            if (walkableTwo)
+            if ((Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, 1 << 9)))
                 return true;
         }
         return false;

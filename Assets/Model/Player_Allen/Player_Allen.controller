@@ -98,13 +98,13 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: Catch
+  - m_Name: Die
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: Die
+  - m_Name: Catch
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -1016,7 +1016,7 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 2
     m_ConditionEvent: Run
-    m_EventTreshold: 0
+    m_EventTreshold: 0.1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102388592551451100}
   m_Solo: 0
@@ -1421,7 +1421,7 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: Run
-    m_EventTreshold: 0
+    m_EventTreshold: 0.1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102030337627744892}
   m_Solo: 0
@@ -1903,7 +1903,7 @@ AnimatorState:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: SkillR
-  m_Speed: 1
+  m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101934773460272922}
@@ -2119,7 +2119,7 @@ AnimatorStateMachine:
     m_Position: {x: 228, y: -120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102537950732803364}
-    m_Position: {x: -624, y: -324, z: 0}
+    m_Position: {x: -612, y: -312, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102288695076074774}
     m_Position: {x: 72, y: 336, z: 0}

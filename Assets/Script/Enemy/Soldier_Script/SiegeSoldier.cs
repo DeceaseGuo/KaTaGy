@@ -73,17 +73,16 @@ public class SiegeSoldier : EnemyControl
         }
     }
     #endregion
-    private Collider[] enemies;
     protected override void AtkDetectSet()
     {
         atkCT = Timer.NextFrame(() =>
         {
             if (haveHit)
             {
-                enemies = Physics.OverlapBox(sword_1.position, new Vector3(.25f, 1.4f, .15f), sword_1.rotation, currentMask);
-                if (enemies.Length != 0)
+                enemiesCon = Physics.OverlapBox(sword_1.position, new Vector3(.25f, 1.4f, .15f), sword_1.rotation, currentMask);
+                if (enemiesCon.Length != 0)
                 {
-                    giveCurrentDamage(enemies[0].gameObject.GetComponent<isDead>());
+                    giveCurrentDamage(enemiesCon[0].gameObject.GetComponent<isDead>());
                     changeCanHit(0);
                 }
             }

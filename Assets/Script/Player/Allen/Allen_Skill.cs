@@ -50,6 +50,7 @@ public class Allen_Skill : SkillBase
     [SerializeField] float skillR_radius;
 
 
+
     private void Start()
     {
 
@@ -199,7 +200,7 @@ public class Allen_Skill : SkillBase
         }
 
         if (catchObj == null && isForward)
-        {
+        {            
             tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.35f, 1.6f, 1.9f), Quaternion.identity, aniScript.canAtkMask);
 
             if (tmpEnemy.Length != 0)
@@ -243,13 +244,13 @@ public class Allen_Skill : SkillBase
                         default:
                             break;
                     }
-                    aniScript.anim.SetBool("Catch", true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
                 else
                 {
-                    aniScript.anim.SetBool("Catch", true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
@@ -275,7 +276,7 @@ public class Allen_Skill : SkillBase
     {
         if (isForward)
         {
-            aniScript.anim.SetBool("Catch", true);
+            aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
             grabSkill.PlayBackwards();
             isForward = false;
         }
@@ -313,8 +314,8 @@ public class Allen_Skill : SkillBase
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
+                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized, 10f);
                             break;
                         case GameManager.NowTarget.Tower:
                             Net.RPC("takeDamage", PhotonTargets.All, 2.5f);
@@ -446,7 +447,7 @@ public class Allen_Skill : SkillBase
         ProjectorManager.Setsize(allSkillRange, 17.5f, 1, true);
         //clone體執行
         if (!photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(R_Skill, 1f));
+            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(R_Skill, .9f));
     }
 
     public void R_Skill()
@@ -473,13 +474,14 @@ public class Allen_Skill : SkillBase
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
+                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 9f);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized, 10f);
                             break;
                         case GameManager.NowTarget.Tower:
                             Net.RPC("takeDamage", PhotonTargets.All, 9f);
                             break;
                         case GameManager.NowTarget.Core:
+                            transform.forward = dirToTarget.normalized;
                             break;
                         case GameManager.NowTarget.NoChange:
                             // playerScript.Net.RPC("HitNull", PhotonTargets.All);
@@ -505,7 +507,7 @@ public class Allen_Skill : SkillBase
 
         if (grabSkill != null)
             grabSkill.Kill();
-        aniScript.anim.SetBool("Catch", false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[20], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -543,7 +545,7 @@ public class Allen_Skill : SkillBase
         playerScript.CountDown_Q();
         if (grabSkill != null)
             grabSkill.Kill();
-        aniScript.anim.SetBool("Catch", false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[20], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;

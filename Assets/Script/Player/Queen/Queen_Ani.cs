@@ -2,6 +2,14 @@
 
 public class Queen_Ani : PlayerAni
 {
+    #region 設定攻擊Collider
+    protected override void SetCheckBox()
+    {
+        checkEnemyBox[0] = new Vector3(3.5f, 1f, 1.5f);
+        checkEnemyBox[1] = new Vector3(3.5f, 1f, 3.5f);
+    }
+    #endregion
+
     #region 按下判斷
     public override void TypeCombo(Vector3 atkDir)
     {
@@ -41,7 +49,7 @@ public class Queen_Ani : PlayerAni
                 if (!photonView.isMine)
                     return;
                 canClick = true;
-                anim.SetBool("Action", false);
+                anim.SetBool(aniHashValue[6], false);
                 player.lockDodge = false;
                 break;
             //結束點
@@ -54,10 +62,10 @@ public class Queen_Ani : PlayerAni
                 }
                 else
                 {
-                    if (!anim.GetBool("Action"))
+                    if (!anim.GetBool(aniHashValue[6]))
                     {
                         player.lockDodge = false;
-                        anim.SetTrigger("ExitCombo");
+                        anim.SetTrigger(aniHashValue[5]);
                         GoBackIdle_canMove();
                         SwitchAtkRange(8);
                     }
@@ -100,12 +108,12 @@ public class Queen_Ani : PlayerAni
         //鐮刀本身
        if (startDetect_1)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(3.5f, 1f, 1.5f));
+            ProduceCheckBox(weapon_Detect, checkEnemyBox[0]);
         }
        //轉刀
          if (startDetect_2)
         {
-            ProduceCheckBox(weapon_Detect, new Vector3(3.5f, 1f, 3.5f));
+            ProduceCheckBox(weapon_Detect, checkEnemyBox[1]);
         }
     }
 

@@ -4584,12 +4584,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18cf1d6be43e354281c05d40cac04f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keysList: []
-  extraRange: 2
+  extraRange: 1.25
   TestNext: []
   alreadyFull: []
-  testTesttest_1: 0
-  testTesttest_2: 0
+  myCheckBoxV3: {x: 1, y: 1, z: 0.9}
 --- !u!114 &114447975691306418
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4645,6 +4643,8 @@ MonoBehaviour:
   hitNullEffect: {fileID: 198659124289594116}
   viewRadius: 10
   viewAngle: 100
+  aniHashValue: 
+  allHashAmount: 21
 --- !u!114 &114461220652676116
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -37900,8 +37900,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.4499512, y: 49}
-  m_SizeDelta: {x: -51.899998, y: -874}
+  m_AnchoredPosition: {x: 1.4499512, y: 35.649994}
+  m_SizeDelta: {x: -51.9, y: -847.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224593467340470780
 RectTransform:

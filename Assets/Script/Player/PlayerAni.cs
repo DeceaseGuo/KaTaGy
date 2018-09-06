@@ -60,6 +60,21 @@ public class PlayerAni : Photon.MonoBehaviour
     private int targetAmount;
     #endregion
 
+    //攻擊偵測
+    protected Vector3[] checkEnemyBox = new Vector3[2];
+
+    //動畫雜湊值
+    [HideInInspector]
+    public int[] aniHashValue;
+    [SerializeField]
+    protected int allHashAmount = 20;
+
+    private void Awake()
+    {
+        SetCheckBox();
+        SetAniHash();
+    }
+
     private void Start()
     {
         anim = GetComponent<Animator>();
@@ -68,12 +83,49 @@ public class PlayerAni : Photon.MonoBehaviour
         cameraControl = SmoothFollow.instance;
     }
 
+    #region 取得動畫雜湊值
+    protected virtual void SetAniHash()
+    {
+        if (allHashAmount <= 19)
+            return;
+
+        aniHashValue = new int[allHashAmount];
+
+        aniHashValue[0] = Animator.StringToHash("Switch");
+        aniHashValue[1] = Animator.StringToHash("NowBuild");
+        aniHashValue[2] = Animator.StringToHash("Run");
+        aniHashValue[3] = Animator.StringToHash("comboIndex");
+        aniHashValue[4] = Animator.StringToHash("Combo");
+        aniHashValue[5] = Animator.StringToHash("ExitCombo");
+        aniHashValue[6] = Animator.StringToHash("Action");
+        aniHashValue[7] = Animator.StringToHash("Building");
+        aniHashValue[8] = Animator.StringToHash("PullSword");
+        aniHashValue[9] = Animator.StringToHash("StunRock");
+        aniHashValue[10] = Animator.StringToHash("Skill_Q");
+        aniHashValue[11] = Animator.StringToHash("Skill_W");
+        aniHashValue[12] = Animator.StringToHash("Skill_E");
+        aniHashValue[13] = Animator.StringToHash("Skill_R");
+        aniHashValue[14] = Animator.StringToHash("Hit");
+        aniHashValue[15] = Animator.StringToHash("Die");
+        //crossfade死亡
+        aniHashValue[16] = Animator.StringToHash("Base Layer.dead");
+        //crossfade閃避
+        aniHashValue[17] = Animator.StringToHash("Base Layer.Skill.Dodge");
+        //crossfade暈眩
+        aniHashValue[18] = Animator.StringToHash("Base Layer.Hit.Stun");
+        //crossfade擊飛
+        aniHashValue[19] = Animator.StringToHash("Base Layer.Hit.HitFly");
+    }
+    #endregion
+    protected virtual void SetCheckBox()
+    { }
+
     #region 武器切換
     [PunRPC]
     public void weaponOC(bool _t)
     {
-        anim.SetBool("NowBuild", _t);
-        anim.SetTrigger("Switch");
+        anim.SetBool(aniHashValue[1], _t);
+        anim.SetTrigger(aniHashValue[0]);
     }
 
     public void WeaponChangePos(int _n)
@@ -141,7 +193,7 @@ public class PlayerAni : Photon.MonoBehaviour
     void ComboAniEnd()
     {
         comboIndex = 0;
-        anim.SetInteger("comboIndex", 0);
+        anim.SetInteger(aniHashValue[3], 0);
         canClick = true;
         redressOpen = false;
         nextComboBool = false;
@@ -159,8 +211,8 @@ public class PlayerAni : Photon.MonoBehaviour
         CancleAllAni();
         player.deadManager.notFeedBack = true;
 
-        if (!anim.GetBool("Die"))
-            anim.CrossFade("Dodge", 0.01f, 0);
+        if (!anim.GetBool(aniHashValue[15]))
+            anim.CrossFade(aniHashValue[17], 0.01f, 0);
     }
     #endregion
 
@@ -182,8 +234,8 @@ public class PlayerAni : Photon.MonoBehaviour
     protected void comboFirst(int Index, Vector3 Dir)
     {
         comboIndex = Index;
-        anim.SetInteger("comboIndex", comboIndex);
-        anim.SetTrigger("Combo");
+        anim.SetInteger(aniHashValue[3], comboIndex);
+        anim.SetTrigger(aniHashValue[4]);
 
         currentAtkDir = Dir.normalized;
         player.Net.RPC("TP_Combo", PhotonTargets.Others, comboIndex);
@@ -199,8 +251,8 @@ public class PlayerAni : Photon.MonoBehaviour
     //前往下個combo
     protected void goNextCombo()
     {
-        anim.SetInteger("comboIndex", comboIndex);
-        anim.SetBool("Action", true);
+        anim.SetInteger(aniHashValue[3], comboIndex);
+        anim.SetBool(aniHashValue[6], true);
         nextComboBool = false;
         after_shaking = false;
         brfore_shaking = false;
@@ -266,7 +318,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void waitBuild(bool _t)
     {
-        anim.SetBool("Building", _t);
+        anim.SetBool(aniHashValue[7], _t);
     }
 
     //攻擊區間傷害判斷
@@ -295,7 +347,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_Q_Fun()
     {
-        anim.SetTrigger("Skill_Q");
+        anim.SetTrigger(aniHashValue[10]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_Q;
         if (player.skill_Q != null)
@@ -305,7 +357,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_W_Fun()
     {
-        anim.SetTrigger("Skill_W");
+        anim.SetTrigger(aniHashValue[11]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_W;
         if (player.skill_W != null)
@@ -315,7 +367,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_E_Fun()
     {
-        anim.SetTrigger("Skill_E");
+        anim.SetTrigger(aniHashValue[12]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_E;
         if (player.skill_E != null)
@@ -325,7 +377,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_R_Fun()
     {
-        anim.SetTrigger("Skill_R");
+        anim.SetTrigger(aniHashValue[13]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_R;
         if (player.skill_R != null)
@@ -335,12 +387,12 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Ani_Run(bool isRun)
     {
-        anim.SetBool("Run", isRun);        
+        anim.SetBool(aniHashValue[2], isRun);        
     }
 
     public void Die()
-    {
-        anim.CrossFade("dead" , 0.05f, 0);
-        anim.SetBool("Die", true);
+    {        
+        anim.CrossFade(/*"dead"*/aniHashValue[16], 0.05f, 0);
+        anim.SetBool(aniHashValue[15], true);
     }
 }

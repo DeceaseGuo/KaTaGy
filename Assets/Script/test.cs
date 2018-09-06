@@ -21,14 +21,13 @@ namespace Mytest
         }
 
         public kkk nowTest;
+        public float qqq=12;
+        public Mini_Soldier jjj;
 
-        NavMeshAgent nav;
-        [SerializeField] Collider[] pos;
+        [SerializeField] int[] pos;
         private void Start()
         {
-            nav = GetComponent<NavMeshAgent>();
         }
-
 
         private void Update()
         {
@@ -41,7 +40,6 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
@@ -51,15 +49,17 @@ namespace Mytest
                     Debug.Log("等於0");
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-               
+            { 
             }
         }
 
-       /* private void OnDrawGizmos()
+        /* private void OnDrawGizmos()
+         {
+             Gizmos.DrawWireSphere(transform.position, testNum);
+         }*/
+        void Ttest1()
         {
-            Gizmos.DrawWireSphere(transform.position, testNum);
-        }*/
+        }
 
     }
 }

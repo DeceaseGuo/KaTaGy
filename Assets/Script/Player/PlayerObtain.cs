@@ -59,10 +59,7 @@ public class PlayerObtain : MonoBehaviour
     #region 檢查金錢夠不夠
     public bool Check_MoneyAmount(int _money)
     {
-        if (resource_Money >= _money)
-            return true;
-        else
-            return false;
+        return (resource_Money >= _money) ? true : false;
     }
     #endregion
 
@@ -73,10 +70,8 @@ public class PlayerObtain : MonoBehaviour
         {
             return false;
         }
-        if (resource_Electricity >= _electricity)
-            return true;
-        else
-            return false;
+
+        return (resource_Electricity >= _electricity) ? true : false;
     }
     #endregion
 }
