@@ -15,9 +15,12 @@ public class Player : Photon.MonoBehaviour
     private HintManager hintManager;
     public HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
 
+    #region 數據
     public GameManager.meIs meIs;
     public PlayerData.PlayerDataBase playerData;
     public PlayerData.PlayerDataBase originalData;
+    private bool firstGetData = true;
+    #endregion
     public PlayerAni AniControll;
     [HideInInspector]
     public BuildManager buildManager;
@@ -37,10 +40,10 @@ public class Player : Photon.MonoBehaviour
     private Image leftTopPowerBar;
     private Image headImage;
 
-    #region 偵測目前跑步動畫
+    //偵測目前跑步動畫
     private bool isRunning;
     public bool getIsRunning { get { return isRunning; } private set { isRunning = value; } }
-    #endregion
+
     private bool stopClick;
     public bool StopClick { get { return stopClick; } set { stopClick = value; } }
         
@@ -114,29 +117,18 @@ public class Player : Photon.MonoBehaviour
     private float mapY;
     #endregion
 
-
-
     private void Awake()
     {
         CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
     }
-    //    
-    
-    //
+
     private void Start()
     {
-        //
-        map = GameObject.Find("smallMapContainer (1)").GetComponent<RectTransform>();
-        //
-        skillManager = GetComponent<SkillBase>();
-        clickPointPos = GameObject.Find("clickPointPos");
-        buildManager = BuildManager.instance;
-        nav = GetComponent<NavMeshAgent>();
-        deadManager = GetComponent<isDead>();
-        nav.updateRotation = false;
-        nav.speed = playerData.moveSpeed;
-        AniControll = GetComponent<PlayerAni>();
+        if (firstGetData)
+            FirstFormatData();
+        FormatData();
+
         if (photonView.isMine)
         {
             if (headImage == null)
@@ -186,29 +178,48 @@ public class Player : Photon.MonoBehaviour
     #endregion
 
     #region 恢復初始數據
-    public void formatData()
+    void FirstFormatData()
     {
-        Debug.Log("初始數據");
+        firstGetData = false;
+        //
+        map = GameObject.Find("smallMapContainer (1)").GetComponent<RectTransform>();
+        //
+        skillManager = GetComponent<SkillBase>();
+        clickPointPos = GameObject.Find("clickPointPos");
+        buildManager = BuildManager.instance;
+        nav = GetComponent<NavMeshAgent>();
+        deadManager = GetComponent<isDead>();
+        nav.updateRotation = false;
+        
+        AniControll = GetComponent<PlayerAni>();        
+
         if (photonView.isMine)
         {
             if (leftTopPowerBar == null)
                 leftTopPowerBar = GameObject.Find("mpBar_0020").GetComponent<Image>();
-            if (buildManager != null && buildManager.nowBuilding)
-                buildManager.BuildSwitch();
-            if (nav != null)
-                nav.speed = playerData.moveSpeed;
-
-            leftTopPowerBar.fillAmount = 1;
         }
-
-        if (AniControll != null)
-            AniControll.WeaponChangePos(1);
-
         originalData = PlayerData.instance.getPlayerData(meIs);
-        playerData = originalData;
-        playerData.Ap_original = playerData.Ap_Max;
-        playerData.Hp_original = playerData.Hp_Max;
-        ChangeMyCollider(true);
+    }
+
+    public void FormatData()
+    {
+        if (!firstGetData)
+        {
+            playerData = originalData;
+            if (photonView.isMine)
+            {
+                if (buildManager != null && buildManager.nowBuilding)
+                    buildManager.BuildSwitch();
+                if (nav != null)
+                    nav.speed = playerData.moveSpeed;
+
+                leftTopPowerBar.fillAmount = 1;
+            }
+
+            if (AniControll != null)
+                AniControll.WeaponChangePos(1);            
+            ChangeMyCollider(true);
+        }
     }
     #endregion
 
@@ -623,7 +634,7 @@ public class Player : Photon.MonoBehaviour
     public void getTatgetPoint(Vector3 tragetPoint)
     {
         nav.SetDestination(tragetPoint);
-        if (!getIsRunning)
+        if (!AniControll.anim.GetBool(AniControll.aniHashValue[2]))
         {
             getIsRunning = true;
             Net.RPC("Ani_Run", PhotonTargets.All, getIsRunning);

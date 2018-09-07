@@ -500,8 +500,6 @@ public class Queen_Skill : SkillBase
     //Q
     public override void ClearQ_Skill()
     {
-        playerScript.CountDown_Q();
-
         if (!photonView.isMine)
             OpenDetect(false);
         else
@@ -511,27 +509,26 @@ public class Queen_Skill : SkillBase
             SkillIconManager.ClearSkillCD(0);
         }
 
+        playerScript.CountDown_Q();
         firstQAtk = false;
         endQAtk = false;
     }
     //W
     public override void ClearW_Skill()
     {
-        allSkillRange.enabled = false;
-        playerScript.CountDown_W();
-
         if (photonView.isMine)
         {
             if (skillCD_CT[1] != null)
                 StopCoroutine(skillCD_CT[1]);
             SkillIconManager.ClearSkillCD(1);
         }
+
+        allSkillRange.enabled = false;
+        playerScript.CountDown_W();
     }
     //E
     public override void ClearE_Skill()
     {
-        playerScript.CountDown_E();
-
         if (!photonView.isMine)
             End_E_skill();
         else
@@ -540,18 +537,21 @@ public class Queen_Skill : SkillBase
                 StopCoroutine(skillCD_CT[2]);
             SkillIconManager.ClearSkillCD(2);
         }
+
+        playerScript.CountDown_E();
     }
     //R
     public override void ClearR_Skill()
     {
-        allSkillRange.enabled = false;
-        playerScript.CountDown_R();
         if (photonView.isMine)
         {
             if (skillCD_CT[3] != null)
                 StopCoroutine(skillCD_CT[3]);
             SkillIconManager.ClearSkillCD(3);
         }
+
+        allSkillRange.enabled = false;
+        playerScript.CountDown_R();
     }
     #endregion
 

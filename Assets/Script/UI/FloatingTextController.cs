@@ -4,7 +4,8 @@ public class FloatingTextController : MonoBehaviour
 {
     public static FloatingTextController instance;
     private GameObject displayDamageText;
-        
+    private Vector2 screenPos;
+
     private void Awake()
     {
         if (instance == null)
@@ -19,23 +20,20 @@ public class FloatingTextController : MonoBehaviour
     }
 
     #region 創建傷害Text
-    public void CreateFloatingText(string _text, Transform _location/*,EnemyControl _enemy*/)
+    public void CreateFloatingText(float _text, Transform _location)
     {
-           GameObject _obj = ObjectPooler.instance.getPoolObject(GameManager.whichObject.popupText, _location.position, Quaternion.identity);
-        //實例化顯示text的ui
-        //FloatingText _folatObj = Instantiate(Resources.Load("PopupTextParent", typeof(FloatingText))) as FloatingText;
+        GameObject _obj = ObjectPooler.instance.getPoolObject(GameManager.whichObject.popupText, _location.position, Quaternion.identity);
+
         _obj.transform.localScale = new Vector3(1, 1, 1);
         //彈出位置=將當地位置轉為螢幕位置
-        Vector2 screenPos = Camera.main.WorldToScreenPoint(_location.position);
-        //隨機一個位置
-        Vector2 offsetPos = new Vector3(Random.Range(-1f, 1f),0, /*Random.Range(5f, 15f)*/0);
+        screenPos = Camera.main.WorldToScreenPoint(_location.position);
+
         //設置實例化出來的ui的父母位置
         _obj.transform.SetParent(displayDamageText.transform, false);
-        //彈出位置
-        _obj.transform.position = screenPos+ offsetPos;
+        //彈出位置                              ////隨機一個位置
+        _obj.transform.position = screenPos + (new Vector2(Random.Range(-1.2f, 1.2f), 0));
         //將哪到的text(數值)傳到實例化出來的腳本
-        FloatingText floatText = _obj.GetComponent<FloatingText>();
-        floatText.SetText(_text);
+        _obj.SendMessage("SetText", _text);
     }
     #endregion
 }

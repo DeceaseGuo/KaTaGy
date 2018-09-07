@@ -14206,7 +14206,7 @@ MonoBehaviour:
     Hp_Max: 50
     Hp_original: 50
     Ap_Max: 100
-    Ap_original: 0
+    Ap_original: 100
     add_APValue: 4.5
     skillCD_Q: 4
     skillCD_W: 3.5
@@ -14243,7 +14243,7 @@ MonoBehaviour:
     Hp_Max: 50
     Hp_original: 50
     Ap_Max: 100
-    Ap_original: 0
+    Ap_original: 100
     add_APValue: 4.5
     skillCD_Q: 3.5
     skillCD_W: 2.5
@@ -37798,7 +37798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soldierGapTime: 0.55
   arraySoldier: {fileID: 1598956575}
-  bornSoldier: 0
+  bornSoldier: 1
 --- !u!114 &1332093344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39770,7 +39770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SecondsBeforeStart: 40.4
-  isAutoBorn: 0
+  isAutoBorn: 1
   allTimeText_min: {fileID: 1388970779}
   allTimeText_sec: {fileID: 1825677595}
   nextWaveText: {fileID: 1898698680}

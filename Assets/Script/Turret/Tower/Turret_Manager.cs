@@ -304,7 +304,7 @@ namespace AtkTower
         #region 傷害顯示
         void openPopupObject(float _damage)
         {
-            floatingText.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+            floatingText.CreateFloatingText(_damage, this.transform);
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         }
         #endregion

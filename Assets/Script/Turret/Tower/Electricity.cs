@@ -185,7 +185,7 @@ public class Electricity : Photon.MonoBehaviour
     #region 傷害顯示
     void openPopupObject(float _damage)
     {
-        FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+        FloatingTextController.instance.CreateFloatingText(_damage, transform);
         healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
     }
     #endregion

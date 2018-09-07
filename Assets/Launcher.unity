@@ -2495,9 +2495,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc69015dd149356458d6964ac542494b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nowTest: 0
-  qqq: 18.5
-  jjj: {fileID: 819504340}
+  originalData:
+    hp: 10
+  nowData:
+    hp: 0
+  nav: {fileID: 0}
+  newPos: {fileID: 0}
   pos: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
 --- !u!1 &662101243
 GameObject:
@@ -3718,12 +3721,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 816922073}
---- !u!114 &819504340 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114778807515949006, guid: 492eb2a95030c7846a75a95ad60008e6,
-    type: 2}
-  m_PrefabInternal: {fileID: 110548648}
-  m_Script: {fileID: 11500000, guid: 13a36920a33658c418185942afc8cdef, type: 3}
 --- !u!1 &828087855
 GameObject:
   m_ObjectHideFlags: 0

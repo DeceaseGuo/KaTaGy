@@ -16,10 +16,14 @@ public class EnemyControl : Photon.MonoBehaviour
     private MatchTimer matchTime;
     protected MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
     #endregion
-    //數據
+
+    #region 數據相關
     public GameManager.whichObject DataName;
     public MyEnemyData.Enemies enemyData;
     public MyEnemyData.Enemies originalData;
+    private bool firstGetData = true;
+    #endregion
+
     [HideInInspector]
     public isDead deadManager;  
 
@@ -114,55 +118,19 @@ public class EnemyControl : Photon.MonoBehaviour
     private void Awake()
     {
         SetAniHash();
+        AtkDetectSet();
     }
 
     private void OnEnable()
     {
         myRender.material.SetFloat("Vector1_D655974D", 0);
-        formatData();
 
-        if (Net != null)
-        {
-            if (ani.GetBool(aniHashValue[1]))
-                Net.RPC("TP_stopAni", PhotonTargets.All, false);
-
-            if (myCollider != null)
-                myCollider.enabled = true;
-
-            if (photonView.isMine)
-            {
-                if (nav != null)
-                    nav.enabled = true;
-                StartDetectT();
-                nowState = states.Move;
-                selectRoad();
-                getNextPoint();
-            }
-        }
-    }
-
-    private void Start()
-    {
-        AtkDetectSet();
-        randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();
-        Net = GetComponent<PhotonView>();
-        ani = GetComponent<Animator>();
-        myCollider = GetComponent<CapsuleCollider>();
-        nav = GetComponent<NavMeshAgent>();
-        if (photonView.isMine)
-        {
-            GetComponent<CreatPoints>().enabled = false;
-            checkCurrentPlay();
-            SetCoroutine();
-            nav.updateRotation = false;
-            nav.speed = enemyData.moveSpeed;
-
-            selectRoad();
-            getNextPoint();
-            nowState = states.Move;
-        }
+        //(true物件池生成會先第一次執行一次)
+        //false從物件池哪出後執行
+        if (!firstGetData)
+            FormatData();
         else
-            nav.enabled = false;
+            FirstformatData();
     }
 
     private void Update()
@@ -181,29 +149,61 @@ public class EnemyControl : Photon.MonoBehaviour
     }
 
     #region 恢復初始數據
-    void formatData()
+    void FirstformatData()
     {
+        firstGetData = false;
+
         if (deadManager == null)
-        {
             deadManager = GetComponent<isDead>();
+
+        if (photonView.isMine)
+            originalData = MyEnemyData.instance.getMySoldierData(DataName);
+        else
+            originalData = MyEnemyData.instance.getEnemySoldierData(DataName);
+
+        randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();
+        Net = GetComponent<PhotonView>();
+        ani = GetComponent<Animator>();
+        myCollider = GetComponent<CapsuleCollider>();
+        nav = GetComponent<NavMeshAgent>();
+        if (photonView.isMine)
+        {
+            GetComponent<CreatPoints>().enabled = false;
+            checkCurrentPlay();
+            SetCoroutine();
+            nav.updateRotation = false;
         }
         else
-        {
-            if (photonView.isMine)
-            {
-                originalData = MyEnemyData.instance.getMySoldierData(DataName);
-                SceneManager.AddMyList(gameObject, deadManager.myAttributes);
-            }
-            else
-            {
-                originalData = MyEnemyData.instance.getEnemySoldierData(DataName);
-                SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
-            }
+            nav.enabled = false;
+    }
 
-            deadManager.ifDead(false);
-            enemyData = originalData;
-        }
+    void FormatData()
+    {
+        if (photonView.isMine)
+            SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+        else
+            SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+
+        deadManager.ifDead(false);
+        enemyData = originalData;
         nowPoint = Find_PathPoint;
+        nav.speed = enemyData.moveSpeed;
+
+        if (ani.GetBool(aniHashValue[1]))
+            Net.RPC("TP_stopAni", PhotonTargets.All, false);
+
+        if (myCollider != null)
+            myCollider.enabled = true;
+
+        if (photonView.isMine)
+        {
+            if (nav != null)
+                nav.enabled = true;
+            StartDetectT();
+            nowState = states.Move;
+            selectRoad();
+            getNextPoint();
+        }
     }
     #endregion
 
@@ -263,8 +263,6 @@ public class EnemyControl : Photon.MonoBehaviour
                 }
             }
         });
-
-        StartDetectT();
     }
     //給其他小兵更改
     protected virtual void SetFindT()
@@ -946,7 +944,7 @@ public class EnemyControl : Photon.MonoBehaviour
     #region 傷害顯示
     public void openPopupObject(float _damage)
     {
-        FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+        FloatingTextController.instance.CreateFloatingText(_damage, this.transform);
         UI_HpBar.fillAmount = enemyData.UI_HP / enemyData.UI_MaxHp;
     }
     #endregion
@@ -1059,7 +1057,8 @@ public class EnemyControl : Photon.MonoBehaviour
 
     protected void StopAll()
     {
-        nav.ResetPath();
+        if (nav.hasPath)
+            nav.ResetPath();
         nowState = states.Null;
         ani.SetBool(aniHashValue[1], false);
     }

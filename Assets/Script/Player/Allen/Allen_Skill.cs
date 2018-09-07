@@ -53,7 +53,6 @@ public class Allen_Skill : SkillBase
 
     private void Start()
     {
-
         if (photonView.isMine)
         {
             allSkillRange = GameObject.Find("AllSkillRange_G").GetComponent<Projector>();
@@ -65,7 +64,7 @@ public class Allen_Skill : SkillBase
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (canShield)
         {
@@ -542,9 +541,10 @@ public class Allen_Skill : SkillBase
                 StopCoroutine(skillCD_CT[0]);
             SkillIconManager.ClearSkillCD(0);
         }
-        playerScript.CountDown_Q();
         if (grabSkill != null)
             grabSkill.Kill();
+
+        playerScript.CountDown_Q();
         aniScript.anim.SetBool(aniScript.aniHashValue[20], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;

@@ -75,17 +75,18 @@ public class SceneObjManager : Photon.MonoBehaviour
             }           
         }
     }*/
-
+    private List<GameObject> tmpObjs = new List<GameObject>();
     public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
     {
-        List<GameObject> tmpObj = new List<GameObject>();        
+        // List<GameObject> tmpObj = new List<GameObject>();        
+        tmpObjs.Clear();
 
         if (canAtkPlay && enemy_Player != null)
         {
             if (!enemy_Player.GetComponent<isDead>().checkDead)//player不會被移出去，所以要判斷死了沒
             {
                 if (Vector3.Distance(enemy_Player.transform.position, _me.transform.position) < _dis)
-                    tmpObj.Add(enemy_Player);
+                    tmpObjs.Add(enemy_Player);
             }           
         }
 
@@ -94,17 +95,17 @@ public class SceneObjManager : Photon.MonoBehaviour
             for (int i = 0; i < towerAmount; i++)
             {
                 if (Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position) < _dis)
-                    tmpObj.Add(enemyTowerObjs[i]);
+                    tmpObjs.Add(enemyTowerObjs[i]);
             }
         }
 
         for (int i = 0; i < soldierAmount; i++)
         {
             if (Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position) < _dis)
-                tmpObj.Add(enemySoldierObjs[i]);            
+                tmpObjs.Add(enemySoldierObjs[i]);            
         }
 
-        return tmpObj;
+        return tmpObjs;
     }
 
     #region Icon
@@ -358,7 +359,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         switch (_level)
         {
             case (1):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)
@@ -372,7 +373,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                 }
                 break;
             case (2):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)
@@ -386,7 +387,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                 }
                 break;
             case (3):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)
@@ -473,7 +474,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         switch (_level)
         {
             case (1):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)
@@ -490,7 +491,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                 }
                 break;
             case (2):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)
@@ -507,7 +508,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                 }
                 break;
             case (3):
-                for (int i = 0; i < enemySoldierObjs.Count; i++)
+                for (int i = 0; i < soldierAmount; i++)
                 {
                     tmpScript = enemySoldierObjs[i].GetComponent<EnemyControl>();
                     if (tmpScript.originalData.ATK_Level != _level)

@@ -23,7 +23,7 @@ public class Attribute_HP : Photon.MonoBehaviour
 
     private void OnEnable()
     {
-        GetComponent<PhotonTransformView>().enabled = true;
+       // GetComponent<PhotonTransformView>().enabled = true;
         UI_HpBar.fillAmount = 1;
         if (photonView.isMine)
         {
@@ -32,8 +32,10 @@ public class Attribute_HP : Photon.MonoBehaviour
 
             leftTopHpBar.fillAmount = 1;
         }
-        if (player != null)
-            player.formatData();
+        if (player == null)
+            player = GetComponent<Player>();
+
+        player.FormatData();
     }
 
     private void LateUpdate()
@@ -111,7 +113,7 @@ public class Attribute_HP : Photon.MonoBehaviour
 
     void openPopupObject(float _damage)
     {
-        FloatingTextController.instance.CreateFloatingText(_damage.ToString("0.0"), this.transform);
+        FloatingTextController.instance.CreateFloatingText(_damage, this.transform);
         UI_HpBar.fillAmount = player.playerData.Hp_original / player.playerData.Hp_Max;
         if (photonView.isMine)
             leftTopHpBar.fillAmount = player.playerData.Hp_original / player.playerData.Hp_Max;        

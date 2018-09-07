@@ -11,18 +11,17 @@ namespace Mytest
 {
     public class test : MonoBehaviour
     {
-
-        public enum kkk :int
+        [System.Serializable]
+        public struct TestData
         {
-            A=0,
-            B=1,
-            C=2,
-            D=3
+            public float hp;
         }
 
-        public kkk nowTest;
-        public float qqq=12;
-        public Mini_Soldier jjj;
+        public TestData originalData;
+        public TestData nowData;
+
+            public NavMeshAgent nav;
+        public Transform newPos;
 
         [SerializeField] int[] pos;
         private void Start()
@@ -40,6 +39,7 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
+                nowData.hp -= 2;
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
@@ -49,7 +49,8 @@ namespace Mytest
                     Debug.Log("等於0");
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
-            { 
+            {
+                nowData = originalData;
             }
         }
 

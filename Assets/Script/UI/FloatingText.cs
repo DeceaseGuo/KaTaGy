@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,14 +39,14 @@ public class FloatingText : MonoBehaviour
     #endregion*/
 
     #region 取得參數
-    public void SetText(string text /*,EnemyControl _enemy,Vector3 _offset*/)
+    public void SetText(float _text)
     {
         if (damageText == null)
         {
             damageText = GetComponentInChildren<Text>();
         }
 
-        damageText.text = text;
+        damageText.text = _text.ToString("0.0");
         StartCoroutine("returnPoolObject");
     }
     #endregion
