@@ -33,7 +33,7 @@ public class PlayerAni : Photon.MonoBehaviour
 
     protected Vector3 currentAtkDir;
     //combo
-    protected int comboIndex;
+    protected byte comboIndex;
     protected float beHit_time = 0.25f;
     protected bool canStiffness = true;
     //攻擊矯正
@@ -67,7 +67,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [HideInInspector]
     public int[] aniHashValue;
     [SerializeField]
-    protected int allHashAmount = 20;
+    protected int allHashAmount = 24;
 
     private void Awake()
     {
@@ -86,7 +86,7 @@ public class PlayerAni : Photon.MonoBehaviour
     #region 取得動畫雜湊值
     protected virtual void SetAniHash()
     {
-        if (allHashAmount <= 19)
+        if (allHashAmount <= 23)
             return;
 
         aniHashValue = new int[allHashAmount];
@@ -115,6 +115,11 @@ public class PlayerAni : Photon.MonoBehaviour
         aniHashValue[18] = Animator.StringToHash("Base Layer.Hit.Stun");
         //crossfade擊飛
         aniHashValue[19] = Animator.StringToHash("Base Layer.Hit.HitFly");
+        //crossfade  Combo1~4
+        aniHashValue[20] = Animator.StringToHash("Base Layer.Combo.combo1");
+        aniHashValue[21] = Animator.StringToHash("Base Layer.Combo.combo2");
+        aniHashValue[22] = Animator.StringToHash("Base Layer.Combo.combo3");
+        aniHashValue[23] = Animator.StringToHash("Base Layer.Combo.combo4");
     }
     #endregion
     protected virtual void SetCheckBox()
@@ -231,7 +236,7 @@ public class PlayerAni : Photon.MonoBehaviour
 
     #region Combo傳輸
     //第一次按下
-    protected void comboFirst(int Index, Vector3 Dir)
+    protected void comboFirst(byte Index, Vector3 Dir)
     {
         comboIndex = Index;
         anim.SetInteger(aniHashValue[3], comboIndex);
@@ -241,7 +246,7 @@ public class PlayerAni : Photon.MonoBehaviour
         player.Net.RPC("TP_Combo", PhotonTargets.Others, comboIndex);
     }
     //之後按下的
-    protected void Nextcombo(int Index)
+    protected void Nextcombo(byte Index)
     {
         comboIndex = Index;
         nextComboBool = true;
@@ -256,13 +261,29 @@ public class PlayerAni : Photon.MonoBehaviour
         nextComboBool = false;
         after_shaking = false;
         brfore_shaking = false;
-        player.Net.RPC("TP_Combo", PhotonTargets.All, comboIndex);
+        player.Net.RPC("TP_Combo", PhotonTargets.Others, comboIndex);
     }
 
     [PunRPC]
-    protected void TP_Combo(int _i)
+    protected void TP_Combo(byte _i)
     {
-        anim.CrossFade("combo" + _i, 0.05f, 0);
+        switch (_i)
+        {
+            case (1):
+                anim.CrossFade(aniHashValue[20], 0.05f, 0);
+                break;
+            case (2):
+                anim.CrossFade(aniHashValue[21], 0.05f, 0);
+                break;
+            case (3):
+                anim.CrossFade(aniHashValue[22], 0.05f, 0);
+                break;
+            case (4):
+                anim.CrossFade(aniHashValue[23], 0.05f, 0);
+                break;
+            default:
+                break;
+        }        
     }
     #endregion
 

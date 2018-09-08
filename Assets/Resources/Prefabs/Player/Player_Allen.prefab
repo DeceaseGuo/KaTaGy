@@ -4644,7 +4644,7 @@ MonoBehaviour:
   viewRadius: 10
   viewAngle: 100
   aniHashValue: 
-  allHashAmount: 21
+  allHashAmount: 25
 --- !u!114 &114461220652676116
 MonoBehaviour:
   m_ObjectHideFlags: 1
