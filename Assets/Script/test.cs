@@ -11,12 +11,13 @@ namespace Mytest
 {
     public class test : MonoBehaviour
     {
+      
         [System.Serializable]
         public struct TestData
         {
             public float hp;
         }
-
+        public byte aaa;
         public TestData originalData;
         public TestData nowData;
 
@@ -39,7 +40,7 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                nowData.hp -= 2;
+                Ttest1(aaa);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
@@ -58,8 +59,9 @@ namespace Mytest
          {
              Gizmos.DrawWireSphere(transform.position, testNum);
          }*/
-        void Ttest1()
+        void Ttest1(byte j)
         {
+            Debug.Log(j);
         }
 
     }

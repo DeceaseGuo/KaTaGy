@@ -84,7 +84,6 @@ public class Allen_Skill : SkillBase
         Gizmos.DrawWireSphere(transform.localPosition, skillR_radius);
     }*/
 
-
     #region 技能Event
     //Q按下&&偵測
     public override void Skill_Q_Click()
@@ -110,7 +109,7 @@ public class Allen_Skill : SkillBase
 
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.All);
+                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.AllViaServer);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -129,7 +128,7 @@ public class Allen_Skill : SkillBase
             playerScript.canSkill_W = false;
             playerScript.stopAnything_Switch(true);
             transform.forward = playerScript.arrow.forward;
-            playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
+            playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.AllViaServer);
         }
     }
 
@@ -139,7 +138,7 @@ public class Allen_Skill : SkillBase
         if (playerScript.ConsumeAP(skillE_needAP, true))
         {
             playerScript.canSkill_E = false;            
-            playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
+            playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.AllViaServer);
         }   
     }
 
@@ -167,7 +166,7 @@ public class Allen_Skill : SkillBase
                 ProjectorManager.SwitchPorjector(projector_R, false);
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
+                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.AllViaServer);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -243,13 +242,13 @@ public class Allen_Skill : SkillBase
                         default:
                             break;
                     }
-                    aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
                 else
                 {
-                    aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
@@ -275,7 +274,7 @@ public class Allen_Skill : SkillBase
     {
         if (isForward)
         {
-            aniScript.anim.SetBool(aniScript.aniHashValue[20], true);
+            aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
             grabSkill.PlayBackwards();
             isForward = false;
         }
@@ -506,7 +505,7 @@ public class Allen_Skill : SkillBase
 
         if (grabSkill != null)
             grabSkill.Kill();
-        aniScript.anim.SetBool(aniScript.aniHashValue[20], false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[24], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -545,7 +544,7 @@ public class Allen_Skill : SkillBase
             grabSkill.Kill();
 
         playerScript.CountDown_Q();
-        aniScript.anim.SetBool(aniScript.aniHashValue[20], false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[24], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;

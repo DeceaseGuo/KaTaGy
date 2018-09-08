@@ -6,7 +6,7 @@ public class Allen_Ani : PlayerAni
     protected override void SetAniHash()
     {
         base.SetAniHash();
-        aniHashValue[20] = Animator.StringToHash("Catch");
+        aniHashValue[24] = Animator.StringToHash("Catch");
     }
     #endregion
 
