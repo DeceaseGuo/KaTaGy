@@ -40,7 +40,7 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                Ttest1(aaa);
+                hhh(a);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
@@ -64,5 +64,27 @@ namespace Mytest
             Debug.Log(j);
         }
 
+        public int a;
+        public List<int> ooo;
+        public List<int> ccc;
+
+        void hhh(int a)
+        {
+            for (int i = 0; i < ooo.Count; i++)
+            {
+                if (ooo[i] == a)
+                    return;
+                else
+                    Debug.Log(ooo[i]);
+            }
+
+            for (int i = 0; i < ccc.Count; i++)
+            {
+                if (ccc[i] == a)
+                    return;
+                else
+                    Debug.Log(ccc[i]);
+            }
+        }
     }
 }

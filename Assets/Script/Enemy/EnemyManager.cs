@@ -19,7 +19,11 @@ public class EnemyManager : MonoBehaviour
     private IEnumerator soldierBorn;
     int nowNum = 0;
 
-    public bool bornSoldier;
+    public Node[] nodePoints_1;
+    public Node[] nodePoints_2;
+
+    private bool firstPath;
+    private byte halfPpopulation;
 
     private void Awake()
     {
@@ -31,28 +35,14 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
-        if (bornSoldier)
-            SetCoroution();
-        else
-        {
-            soldierBorn = Timer.Start(soldierGapTime, true, () =>
-            {
-                arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint);
-                nowNum += 1;
-                if (nowNum == 3)
-                {
-                    StopCoroutine(soldierBorn);
-                    nowNum = 0;
-                }
-            });
-        }
+        SetCoroution();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F7))
         {
-            StartCoroutine(soldierBorn);
+            SpawnWave();
         }
     }
 
@@ -74,7 +64,10 @@ public class EnemyManager : MonoBehaviour
     {
         soldierBorn = Timer.FirstAction(soldierGapTime,() =>
         {
-            arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint);
+            if (nowNum < halfPpopulation)
+                arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, firstPath);
+            else
+                arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, !firstPath);
             nowNum += 1;
             if (nowNum == arraySoldier.MaxPopulation)
             {
@@ -85,10 +78,22 @@ public class EnemyManager : MonoBehaviour
     }
     #endregion
 
+    #region 隨機取得路徑
+    void GetMyPath()
+    {
+        if (Random.Range(0, 100) < 50)
+            firstPath = true;
+        else
+            firstPath = false;
+    }
+    #endregion
+
     #region 出產士兵
     public void SpawnWave()
     {
         StopCoroutine(soldierBorn);
+        GetMyPath();
+        halfPpopulation = (byte)(arraySoldier.MaxPopulation * 0.5f);
         StartCoroutine(soldierBorn);
     }
     #endregion

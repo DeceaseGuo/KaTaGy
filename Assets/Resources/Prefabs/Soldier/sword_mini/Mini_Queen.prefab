@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 136860591904145872}
   - component: {fileID: 54243955843698080}
   m_Layer: 29
-  m_Name: test22
+  m_Name: Mini_Queen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1180,7 +1180,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1299396737225026}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -8.79, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4171614937699072}
@@ -2071,7 +2071,7 @@ MonoBehaviour:
       moveSpeed: 0
   deadManager: {fileID: 0}
   firstPriority: 3
-  viewRadius: 18
+  viewRadius: 23
   waitTime: 10
   currentMask:
     serializedVersion: 2

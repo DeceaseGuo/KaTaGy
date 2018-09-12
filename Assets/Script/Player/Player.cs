@@ -407,13 +407,13 @@ public class Player : Photon.MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+  /*  private void FixedUpdate()
     {
         if (!photonView.isMine || deadManager.checkDead || (MyState != statesData.canMove_Atk && MyState != statesData.canMvoe_Build))
             return;
 
         CharacterRun();
-    }
+    }*/
 
     #region 目前狀態執行→update
     void nowCanDo()
@@ -421,9 +421,10 @@ public class Player : Photon.MonoBehaviour
         switch (MyState)
         {
             case statesData.canMove_Atk:
+                DetectSkillBtn();
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
-                DetectSkillBtn();
+                CharacterRun();
                 CharacterAtk_F();
                 Dodge_Btn();
                 ATK_Build_Btn();
@@ -431,6 +432,7 @@ public class Player : Photon.MonoBehaviour
             case statesData.canMvoe_Build:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
+                CharacterRun();
                 ATK_Build_Btn();
                 break;
             case statesData.notMove:
@@ -643,6 +645,9 @@ public class Player : Photon.MonoBehaviour
     #region 角色移動
     void CharacterRun()
     {
+        if (!photonView.isMine || deadManager.checkDead)
+            return;
+
         if (getIsRunning)
         {
             #region 尋找下一個位置方向
@@ -652,7 +657,7 @@ public class Player : Photon.MonoBehaviour
             #endregion
 
             #region 判斷是否到最終目標點→否則執行移動
-            maxDisGap = nav.destination - transform.localPosition;            
+            maxDisGap = nav.destination - transform.localPosition;
             if (maxDisGap.sqrMagnitude < Mathf.Pow(playerData.stoppingDst, 2))
             {
                 isStop();
@@ -868,7 +873,9 @@ public class Player : Photon.MonoBehaviour
     {
         isStop();
         if (_stop)
+        {
             MyState = statesData.None;
+        }
         else
         {
             if (!buildManager.nowBuilding)

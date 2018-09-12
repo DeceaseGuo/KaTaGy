@@ -4,11 +4,13 @@ using UnityEngine.UI;
 
 public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
+    private UIManager uiManager;
+    private ObjectPooler poolManager;
+    private ObjectPooler PoolManager { get { if (poolManager == null) poolManager = ObjectPooler.instance; return poolManager; } }
     public int nowPopulation = 0;
     public int order;
     public bool isChose = false;
     public Sort_Soldier Data;
-    private UIManager uiManager;
 
     [Header("ICON")]
     [SerializeField] Image icon_Pos;
@@ -16,10 +18,13 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] Image frame_Pos;
     [SerializeField] Image Lock_Pos;
     [SerializeField] Sprite originalImg;
+
+    private GameObject tmpObj;
     
     private void Start()
     {
         uiManager = UIManager.instance;
+        poolManager = ObjectPooler.instance;
     }
 
     public void OpenSelectImage(bool _t)
@@ -61,11 +66,12 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     }
 
     //生出小兵
-    public void BornSoldier(Transform _pos)
+    public void BornSoldier(Transform _pos, bool _pathBool)
     {
         if (isChose)
         {
-            ObjectPooler.instance.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
+            tmpObj = PoolManager.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
+            tmpObj.SendMessage("selectRoad", _pathBool);
         }
     }
 

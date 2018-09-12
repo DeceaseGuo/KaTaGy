@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class ArraySoldier : MonoBehaviour
 {
-    private int maxPopulation = 6;
-    public int MaxPopulation
+    private byte maxPopulation = 6;
+    public byte MaxPopulation
     {
         get { return maxPopulation; }
 
@@ -113,7 +113,7 @@ public class ArraySoldier : MonoBehaviour
     //自動排順序
     void RenewArray()
     {
-        for (int i = 0; i < MaxPopulation; i++)
+        for (byte i = 0; i < MaxPopulation; i++)
         {
             if (sort_list[i].isChose)
                 continue;
@@ -143,7 +143,7 @@ public class ArraySoldier : MonoBehaviour
         else
         {
             int needFull = MaxPopulation - nowPopulation;
-            for (int i = 0; i < MaxPopulation; i++)
+            for (byte i = 0; i < MaxPopulation; i++)
             {
                 if (needFull == 0)
                     break;
@@ -165,9 +165,9 @@ public class ArraySoldier : MonoBehaviour
     ///////////還需更改////////////////////
     #region 上鎖與解鎖
     //解鎖 → 最大人口+獎勵人口
-    void removeLock(int _max)
+    void removeLock(byte _max)
     {
-        for (int i = 7; i < _max; i++)
+        for (byte i = 7; i < _max; i++)
         {
             sort_list[i].LockState(false);
         }
