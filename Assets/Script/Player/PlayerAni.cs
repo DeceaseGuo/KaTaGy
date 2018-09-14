@@ -349,7 +349,7 @@ public class PlayerAni : Photon.MonoBehaviour
         ChangeNowDir();
     }
     //給予正確目標傷害
-    protected virtual void GetCurrentTarget(Collider[] _enemies)
+    protected virtual void GetCurrentTarget()
     {
         
     }
@@ -368,9 +368,9 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_Q_Fun()
     {
-        anim.SetTrigger(aniHashValue[10]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_Q;
+        anim.SetTrigger(aniHashValue[10]);
         if (player.skill_Q != null)
             player.skill_Q.Invoke();
     }
@@ -378,9 +378,9 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_W_Fun()
     {
-        anim.SetTrigger(aniHashValue[11]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_W;
+        anim.SetTrigger(aniHashValue[11]);
         if (player.skill_W != null)
             player.skill_W.Invoke();
     }
@@ -388,9 +388,9 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_E_Fun()
     {
-        anim.SetTrigger(aniHashValue[12]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_E;
+        anim.SetTrigger(aniHashValue[12]);
         if (player.skill_E != null)
             player.skill_E.Invoke();
     }
@@ -398,9 +398,9 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     public void Skill_R_Fun()
     {
-        anim.SetTrigger(aniHashValue[13]);
         player.deadManager.notFeedBack = true;
         player.skillManager.nowSkill = SkillBase.SkillAction.is_R;
+        anim.SetTrigger(aniHashValue[13]);
         if (player.skill_R != null)
             player.skill_R.Invoke();
     }
@@ -413,7 +413,7 @@ public class PlayerAni : Photon.MonoBehaviour
 
     public void Die()
     {        
-        anim.CrossFade(/*"dead"*/aniHashValue[16], 0.05f, 0);
+        anim.CrossFade(aniHashValue[16], 0.05f, 0);
         anim.SetBool(aniHashValue[15], true);
     }
 }

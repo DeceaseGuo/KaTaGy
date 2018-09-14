@@ -15,6 +15,9 @@ public class EnemyControl : Photon.MonoBehaviour
 
     private MatchTimer matchTime;
     protected MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+
+    private EnemyManager enemyBornManager;
+    protected EnemyManager EnemyBornScript { get { if (enemyBornManager == null) enemyBornManager = EnemyManager.instance; return enemyBornManager; } }
     #endregion
 
     #region 數據相關
@@ -48,7 +51,7 @@ public class EnemyControl : Photon.MonoBehaviour
     public List<GameObject> myTarget;
     //尋路
     protected NavMeshAgent nav;
-    protected RandomNodeManager randomNodeManager;
+   // protected RandomNodeManager randomNodeManager;
     public Node[] agentPoints;
   //  protected Transform targetPoint;
     private int Find_PathPoint;
@@ -106,9 +109,13 @@ public class EnemyControl : Photon.MonoBehaviour
     protected Vector3 tmpNextPos;
     #endregion
 
+    #region 攻擊所需
     //攻擊偵測 
     [SerializeField]
     protected Vector3 checkEnemyBox;
+    protected isDead atkTarget;
+    protected PhotonView atkNet;
+    #endregion
 
     //動畫雜湊值
     protected int[] aniHashValue;
@@ -161,7 +168,6 @@ public class EnemyControl : Photon.MonoBehaviour
         else
             originalData = MyEnemyData.instance.getEnemySoldierData(DataName);
 
-        randomNodeManager = GameObject.Find("RandomNodeManager").GetComponent<RandomNodeManager>();
         Net = GetComponent<PhotonView>();
         ani = GetComponent<Animator>();
         myCollider = GetComponent<CapsuleCollider>();
@@ -186,7 +192,7 @@ public class EnemyControl : Photon.MonoBehaviour
 
         deadManager.ifDead(false);
         enemyData = originalData;
-        nowPoint = Find_PathPoint;
+        
         nav.speed = enemyData.moveSpeed;
 
         if (ani.GetBool(aniHashValue[1]))
@@ -197,12 +203,10 @@ public class EnemyControl : Photon.MonoBehaviour
 
         if (photonView.isMine)
         {
+            nowPoint = Find_PathPoint;
             if (nav != null)
                 nav.enabled = true;
             StartDetectT();
-            nowState = states.Move;
-            selectRoad();
-            getNextPoint();
         }
     }
     #endregion
@@ -284,7 +288,6 @@ public class EnemyControl : Photon.MonoBehaviour
                     // currentTarget = _pos;
                     nowTarget = GameManager.NowTarget.NoChange;
                     //chaseTime = 9999;
-                    return;
                 }
                 else if (nowTarget != firstPriority && _inform.myAttributes == firstPriority)
                 {
@@ -294,10 +297,15 @@ public class EnemyControl : Photon.MonoBehaviour
                         nowTarget = firstPriority;
                         goAtkPos(Cpoint, _inform);
                     }
-
-                    return;
                 }
-                return;
+                else if (nowTarget != firstPriority && _inform.myAttributes == GameManager.NowTarget.Soldier)
+                {
+                   /* if (!Cpoint.CheckFull(enemyData.atk_Range))
+                    {
+                        nowTarget = GameManager.NowTarget.Soldier;
+                        goAtkPos(Cpoint, _inform);
+                    }*/
+                }
             }
             else
             {
@@ -327,6 +335,11 @@ public class EnemyControl : Photon.MonoBehaviour
             }
         }
     }
+
+    void HaveTargetDetect()
+    {
+
+    }
     #endregion
 
     #region 判斷並前往攻擊點
@@ -341,7 +354,7 @@ public class EnemyControl : Photon.MonoBehaviour
         if (nowTarget == GameManager.NowTarget.Null)
             nowTarget = _isdaed.myAttributes;
 
-        tmpPos = points.getPoint(enemyData.atk_Range, this.transform, enemyData.width, true);
+        tmpPos = points.FindClosePoint(enemyData.atk_Range, this.transform, enemyData.width, true);
         if (tmpPos == null)
         {
             cancelSelectTarget(true);
@@ -374,7 +387,7 @@ public class EnemyControl : Photon.MonoBehaviour
             return;
         }
 
-        tmpPos = points.getPoint(enemyData.atk_Range, this.transform, enemyData.width, true);
+        tmpPos = points.FindClosePoint(enemyData.atk_Range, this.transform, enemyData.width, true);
         if (tmpPos == null && chaseTime > 0)
         {
             //Debug.Log("找點啦 耖");
@@ -426,8 +439,7 @@ public class EnemyControl : Photon.MonoBehaviour
             Net.RPC("changeLayer", PhotonTargets.All, 29);
             Net.RPC("changeMask_2", PhotonTargets.All);
             nowPoint = 9;
-            Find_PathPoint = nowPoint;
-            
+            Find_PathPoint = nowPoint;          
         }
     }
 
@@ -444,12 +456,15 @@ public class EnemyControl : Photon.MonoBehaviour
     #endregion
 
     #region 士兵選擇路線
-    void selectRoad()
+    public void selectRoad(bool _pathBool)
     {
-        if (Random.Range(0, 100) < 50)
-            agentPoints = randomNodeManager.getNodePoints_1;
+        if (_pathBool)
+            agentPoints = EnemyBornScript.nodePoints_1;
         else
-            agentPoints = randomNodeManager.getNodePoints_2;
+            agentPoints = EnemyBornScript.nodePoints_2;
+
+        nowState = states.Move;
+        getNextPoint();
     }
     #endregion
 
@@ -514,9 +529,9 @@ public class EnemyControl : Photon.MonoBehaviour
 
         if (nowState == states.AtkMove)
         {
-           // if (!ifAtkMoveStop)
+            //if (!ifAtkMoveStop)
             {
-                tmpPos = points.GoComparing(enemyData.atk_Range, transform, correctPos, true);
+                tmpPos = points.GoComparing(enemyData.atk_Range, transform, correctPos, enemyData.width, true);
                 if (tmpPos != null)
                 {
                     points.TestNext.Remove(correctPos);
@@ -542,7 +557,7 @@ public class EnemyControl : Photon.MonoBehaviour
                 if (!ani.GetBool(aniHashValue[1]))
                     Net.RPC("TP_stopAni", PhotonTargets.All, true);
 
-                rotToTarget();
+                //rotToTarget();
                 ifAtkMoveStop = true;
 
                 if (canAtking && !deadManager.checkDead)
@@ -630,7 +645,7 @@ public class EnemyControl : Photon.MonoBehaviour
                 //超過攻擊範圍進行追趕
                 if (OverAtkDis)
                 {
-                    tmpPos = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, false);
+                    tmpPos = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, enemyData.width, false);
                     if (tmpPos != null)
                         shortPos = tmpPos;
                     //未到達範圍 →追趕
@@ -654,7 +669,7 @@ public class EnemyControl : Photon.MonoBehaviour
                     if (!ani.GetBool(aniHashValue[1]))
                         Net.RPC("TP_stopAni", PhotonTargets.All, true);
 
-                    tmpPos = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, false);
+                    tmpPos = points.GoComparing(enemyData.atk_Range, this.transform, correctPos, enemyData.width, false);
                     if (tmpPos != null)
                     {
                         //Debug.Log("我找到一個更近的囉");
@@ -704,15 +719,16 @@ public class EnemyControl : Photon.MonoBehaviour
     /// <summary>
     /// 觀看武器大小
     /// </summary>
-    /*public GameObject TTTTEEEE;
-    private void OnDrawGizmos()
+    //public GameObject TTTTEEEE;
+  /*  private void OnDrawGizmos()
     {
-        TTTTEEEE.transform.position = sword_1.position;
-        TTTTEEEE.transform.rotation = sword_1.rotation;
+        Gizmos.DrawWireSphere(transform.position, viewRadius);
+       // TTTTEEEE.transform.position = sword_1.position;
+        //TTTTEEEE.transform.rotation = sword_1.rotation;
     }*/
 
     #region 給與正確目標傷害
-    protected virtual void giveCurrentDamage(isDead _target)
+    protected virtual void giveCurrentDamage()
     {
 
     }
@@ -792,20 +808,20 @@ public class EnemyControl : Photon.MonoBehaviour
 
         if (photonView.isMine)
         {
-            getTatgetPoint(agentPoints[nowPoint].GetRandomPointInNodeArea());
+            getTatgetPoint(agentPoints[nowPoint].transform.position);
         }
     }
 
-    public void touchPoint(int _i, bool _canMove)
+    public void touchPoint(int _i)
     {
         nowPoint = _i;
-        if (nowPoint == 10 || nowPoint == 0)
+        if (nowPoint == 10 || nowPoint == -1)
         {
             nowState = states.Null;
           //  Debug.Log("已到達終點");
             return;
         }
-        nextPos = _canMove;
+        nextPos = true;
     }
     #endregion
 

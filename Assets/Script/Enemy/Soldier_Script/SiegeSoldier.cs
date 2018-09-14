@@ -7,14 +7,39 @@ public class SiegeSoldier : EnemyControl
 {
     private IEnumerator atkCT;
     private bool changeState;
-    private int stunAtk = 0;
+    private byte nowAtkIndex = 0;
+
+    #region 取得動畫雜湊值
+    protected override void SetAniHash()
+    {
+        base.SetAniHash();
+        aniHashValue[3] = Animator.StringToHash("StunRock");
+        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.Stun");
+        aniHashValue[5] = Animator.StringToHash("Base Layer.ATK.attack1");
+        aniHashValue[6] = Animator.StringToHash("Base Layer.ATK.attack2");
+        aniHashValue[7] = Animator.StringToHash("Base Layer.ATK.attack3");
+    }
+    #endregion
+
+    protected override void AtkDetectSet()
+    {
+        atkCT = Timer.NextFrame(() =>
+        {
+            if (haveHit)
+            {
+                enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
+                if (enemiesCon.Length != 0)
+                    giveCurrentDamage();
+            }
+        });
+    }
 
     #region 小兵攻擊
     protected override IEnumerator enemyAttack()
     {
         if (nowState == states.Atk)
-        {
-            stunAtk++;
+        {            
+            nowAtkIndex++;
             deadManager.notFeedBack = true;
             firstAtk = true;
 
@@ -22,7 +47,7 @@ public class SiegeSoldier : EnemyControl
             rotToTarget();
             resetChaseTime();
             canAtking = false;
-            Net.RPC("getAtkAnimator", PhotonTargets.All);
+            Net.RPC("getAtkAnimator", PhotonTargets.All, nowAtkIndex);
             delayTimeToAtk();
             yield return new WaitForSeconds(3f);
             nowState = states.Wait_Move;
@@ -34,17 +59,23 @@ public class SiegeSoldier : EnemyControl
     }
 
     [PunRPC]
-    public void getAtkAnimator()
+    public void getAtkAnimator(byte _index)
     {
-        if (!deadManager.checkDead)
+        if (!deadManager.checkDead && !NowCC)
         {
-            if (stunAtk == 3)
+            switch (_index)
             {
-                ani.CrossFade("暈擊", 0.01f, 0);
-                stunAtk = 0;
+                case (1):
+                    ani.CrossFade(aniHashValue[5], 0.01f, 0);
+                    break;
+                case (2):
+                    ani.CrossFade(aniHashValue[6], 0.01f, 0);
+                    break;
+                case (3):
+                    ani.CrossFade(aniHashValue[7], 0.01f, 0);
+                    nowAtkIndex = 0;
+                    break;
             }
-            else
-                ani.CrossFade("attack", 0.01f, 0);
         }
 
         if (!photonView.isMine)
@@ -63,8 +94,8 @@ public class SiegeSoldier : EnemyControl
                 {
                     haveHit = false;
                     StopCoroutine(atkCT);
+                    alreadytakeDamage.Clear();
                 }
-                //alreadytakeDamage.Clear();
             }
             else
             {
@@ -73,21 +104,44 @@ public class SiegeSoldier : EnemyControl
         }
     }
     #endregion
-    protected override void AtkDetectSet()
+
+    #region 給與正確目標傷害
+    protected override void giveCurrentDamage()
     {
-        atkCT = Timer.NextFrame(() =>
+        for (int i = 0; i < enemiesCon.Length; i++)
         {
-            if (haveHit)
+            if (alreadytakeDamage.Contains(enemiesCon[i].gameObject))
+                continue;
+
+            atkTarget = enemiesCon[i].GetComponent<isDead>();
+            if (!atkTarget.checkDead)
             {
-                enemiesCon = Physics.OverlapBox(sword_1.position, new Vector3(.25f, 1.4f, .15f), sword_1.rotation, currentMask);
-                if (enemiesCon.Length != 0)
+                atkNet = atkTarget.GetComponent<PhotonView>();
+                switch (atkTarget.myAttributes)
                 {
-                    giveCurrentDamage(enemiesCon[0].gameObject.GetComponent<isDead>());
-                    changeCanHit(0);
+                    case GameManager.NowTarget.Null:
+                        break;
+                    case GameManager.NowTarget.Player:
+                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
+                        break;
+                    case GameManager.NowTarget.Soldier:
+                        atkNet.RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
+                        break;
+                    case GameManager.NowTarget.Tower:
+                        atkNet.RPC("takeDamage", PhotonTargets.All, 8.5f);
+                        break;
+                    case GameManager.NowTarget.Core:
+                        break;
+                    case GameManager.NowTarget.NoChange:
+                        break;
+                    default:
+                        break;
                 }
+                alreadytakeDamage.Add(atkNet.gameObject);
             }
-        });
+        }
     }
+    #endregion
 
     protected override void MyHelath(float _damage)
     {

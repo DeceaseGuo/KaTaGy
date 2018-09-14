@@ -91,7 +91,7 @@ public class ButtonManager_Solider : MonoBehaviour
                 break;
             case NowMenu.soldier_2:
                 if (Input.GetKeyDown(KeyCode.Alpha1))
-                    clickSolider(GameManager.whichObject.Soldier_2);
+                    clickSolider(GameManager.whichObject.None);
                 if (Input.GetKeyDown(KeyCode.Alpha2))
                     clickSolider(GameManager.whichObject.None);
                 if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -131,7 +131,7 @@ public class ButtonManager_Solider : MonoBehaviour
                 break;
             case NowMenu.soldier_6:
                 if (Input.GetKeyDown(KeyCode.Alpha1))
-                    clickSolider(GameManager.whichObject.None);
+                    clickSolider(GameManager.whichObject.Soldier_2_Siege);
                 if (Input.GetKeyDown(KeyCode.Alpha2))
                     clickSolider(GameManager.whichObject.None);
                 if (Input.GetKeyDown(KeyCode.Alpha3))

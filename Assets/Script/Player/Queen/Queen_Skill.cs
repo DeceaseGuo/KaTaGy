@@ -81,7 +81,7 @@ public class Queen_Skill : SkillBase
 
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.AllViaServer);
+                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -118,7 +118,7 @@ public class Queen_Skill : SkillBase
 
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.AllViaServer);
+                playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -153,7 +153,7 @@ public class Queen_Skill : SkillBase
 
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.AllViaServer);
+                playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -190,7 +190,7 @@ public class Queen_Skill : SkillBase
 
                 transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.AllViaServer);
+                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))

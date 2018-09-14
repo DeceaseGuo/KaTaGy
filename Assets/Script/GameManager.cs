@@ -40,9 +40,10 @@ public class GameManager : Photon.MonoBehaviour
     {
         None=0,
         Soldier_1=1,
-        Soldier_2=2,
-        //SoldierIcon_1=3,
-        //SoldierIcon_2=4,
+        Soldier_2_Siege=2,
+        Soldier3_Break=3,
+        Soldier4_Mad=4,
+
         soldier_Test = 13,
 
         Tower1_Cannon =5,
@@ -61,7 +62,10 @@ public class GameManager : Photon.MonoBehaviour
         Bullet_Missile = 17,
         EIcon = 18,
         TowerIcon = 19,
-        SoldierIcon = 20
+        SoldierIcon = 20,
+
+        Soldier5_Fire=21,
+        Soldier6_Gaint=22
     }
 
     public class WhichObjectEnumComparer : IEqualityComparer<whichObject>

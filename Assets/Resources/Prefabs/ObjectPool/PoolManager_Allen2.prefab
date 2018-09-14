@@ -52,16 +52,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pools:
-  - pool_Name: 3
-    pool_Prefab: {fileID: 1146771872175086, guid: 10c50970d4474d640a8e4a5dd2d1136a,
-      type: 2}
-    pool_amount: 18
-    filePath: Prefabs/SoldierIcon/enemy_01
   - pool_Name: 1
     pool_Prefab: {fileID: 1299396737225026, guid: 90eed5d074b49af4eb81b5af8f738ef2,
       type: 2}
+    pool_amount: 12
+    filePath: Prefabs/Soldier/sword_mini/Mini_Queen
+  - pool_Name: 2
+    pool_Prefab: {fileID: 1693708846014862, guid: c67c4831d6c20a5489d2a8311afa2c3d,
+      type: 2}
     pool_amount: 10
-    filePath: Prefabs/Soldier/sword_mini/test22
+    filePath: Prefabs/Soldier/siege_high/Solider_Siege_Queen
   - pool_Name: 12
     pool_Prefab: {fileID: 1298045806864356, guid: 56bb140dbaaaeec439657a67dbd670e4,
       type: 2}

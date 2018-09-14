@@ -76,6 +76,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
     }*/
     private List<GameObject> tmpObjs = new List<GameObject>();
+    private Transform tmpTransform;
     public List<GameObject> CalculationDis(GameObject _me, float _dis, bool canAtkTower, bool canAtkPlay)
     {
         // List<GameObject> tmpObj = new List<GameObject>();        
@@ -106,6 +107,43 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
 
         return tmpObjs;
+    }
+
+    public Transform CalculationDis_Tower(GameObject _me, float _dis)
+    {
+        tmpTransform = null;
+
+        //塔
+        for (int i = 0; i < towerAmount; i++)
+        {
+
+            if (Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position) < _dis)
+            {
+                if (tmpTransform == null)
+                    tmpTransform = enemyTowerObjs[i].transform;
+                else
+                    tmpTransform = (enemyTowerObjs[i].transform.position - _me.transform.position).magnitude < (tmpTransform.position - _me.transform.position).magnitude ? enemyTowerObjs[i].transform : tmpTransform;
+            }
+
+            if (tmpTransform != null)
+                return tmpTransform;
+        }
+
+        //士兵
+        for (int i = 0; i < soldierAmount; i++)
+        {
+            if (Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position) < _dis)
+            {
+                if (tmpTransform == null)
+                    tmpTransform = enemySoldierObjs[i].transform;
+                else
+                    tmpTransform = (enemySoldierObjs[i].transform.position - _me.transform.position).magnitude < (tmpTransform.position - _me.transform.position).magnitude ? enemySoldierObjs[i].transform : tmpTransform;
+            }
+            if (tmpTransform != null)
+                return tmpTransform;
+        }
+
+        return null;
     }
 
     #region Icon

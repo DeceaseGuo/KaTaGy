@@ -29,8 +29,12 @@ public class Mini_Soldier : EnemyControl
                   enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
                   if (enemiesCon.Length != 0)
                   {
-                      giveCurrentDamage(enemiesCon[0].gameObject.GetComponent<isDead>());
-                      changeCanHit(0);
+                      atkTarget = enemiesCon[0].gameObject.GetComponent<isDead>();
+                      if (!atkTarget.checkDead)
+                      {
+                          giveCurrentDamage();
+                          changeCanHit(0);
+                      }
                   }
               }
           });
@@ -82,7 +86,6 @@ public class Mini_Soldier : EnemyControl
                     haveHit = false;
                     StopCoroutine(atkCT);
                 }
-                //alreadytakeDamage.Clear();
             }
             else
             {
@@ -93,22 +96,18 @@ public class Mini_Soldier : EnemyControl
     #endregion
 
     #region 給與正確目標傷害
-    protected override void giveCurrentDamage(isDead _target)
+    protected override void giveCurrentDamage()
     {
-        if (_target.checkDead)
-            return;
-
-        switch (_target.myAttributes)
+        switch (atkTarget.myAttributes)
         {
             case GameManager.NowTarget.Player:
-                //target.gameObject.SendMessage("GetDeBuff_Stun");
-                _target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
+                atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
                 break;
             case GameManager.NowTarget.Soldier:
-                _target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
+                atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
                 break;
             case GameManager.NowTarget.Tower:
-                _target.gameObject.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
+                atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
                 break;
             case GameManager.NowTarget.Core:
                 break;

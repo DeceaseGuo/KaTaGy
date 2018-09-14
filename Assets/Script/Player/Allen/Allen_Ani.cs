@@ -126,24 +126,22 @@ public class Allen_Ani : PlayerAni
     void ProduceCheckBox(Transform _pos , Vector3 _size)
     {
         checkBox = Physics.OverlapBox(_pos.position, _size, _pos.rotation, canAtkMask);
-        GetCurrentTarget(checkBox);
+        if (photonView.isMine && checkBox.Length != 0)
+            GetCurrentTarget();
     }
     #endregion
 
     #region 給予正確目標傷害
-    protected override void GetCurrentTarget(Collider[] _enemies)
+    protected override void GetCurrentTarget()
     {
-        if (!photonView.isMine || _enemies.Length == 0)
-            return;
-
-        arrayAmount = _enemies.Length;
+        arrayAmount = checkBox.Length;
         for (int i = 0; i < arrayAmount; i++)
         {
-            if (alreadyDamage.Contains(_enemies[i].gameObject))
+            if (alreadyDamage.Contains(checkBox[i].gameObject))
                 continue;
 
-            checkTag = _enemies[i].GetComponent<isDead>();
-            if (checkTag != null)
+            checkTag = checkBox[i].GetComponent<isDead>();
+            if (!checkTag.checkDead)
             {
                 //攻擊無效化
                 if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
@@ -152,7 +150,7 @@ public class Allen_Ani : PlayerAni
                     player.Net.RPC("HitNull", PhotonTargets.All);
                     return;
                 }
-                Net = _enemies[i].GetComponent<PhotonView>();
+                Net = checkBox[i].GetComponent<PhotonView>();
                 switch (checkTag.myAttributes)
                 {
                     case (GameManager.NowTarget.Soldier):
@@ -183,7 +181,7 @@ public class Allen_Ani : PlayerAni
                         Debug.Log("錯誤");
                         break;
                 }
-                alreadyDamage.Add(_enemies[i].gameObject);
+                alreadyDamage.Add(checkBox[i].gameObject);
             }
         }
     }

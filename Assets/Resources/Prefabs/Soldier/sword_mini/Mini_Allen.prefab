@@ -365,7 +365,7 @@ GameObject:
   - component: {fileID: 136860591904145872}
   - component: {fileID: 54243955843698080}
   m_Layer: 28
-  m_Name: Mini
+  m_Name: Mini_Allen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1776,6 +1776,9 @@ MonoBehaviour:
   TestNext: []
   alreadyFull: []
   myCheckBoxV3: {x: 1.5, y: 1, z: 1.25}
+  testLook: 0
+  atkRangeTest: 0
+  atkWidthTest: 0
 --- !u!114 &114274359384948768
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2012,7 +2015,7 @@ MonoBehaviour:
       moveSpeed: 0
   deadManager: {fileID: 0}
   firstPriority: 3
-  viewRadius: 18
+  viewRadius: 23
   waitTime: 10
   currentMask:
     serializedVersion: 2

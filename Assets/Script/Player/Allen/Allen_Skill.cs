@@ -107,9 +107,9 @@ public class Allen_Skill : SkillBase
                 projector_Q.enabled = false;
                 //關閉顯示範圍
 
-                transform.forward = playerScript.arrow.forward;
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.AllViaServer);
+                transform.forward = playerScript.arrow.forward;
+                playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -128,7 +128,7 @@ public class Allen_Skill : SkillBase
             playerScript.canSkill_W = false;
             playerScript.stopAnything_Switch(true);
             transform.forward = playerScript.arrow.forward;
-            playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.AllViaServer);
+            playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
         }
     }
 
@@ -138,7 +138,7 @@ public class Allen_Skill : SkillBase
         if (playerScript.ConsumeAP(skillE_needAP, true))
         {
             playerScript.canSkill_E = false;            
-            playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.AllViaServer);
+            playerScript.Net.RPC("Skill_E_Fun", PhotonTargets.All);
         }   
     }
 
@@ -165,8 +165,9 @@ public class Allen_Skill : SkillBase
                 //關閉顯示範圍
                 ProjectorManager.SwitchPorjector(projector_R, false);
                 transform.forward = playerScript.arrow.forward;
+
                 playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.AllViaServer);
+                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
             }
         }
         if (Input.GetMouseButtonDown(1))
@@ -660,6 +661,6 @@ public class Allen_Skill : SkillBase
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;
-    }    
+    }
     #endregion
 }

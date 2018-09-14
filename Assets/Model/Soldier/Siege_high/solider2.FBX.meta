@@ -1,0 +1,659 @@
+fileFormatVersion: 2
+guid: bbbb7900bef1c7c4d93dad79c17244a6
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Bone001
+    100002: Bone002
+    100004: Bone003
+    100006: Bone005
+    100008: Bone006
+    100010: Bone007
+    100012: Bone007(mirrored)
+    100014: Bone008
+    100016: Bone008(mirrored)
+    100018: Bone011
+    100020: Bone011(mirrored)
+    100022: Bone012
+    100024: Bone012(mirrored)
+    100026: Bone014
+    100028: Bone014(mirrored)
+    100030: Bone015
+    100032: Bone015(mirrored)
+    100034: Bone017
+    100036: Bone017(mirrored)
+    100038: Bone018
+    100040: Bone018(mirrored)
+    100042: Bone020
+    100044: Bone020(mirrored)
+    100046: Bone021
+    100048: Bone021(mirrored)
+    100050: Bone023
+    100052: Bone023(mirrored)
+    100054: Bone024
+    100056: Bone024(mirrored)
+    100058: Bone026
+    100060: Bone026(mirrored)
+    100062: Bone027
+    100064: Bone027(mirrored)
+    100066: Bone028
+    100068: Bone028(mirrored)
+    100070: Bone035
+    100072: Bone036
+    100074: Bone037
+    100076: Bone038
+    100078: Bone039
+    100080: Bone040
+    100082: Bone045
+    100084: Bone046
+    100086: Bone047
+    100088: Bone048
+    100090: Bone049
+    100092: Bone050
+    100094: Bone050(mirrored)
+    100096: Bone050(mirrored) 1
+    100098: Bone050(mirrored)(mirrored)
+    100100: Bone051
+    100102: Bone051(mirrored)
+    100104: Bone051(mirrored) 1
+    100106: Bone051(mirrored)(mirrored)
+    100108: Bone052
+    100110: Bone052(mirrored)
+    100112: Bone052(mirrored) 1
+    100114: Bone052(mirrored)(mirrored)
+    100116: Bone053
+    100118: Bone053(mirrored)
+    100120: Bone053(mirrored) 1
+    100122: Bone053(mirrored)(mirrored)
+    100124: Bone054
+    100126: Bone054(mirrored)
+    100128: Bone054(mirrored) 1
+    100130: Bone054(mirrored)(mirrored)
+    100132: Bone055
+    100134: Bone055(mirrored)
+    100136: Bone055(mirrored) 1
+    100138: Bone055(mirrored)(mirrored)
+    100140: Bone056
+    100142: Bone058
+    100144: Circle001
+    100146: Circle002
+    100148: Circle003
+    100150: Circle004
+    100152: Circle005
+    100154: Circle006
+    100156: Dummy001
+    100158: hammer
+    100160: IK Chain001
+    100162: IK Chain002
+    100164: IK Chain003
+    100166: IK Chain004
+    100168: IK Chain005
+    100170: IK Chain006
+    100172: IK Chain007
+    100174: IK Chain008
+    100176: IK Chain009
+    100178: IK Chain010
+    100180: IK Chain011
+    100182: IK Chain012
+    100184: Line001
+    100186: Line002
+    100188: Line003
+    100190: Line004
+    100192: //RootNode
+    100194: solider2_COM_ctrl
+    100196: solider2_pelvis_ctrl
+    100198: solider2_pelvis_ctrl002
+    100200: solider2_pelvis_ctrl003
+    100202: solider2_pelvis_ctrl004
+    100204: solider2_pelvis_ctrl005
+    100206: solider2_pelvis_ctrl006
+    100208: solider2_pelvis_ctrl007
+    100210: solider2_pelvis_ctrl008
+    100212: solider2_pelvis_ctrl009
+    100214: solider2_pelvis_ctrl010
+    100216: solider2_pelvis_ctrl011
+    100218: solider2_pelvis_ctrl012
+    100220: solider2_pelvis_ctrl013
+    100222: solider2_pelvis_ctrl014
+    100224: solider2_pelvis_ctrl015
+    100226: solider2_pelvis_ctrl016
+    100228: solider2_pelvis_ctrl017
+    100230: solider2_pelvis_ctrl018
+    100232: solider2_pelvis_ctrl019
+    100234: solider2_pelvis_ctrl020
+    100236: solider2_pelvis_ctrl021
+    100238: solider2_pelvis_ctrl022
+    100240: solider2_pelvis_ctrl023
+    100242: solider2_pelvis_ctrl024
+    100244: solider2_pelvis_ctrl025
+    100246: solider2_pelvis_ctrl026
+    100248: solider2_pelvis_ctrl027
+    100250: solider2_pelvis_ctrl028
+    100252: solider2_spin_ctrl
+    100254: Sphere003
+    400000: Bone001
+    400002: Bone002
+    400004: Bone003
+    400006: Bone005
+    400008: Bone006
+    400010: Bone007
+    400012: Bone007(mirrored)
+    400014: Bone008
+    400016: Bone008(mirrored)
+    400018: Bone011
+    400020: Bone011(mirrored)
+    400022: Bone012
+    400024: Bone012(mirrored)
+    400026: Bone014
+    400028: Bone014(mirrored)
+    400030: Bone015
+    400032: Bone015(mirrored)
+    400034: Bone017
+    400036: Bone017(mirrored)
+    400038: Bone018
+    400040: Bone018(mirrored)
+    400042: Bone020
+    400044: Bone020(mirrored)
+    400046: Bone021
+    400048: Bone021(mirrored)
+    400050: Bone023
+    400052: Bone023(mirrored)
+    400054: Bone024
+    400056: Bone024(mirrored)
+    400058: Bone026
+    400060: Bone026(mirrored)
+    400062: Bone027
+    400064: Bone027(mirrored)
+    400066: Bone028
+    400068: Bone028(mirrored)
+    400070: Bone035
+    400072: Bone036
+    400074: Bone037
+    400076: Bone038
+    400078: Bone039
+    400080: Bone040
+    400082: Bone045
+    400084: Bone046
+    400086: Bone047
+    400088: Bone048
+    400090: Bone049
+    400092: Bone050
+    400094: Bone050(mirrored)
+    400096: Bone050(mirrored) 1
+    400098: Bone050(mirrored)(mirrored)
+    400100: Bone051
+    400102: Bone051(mirrored)
+    400104: Bone051(mirrored) 1
+    400106: Bone051(mirrored)(mirrored)
+    400108: Bone052
+    400110: Bone052(mirrored)
+    400112: Bone052(mirrored) 1
+    400114: Bone052(mirrored)(mirrored)
+    400116: Bone053
+    400118: Bone053(mirrored)
+    400120: Bone053(mirrored) 1
+    400122: Bone053(mirrored)(mirrored)
+    400124: Bone054
+    400126: Bone054(mirrored)
+    400128: Bone054(mirrored) 1
+    400130: Bone054(mirrored)(mirrored)
+    400132: Bone055
+    400134: Bone055(mirrored)
+    400136: Bone055(mirrored) 1
+    400138: Bone055(mirrored)(mirrored)
+    400140: Bone056
+    400142: Bone058
+    400144: Circle001
+    400146: Circle002
+    400148: Circle003
+    400150: Circle004
+    400152: Circle005
+    400154: Circle006
+    400156: Dummy001
+    400158: hammer
+    400160: IK Chain001
+    400162: IK Chain002
+    400164: IK Chain003
+    400166: IK Chain004
+    400168: IK Chain005
+    400170: IK Chain006
+    400172: IK Chain007
+    400174: IK Chain008
+    400176: IK Chain009
+    400178: IK Chain010
+    400180: IK Chain011
+    400182: IK Chain012
+    400184: Line001
+    400186: Line002
+    400188: Line003
+    400190: Line004
+    400192: //RootNode
+    400194: solider2_COM_ctrl
+    400196: solider2_pelvis_ctrl
+    400198: solider2_pelvis_ctrl002
+    400200: solider2_pelvis_ctrl003
+    400202: solider2_pelvis_ctrl004
+    400204: solider2_pelvis_ctrl005
+    400206: solider2_pelvis_ctrl006
+    400208: solider2_pelvis_ctrl007
+    400210: solider2_pelvis_ctrl008
+    400212: solider2_pelvis_ctrl009
+    400214: solider2_pelvis_ctrl010
+    400216: solider2_pelvis_ctrl011
+    400218: solider2_pelvis_ctrl012
+    400220: solider2_pelvis_ctrl013
+    400222: solider2_pelvis_ctrl014
+    400224: solider2_pelvis_ctrl015
+    400226: solider2_pelvis_ctrl016
+    400228: solider2_pelvis_ctrl017
+    400230: solider2_pelvis_ctrl018
+    400232: solider2_pelvis_ctrl019
+    400234: solider2_pelvis_ctrl020
+    400236: solider2_pelvis_ctrl021
+    400238: solider2_pelvis_ctrl022
+    400240: solider2_pelvis_ctrl023
+    400242: solider2_pelvis_ctrl024
+    400244: solider2_pelvis_ctrl025
+    400246: solider2_pelvis_ctrl026
+    400248: solider2_pelvis_ctrl027
+    400250: solider2_pelvis_ctrl028
+    400252: solider2_spin_ctrl
+    400254: Sphere003
+    2100000: wire_115115115
+    2100002: No Name
+    2300000: hammer
+    3300000: hammer
+    4300000: Sphere003
+    4300002: hammer
+    7400000: T-POSE
+    7400002: walk
+    7400004: Idle
+    7400006: attack1
+    7400008: attack2
+    7400010: attack3
+    7400012: buff
+    7400014: hit
+    7400016: dead
+    9500000: //RootNode
+    13700000: Sphere003
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: T-POSE
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 5
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: walk
+      takeName: Take 001
+      firstFrame: 7
+      lastFrame: 51
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 54
+      lastFrame: 90
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: attack1
+      takeName: Take 001
+      firstFrame: 92
+      lastFrame: 165
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.39617485
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.55464476
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: attack2
+      takeName: Take 001
+      firstFrame: 166
+      lastFrame: 239
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.22950812
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.37315536
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: attack3
+      takeName: Take 001
+      firstFrame: 240
+      lastFrame: 312
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.41698554
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.48360673
+        functionName: changeCanHit
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 850975add56815344860ac1cb513bb99,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: buff
+      takeName: Take 001
+      firstFrame: 313
+      lastFrame: 339
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: hit
+      takeName: Take 001
+      firstFrame: 340
+      lastFrame: 364
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: dead
+      takeName: Take 001
+      firstFrame: 365
+      lastFrame: 380
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1.15
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
