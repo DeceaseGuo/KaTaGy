@@ -86,7 +86,6 @@ public class Player : Photon.MonoBehaviour
     public bool NowCC { get { return nowCC; } set { nowCC = value; } }
     #endregion
     private CapsuleCollider CharaCollider;
-    public BoxCollider shieldCollider;
     //技能
     [HideInInspector]
     public SkillBase skillManager;
@@ -135,10 +134,12 @@ public class Player : Photon.MonoBehaviour
             headImage.sprite = playerData.headImage;
             checkCurrentPlay();
             GetComponent<CreatPoints>().enabled = false;
+
+            SceneObjManager.Instance.myPlayer = this;
         }
         else
         {
-            SceneObjManager.Instance.enemy_Player = gameObject;
+            SceneObjManager.Instance.enemy_Player = this;
             this.enabled = false;
         }
     }
@@ -163,14 +164,12 @@ public class Player : Photon.MonoBehaviour
     public void changeMask_1(int _who)
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer1_Mask;
-        shieldCollider.gameObject.layer = 30;
         meIs = ((GameManager.meIs)_who);
     }
     [PunRPC]
     public void changeMask_2(int _who)
     {
         GetComponent<PlayerAni>().canAtkMask = GameManager.instance.getPlayer2_Mask;
-        shieldCollider.gameObject.layer = 31;
         meIs = ((GameManager.meIs)_who);
     }
     #endregion
@@ -215,8 +214,9 @@ public class Player : Photon.MonoBehaviour
             }
 
             if (AniControll != null)
-                AniControll.WeaponChangePos(1);            
-            ChangeMyCollider(true);
+                AniControll.WeaponChangePos(1);
+            deadManager.NoDamage(false);
+            CharaCollider.enabled = true;
         }
     }
     #endregion
@@ -365,7 +365,7 @@ public class Player : Photon.MonoBehaviour
 
     #region 士兵
     [PunRPC]
-    public void UpdataSoldier(int _level, int _whatAbility)
+    public void UpdataSoldier(byte _level, int _whatAbility)
     {
         if (photonView.isMine)
             SceneObjManager.Instance.UpdataMySoldier(_level, _whatAbility);
@@ -386,34 +386,26 @@ public class Player : Photon.MonoBehaviour
     #endregion
     #endregion
 
-    private void Update()
+    public void NeedToUpdate()
     {
-        if (!photonView.isMine || deadManager.checkDead)
-            return;
-
-        if (leftTopPowerBar.fillAmount != 1)
-            AddPower();
-
-        CorrectDirection();        
-
-        if (MyState != statesData.None)
+        if (!deadManager.checkDead)
         {
-            nowCanDo();
-            ///
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (leftTopPowerBar.fillAmount != 1)
+                AddPower();
+
+            CorrectDirection();
+
+            if (MyState != statesData.None)
             {
-                transform.position = MousePosition;
+                nowCanDo();
+                ///
+                if (Input.GetKeyDown(KeyCode.LeftShift))
+                {
+                    transform.position = MousePosition;
+                }
             }
         }
     }
-
-  /*  private void FixedUpdate()
-    {
-        if (!photonView.isMine || deadManager.checkDead || (MyState != statesData.canMove_Atk && MyState != statesData.canMvoe_Build))
-            return;
-
-        CharacterRun();
-    }*/
 
     #region 目前狀態執行→update
     void nowCanDo()
@@ -456,8 +448,8 @@ public class Player : Photon.MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Idle_Atk") ||
-             AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("Run_Atk") || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
+            if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).fullPathHash == AniControll.aniHashValue[24] ||
+             AniControll.anim.GetCurrentAnimatorStateInfo(0).fullPathHash == AniControll.aniHashValue[25] || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
              || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_run")))
             {
                 if (SkillState != SkillData.None)
@@ -881,7 +873,7 @@ public class Player : Photon.MonoBehaviour
             if (!buildManager.nowBuilding)
                 MyState = statesData.canMove_Atk;
             else
-                MyState = statesData.canMvoe_Build;
+                MyState = statesData.canMvoe_Build;           
         }
     }
     //停止行動 只能閃避
@@ -913,12 +905,6 @@ public class Player : Photon.MonoBehaviour
             Net.RPC("waitBuild", PhotonTargets.All, _t);
     }
 
-    //改變碰撞(無敵用)
-    public void ChangeMyCollider(bool _myCollider)
-    {
-        CharaCollider.enabled = _myCollider;
-        shieldCollider.enabled = !_myCollider;
-    }
     //精靈王傳送用
     public void TeleportPos(Vector3 _pos)
     {

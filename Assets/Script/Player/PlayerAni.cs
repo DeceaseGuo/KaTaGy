@@ -34,7 +34,7 @@ public class PlayerAni : Photon.MonoBehaviour
     protected Vector3 currentAtkDir;
     //combo
     protected byte comboIndex;
-    protected float beHit_time = 0.25f;
+    protected float beHit_time = 0.4f;
     protected bool canStiffness = true;
     //攻擊矯正
     protected bool redressOpen = false;
@@ -67,7 +67,7 @@ public class PlayerAni : Photon.MonoBehaviour
     [HideInInspector]
     public int[] aniHashValue;
     [SerializeField]
-    protected int allHashAmount = 24;
+    protected int allHashAmount = 26;
 
     private void Awake()
     {
@@ -86,7 +86,7 @@ public class PlayerAni : Photon.MonoBehaviour
     #region 取得動畫雜湊值
     protected virtual void SetAniHash()
     {
-        if (allHashAmount <= 23)
+        if (allHashAmount <= 25)
             return;
 
         aniHashValue = new int[allHashAmount];
@@ -120,6 +120,9 @@ public class PlayerAni : Photon.MonoBehaviour
         aniHashValue[21] = Animator.StringToHash("Base Layer.Combo.combo2");
         aniHashValue[22] = Animator.StringToHash("Base Layer.Combo.combo3");
         aniHashValue[23] = Animator.StringToHash("Base Layer.Combo.combo4");
+        //攻擊狀態 站與跑
+        aniHashValue[24] = Animator.StringToHash("Base Layer.Idle_Atk");
+        aniHashValue[25] = Animator.StringToHash("Base Layer.Run_Atk");
     }
     #endregion
     protected virtual void SetCheckBox()
@@ -267,23 +270,8 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     protected void TP_Combo(byte _i)
     {
-        switch (_i)
-        {
-            case (1):
-                anim.CrossFade(aniHashValue[20], 0.05f, 0);
-                break;
-            case (2):
-                anim.CrossFade(aniHashValue[21], 0.05f, 0);
-                break;
-            case (3):
-                anim.CrossFade(aniHashValue[22], 0.05f, 0);
-                break;
-            case (4):
-                anim.CrossFade(aniHashValue[23], 0.05f, 0);
-                break;
-            default:
-                break;
-        }        
+        _i += 19;
+        anim.CrossFade(aniHashValue[_i], 0.02f, 0);
     }
     #endregion
 
@@ -305,6 +293,7 @@ public class PlayerAni : Photon.MonoBehaviour
                         transform.rotation = player.CharacterRot;
                         currentAtkDir = dirToTarget.normalized;
                         Debug.Log("矯正結束");
+                        redressOpen = false;
                         break;
                     }
                 }

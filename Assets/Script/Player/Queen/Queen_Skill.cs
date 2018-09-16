@@ -267,7 +267,8 @@ public class Queen_Skill : SkillBase
                                 Net.RPC("pushOtherTarget", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Soldier:
-                                Net.RPC("pushOtherTarget", PhotonTargets.All, -transform.forward.normalized);
+                                if (!who.noCC)
+                                    Net.RPC("pushOtherTarget", PhotonTargets.All, -transform.forward.normalized);
                                 Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
                                 break;
                             case GameManager.NowTarget.Tower:
@@ -308,8 +309,9 @@ public class Queen_Skill : SkillBase
                                 Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
                                 break;
                             case GameManager.NowTarget.Soldier:
+                                if (!who.noCC)
+                                    Net.RPC("HitFlayUp", PhotonTargets.All);
                                 Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
-                                Net.RPC("HitFlayUp", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Tower:
                                 Net.RPC("takeDamage", PhotonTargets.All, 5.5f);
@@ -362,8 +364,9 @@ public class Queen_Skill : SkillBase
                                 break;
                             case GameManager.NowTarget.Soldier:
                                 Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
+                                if (!who.noCC)
+                                    Net.RPC("HitFlayUp", PhotonTargets.All);
                                 Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
-                                Net.RPC("HitFlayUp", PhotonTargets.All);
                                 break;
                             case GameManager.NowTarget.Tower:
                                 Net.RPC("takeDamage", PhotonTargets.All, 5f);

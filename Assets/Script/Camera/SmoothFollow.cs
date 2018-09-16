@@ -50,14 +50,15 @@ public class SmoothFollow : MonoBehaviour
     private void Start()
     {
         transform.rotation = Quaternion.Euler(offsetRot);
-        target = Creatplayer.instance.MyNowPlayer.transform;
+        target = Creatplayer.instance.Player_Script.transform;
        // playerScript = Creatplayer.instance.Player_Script;
         coreManager = MyCore.instance;
        // followControll = GetComponent<Camera>();
         GoBackMyPos();
     }
 
-    private void LateUpdate()
+
+    public void NeedToLateUpdate()
     {
         if (!isLockCamera)
             camera_NOLock();

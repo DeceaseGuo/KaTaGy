@@ -4162,12 +4162,12 @@ MonoBehaviour:
       moveSpeed: 0
   deadManager: {fileID: 0}
   firstPriority: 3
-  viewRadius: 30
+  viewRadius: 40
   waitTime: 18
+  waitNextActionTime: 4.5
   currentMask:
     serializedVersion: 2
     m_Bits: 0
-  myTarget: []
   agentPoints: []
   myRender: {fileID: 137181236218780090}
   UI_HpObj: {fileID: 225537070448414450}
@@ -4180,6 +4180,7 @@ MonoBehaviour:
   allHashAmount: 8
   canAtking: 1
   alreadytakeDamage: []
+  canLookCheckRadius: 0
 --- !u!114 &114304740132656896
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4282,8 +4283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18cf1d6be43e354281c05d40cac04f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraRange: 3.3
-  TestNext: []
+  extraRange: 3.5
+  willGoNext: []
   alreadyFull: []
   testLook: 0
   atkRangeTest: 0
@@ -4300,7 +4301,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 2
-  noCC: 0
+  noResetNoCC: 1
+  noCC: 1
   notFeedBack: 0
 --- !u!114 &114923733923321406
 MonoBehaviour:
@@ -4502,7 +4504,7 @@ NavMeshAgent:
   m_Radius: 1.7
   m_Speed: 0
   m_Acceleration: 200
-  avoidancePriority: 40
+  avoidancePriority: 30
   m_AngularSpeed: 0
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 0
@@ -4511,7 +4513,7 @@ NavMeshAgent:
   m_Height: 7.9
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 3
 --- !u!222 &222026473620703228
 CanvasRenderer:
   m_ObjectHideFlags: 1

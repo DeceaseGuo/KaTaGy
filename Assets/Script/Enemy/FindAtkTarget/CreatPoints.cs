@@ -22,7 +22,7 @@ public class CreatPoints : MonoBehaviour
     
     [SerializeField] float extraRange = 0;
     public Dictionary<float, List<pointData>> atkPoints /*= new Dictionary<float, List<pointData>>()*/;
-    public List<Transform> TestNext;
+    public List<Transform> willGoNext;
     public List<Transform> alreadyFull;
 
     private float lastWidth;
@@ -57,26 +57,21 @@ public class CreatPoints : MonoBehaviour
     {
         pointParent = GameObject.Find("PointData").transform;
         atkPoints = new Dictionary<float, List<pointData>>(new WhichfloatComparer());
+        CalculatePoint(4f, 2.5f);
+        CalculatePoint(11, 8);
     }
 
     #region 找到離最近的空位
-    public Transform FindClosePoint(float _range, Transform _soldierPos, float _width, bool _obsDet)
+    public Transform FindClosePoint(float _range, Transform _soldierPos, float _width)
     {
-        ////之後可將距離事先存好
-        if (!atkPoints.ContainsKey(_range))
-        {
-            CalculatePoint(_range, _width);
-        }
-        ////
-
         near = -1;
         neardis = 1000000;
         tmpPointData = atkPoints[_range];
         for (int i = 0; i < tmpPointData.Count; i++)
         {
-            if (!alreadyFull.Contains(tmpPointData[i].point) && !checkDetectPos(tmpPointData[i].point))
+            if (!alreadyFull.Contains(tmpPointData[i].point) && !willGoNext.Contains(tmpPointData[i].point))
             {
-                if (CheckObstacle(tmpPointData[i].point, _width, _obsDet))
+                if (CheckObstacle(tmpPointData[i].point, _width))
                 {
                     compareCon = Vector3.Distance(tmpPointData[i].point.position, _soldierPos.position);
                     if (compareCon < neardis)
@@ -94,15 +89,15 @@ public class CreatPoints : MonoBehaviour
     }
     #endregion
 
-    public Transform GoComparing(float _range, Transform _soldierPos, Transform _firstPoint, float _width, bool _obsDet)
+    public Transform GoComparing(float _range, Transform _soldierPos, Transform _firstPoint, float _width)
     {
 
-        comparPos = FindClosePoint(_range, _soldierPos, _width, _obsDet);
+        comparPos = FindClosePoint(_range, _soldierPos, _width);
 
         if (comparPos == null || _soldierPos == null || _firstPoint == null)
             return null;
 
-        if (!TestNext.Contains(comparPos) && !alreadyFull.Contains(comparPos))
+        if (!willGoNext.Contains(comparPos) && !alreadyFull.Contains(comparPos))
         {
             return ((comparPos.position - _soldierPos.position).magnitude < (_firstPoint.position - _soldierPos.position).magnitude) ? comparPos : null;
         }
@@ -118,27 +113,46 @@ public class CreatPoints : MonoBehaviour
         return (atkPoints[_dis].Count == alreadyFull.Count) ? true : false;
     }
 
-    public bool checkDetectPos(Transform _pos)
+    #region 新增移除Point
+    //佔據點
+    public void AddPoint(Transform _node)
     {
-        return (TestNext.Contains(_pos)) ? true : false;
-    }
-
-    public void AddPoint(float _range, Transform _node)
-    {
-        if(!alreadyFull.Contains(_node))
+        if (!alreadyFull.Contains(_node))
         {
-            //if(!CheckFull(_node))
-            alreadyFull.Add(_node);
-
-            TestNext.Remove(_node);
+            alreadyFull.Add(_node);            
         }
     }
-
-    public void RemovePoint( float _range, Transform _node)
+    public void RemovePoint(Transform _node)
     {
         if (alreadyFull.Contains(_node))
             alreadyFull.Remove(_node);      
     }
+
+    //WillGo點
+    public void AddWillGo_P(Transform _node ,Transform _lastNode)
+    {
+        if (willGoNext.Contains(_lastNode))
+            willGoNext.Remove(_lastNode);
+
+        if (!willGoNext.Contains(_node))
+            willGoNext.Add(_node);
+    }
+    public void RemoveWillGo_P(Transform _node)
+    {
+        if (willGoNext.Contains(_node))
+            willGoNext.Remove(_node);
+    }
+
+    //移除任何
+    public void RemoveThisPoint(Transform _node)
+    {
+        if (alreadyFull.Contains(_node))
+            alreadyFull.Remove(_node);
+
+        if (willGoNext.Contains(_node))
+            willGoNext.Remove(_node);
+    }
+    #endregion
 
     private void LateUpdate()
     {
@@ -151,9 +165,9 @@ public class CreatPoints : MonoBehaviour
             }
         }
         //觀看生成點用
-        /*if (Input.GetKeyDown("f"))
+     /*   if (Input.GetKeyDown("f"))
         {
-            CalculatePoint(atkRangeTest, atkWidthTest);
+          //  CalculatePoint(atkRangeTest, atkWidthTest);
         }*/
     }
 
@@ -184,11 +198,8 @@ public class CreatPoints : MonoBehaviour
         atkPoints.Add(_range, _tmpLlist);
     }
 
-    bool CheckObstacle(Transform _pos, float _width, bool _obsDet)
+    bool CheckObstacle(Transform _pos, float _width)
     {
-        if (!_obsDet)
-            return true;
-
         if (_width != lastWidth)
         {
             lastWidth = _width;

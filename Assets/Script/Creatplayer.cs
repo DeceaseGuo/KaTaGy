@@ -23,10 +23,6 @@ public class Creatplayer : Photon.MonoBehaviour
     private Player player_Script;
     public Player Player_Script { get { return player_Script; } private set { player_Script = value; } }
 
-    //玩家Gameobject
-    private GameObject myNowPlayer;
-    public GameObject MyNowPlayer { get { return myNowPlayer; } private set { myNowPlayer = value; } }
-
     //出生位置
     private Vector3 myPosition;
 
@@ -112,9 +108,9 @@ public class Creatplayer : Photon.MonoBehaviour
     {
         myPosition = _pos.localPosition;
         EnemyManagerScript.CorrectBornPoint = _pos;
-        MyNowPlayer = PhotonNetwork.Instantiate("Prefabs/Player/" + player, _pos.localPosition, Quaternion.identity, 0);
+        GameObject myNowPlayer = PhotonNetwork.Instantiate("Prefabs/Player/" + player, _pos.localPosition, Quaternion.identity, 0);
         Instantiate(Resources.Load("Prefabs/ObjectPool/" + poolNumber), Vector3.zero, Quaternion.identity);
-        MyNowPlayer.transform.SetParent(MyPlayer);
+        myNowPlayer.transform.SetParent(MyPlayer);
         //GameManager.instance.changeNowMask();
         Player_Script = myNowPlayer.GetComponent<Player>();
     }
@@ -132,7 +128,7 @@ public class Creatplayer : Photon.MonoBehaviour
     {
         CameraEffect.instance.nowDie(false);
         dieCD_Obj.gameObject.SetActive(false);
-        MyNowPlayer.GetComponent<PhotonView>().RPC("SetActiveT", PhotonTargets.All, myPosition);
+        Player_Script.Net.RPC("SetActiveT", PhotonTargets.All, myPosition);
     }
     #endregion
 }

@@ -92,12 +92,12 @@ namespace AtkTower
                 if (photonView.isMine)
                 {
                     originalTurretData = TurretData.instance.getTowerData(DataName);
-                    SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                    SceneManager.AddMy_TowerList(gameObject);
                 }
                 else
                 {
                     originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
-                    SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+                    SceneManager.AddEnemy_TowerList(gameObject);
                 }
 
                 deadManager.ifDead(false);
@@ -128,27 +128,16 @@ namespace AtkTower
         }
         #endregion
 
-        GameObject _target;
-        List<GameObject> tmpTarget;
+        GameObject tmpTarget;
         #region 尋找敵人
         public void FindEnemy()
         {
-            float d = 9999;
-            _target = null;
-            tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, true, true);
-            for (int i = 0; i < tmpTarget.Count; i++)
-            {
-                float dis = Vector3.Distance(tmpTarget[i].transform.position, transform.position);
-                if (dis > turretData.Atk_MinRange && dis < d)
-                {
-                    d = dis;
-                    _target = tmpTarget[i];
-                }
-            }
+            tmpTarget = null;
+            tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, turretData.Atk_MinRange);
 
-            if (_target != null)
+            if (tmpTarget != null)
             {
-                target = _target.transform;
+                target = tmpTarget.transform;
             }
         }
         #endregion
@@ -287,12 +276,12 @@ namespace AtkTower
             {
                 if (photonView.isMine)
                 {
-                    SceneManager.RemoveMyList(gameObject, GameManager.NowTarget.Tower);
+                    SceneManager.RemoveMy_TowerList(gameObject);
                     BuildManager.instance.obtaniElectricity(this);
                 }
                 else
                 {
-                    SceneManager.RemoveEnemyList(gameObject, GameManager.NowTarget.Tower);
+                    SceneManager.RemoveEnemy_TowerList(gameObject);
                 }
 
                 deadManager.ifDead(true);

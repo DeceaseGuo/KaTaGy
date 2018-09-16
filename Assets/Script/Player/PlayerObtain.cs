@@ -20,14 +20,8 @@ public class PlayerObtain : MonoBehaviour
         {
             instance = this;
         }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown("f"))
-        {
-            obtaniResource(100);
-        }
+        //////////暫時取的資源
+        obtaniResource(5000);
     }
 
     public void obtaniResource(int _money)

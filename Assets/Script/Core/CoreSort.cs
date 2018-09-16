@@ -11,7 +11,7 @@ public class CoreSort : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public UpdateManager.Myability abilityData;
     public GameManager.whichObject unLockObj;
 
-    public int myLevel;
+    public byte myLevel;
     [SerializeField] string myName;
     [SerializeField] string myDescription;
     [Header("升級")]

@@ -107,13 +107,13 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
             //Solider
             for (int i = 0; i < mySoliderIcons.Count; i++)
             {
-                UpdatePos(SceneManager.mySoldierObjs[i], mySoliderIcons[i]);                                                                
+                UpdatePos(SceneManager.mySoldierObjs[i].gameObject, mySoliderIcons[i]);                                                                
                 ShowEnemysIcon(mySoliderIcons[i]);//顯示視野內敵人
             }
             #endregion
 
             #region 敵方
-            UpdatePos(SceneManager.enemy_Player, enemyplayerIcon);//更新玩家icon
+            UpdatePos(SceneManager.enemy_Player.gameObject, enemyplayerIcon);//更新玩家icon
             //Tower
             for (int i = 0; i < enemyTowerIcons.Count; i++)
             {
@@ -122,7 +122,7 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
             //Solider
             for (int i = 0; i < enemySoliderIcons.Count; i++)
             {
-                UpdatePos(SceneManager.enemySoldierObjs[i], enemySoliderIcons[i]);
+                UpdatePos(SceneManager.enemySoldierObjs[i].gameObject, enemySoliderIcons[i]);
             }
             #endregion
 

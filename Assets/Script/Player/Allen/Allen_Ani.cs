@@ -6,7 +6,7 @@ public class Allen_Ani : PlayerAni
     protected override void SetAniHash()
     {
         base.SetAniHash();
-        aniHashValue[24] = Animator.StringToHash("Catch");
+        aniHashValue[26] = Animator.StringToHash("Catch");
     }
     #endregion
 
@@ -23,22 +23,23 @@ public class Allen_Ani : PlayerAni
     {
         if (canClick)
         {
-            if (comboIndex == 0)
+            if (comboIndex == 0 && (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[24] || anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[25] ||
+                anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[17]))
             {
                 canClick = false;
                 comboFirst(1, atkDir);
             }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo1") && comboIndex == 1)
+            if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[20] && comboIndex == 1)
             {
                 canClick = false;
                 Nextcombo(2);
             }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo2") && comboIndex == 2)
+            if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[21] && comboIndex == 2)
             {
                 canClick = false;
                 Nextcombo(3);
             }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("combo3") && comboIndex == 3)
+            if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[22] && comboIndex == 3)
             {
                 canClick = false;
                 Nextcombo(4);
@@ -143,13 +144,6 @@ public class Allen_Ani : PlayerAni
             checkTag = checkBox[i].GetComponent<isDead>();
             if (!checkTag.checkDead)
             {
-                //攻擊無效化
-                if (checkTag.myAttributes == GameManager.NowTarget.NoChange)
-                {
-                    SwitchAtkRange(8);
-                    player.Net.RPC("HitNull", PhotonTargets.All);
-                    return;
-                }
                 Net = checkBox[i].GetComponent<PhotonView>();
                 switch (checkTag.myAttributes)
                 {

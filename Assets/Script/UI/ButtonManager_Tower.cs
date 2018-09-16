@@ -38,7 +38,7 @@ public class ButtonManager_Tower : MonoBehaviour
         buildManager = BuildManager.instance;
     }
 
-    private void Update()
+    public void NeedToUpdate()
     {
         if (uiManager.IsTowerMenu && buildManager.nowSelect && nowMenu != NowMenu.None)
         {
@@ -61,7 +61,6 @@ public class ButtonManager_Tower : MonoBehaviour
             nowMenu = NowMenu.None;
     }
     #endregion
-
 
     #region 快捷鍵
     private void clickButton_Tower()
