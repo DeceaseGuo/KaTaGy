@@ -17,7 +17,8 @@ public class Creatplayer : Photon.MonoBehaviour
     [SerializeField] Transform pos_2;
 
     [SerializeField] Transform MyPlayer;
-    [SerializeField] Text dieCD_Obj;
+    [SerializeField] Text countDownText;
+    [SerializeField] CanvasGroup dieCD_Obj;
 
     //玩家控制腳本
     private Player player_Script;
@@ -118,16 +119,16 @@ public class Creatplayer : Photon.MonoBehaviour
     #region 玩家重生
     public void player_ReBorn(float _countDown)
     {
-        if (!dieCD_Obj.gameObject.activeInHierarchy)
-            dieCD_Obj.gameObject.SetActive(true);
+        if (dieCD_Obj.alpha == 0)
+            dieCD_Obj.alpha = 1;
 
-        StartCoroutine(MatchTimeManager.SetCountDown(ReBorn, _countDown, dieCD_Obj, null));
+        StartCoroutine(MatchTimeManager.SetCountDown(ReBorn, _countDown, countDownText, null));
     }
 
     void ReBorn()
     {
         CameraEffect.instance.nowDie(false);
-        dieCD_Obj.gameObject.SetActive(false);
+        dieCD_Obj.alpha = 0;
         Player_Script.Net.RPC("SetActiveT", PhotonTargets.All, myPosition);
     }
     #endregion
