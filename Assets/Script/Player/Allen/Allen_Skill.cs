@@ -224,6 +224,8 @@ public class Allen_Skill : SkillBase
                             {
                                 Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
                                 Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
+                                if (who.noCC)
+                                    catchObj = null;
                             }
                             break;
                         case GameManager.NowTarget.Tower:
@@ -243,13 +245,13 @@ public class Allen_Skill : SkillBase
                         default:
                             break;
                     }
-                    aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[26], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
                 else
                 {
-                    aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
+                    aniScript.anim.SetBool(aniScript.aniHashValue[26], true);
                     grabSkill.PlayBackwards();
                     isForward = false;
                 }
@@ -275,7 +277,7 @@ public class Allen_Skill : SkillBase
     {
         if (isForward)
         {
-            aniScript.anim.SetBool(aniScript.aniHashValue[24], true);
+            aniScript.anim.SetBool(aniScript.aniHashValue[26], true);
             grabSkill.PlayBackwards();
             isForward = false;
         }
@@ -313,7 +315,8 @@ public class Allen_Skill : SkillBase
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
+                            if (!who.noCC)
+                                Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 2.5f);
                             break;
                         case GameManager.NowTarget.Tower:
@@ -371,7 +374,7 @@ public class Allen_Skill : SkillBase
 
     public void EndShield()
     {
-        playerScript.ChangeMyCollider(true);
+        playerScript.deadManager.NoDamage(false);
         if (shieldNum != 0)
             canShield = true;
         else
@@ -388,7 +391,7 @@ public class Allen_Skill : SkillBase
         }
         SwitchShieldIcon(false);
         shieldNum = 0;        
-        playerScript.ChangeMyCollider(true);
+        playerScript.deadManager.NoDamage(false);
         canShield = false;
         if (photonView.isMine)
         {
@@ -432,7 +435,7 @@ public class Allen_Skill : SkillBase
     [PunRPC]
     public void NowShield()
     {
-        playerScript.ChangeMyCollider(false);
+        playerScript.deadManager.NoDamage(true);
         StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.7f));
     }
     #endregion
@@ -440,7 +443,7 @@ public class Allen_Skill : SkillBase
     #region R大絕(開大無敵)
     public void Go_RSkill()
     {
-        playerScript.ChangeMyCollider(false);
+        playerScript.deadManager.NoDamage(true);
         //設定攻擊範圍
         allSkillRange.transform.position = mySkillPos;
         ProjectorManager.Setsize(allSkillRange, 17.5f, 1, true);
@@ -453,7 +456,7 @@ public class Allen_Skill : SkillBase
     {
         tmpEnemy = Physics.OverlapSphere(transform.localPosition, skillR_radius, aniScript.canAtkMask);
         if (tmpEnemy.Length != 0)
-         {
+        {
             targetAmount = tmpEnemy.Length;
             Vector3 hitPoint = transform.position + new Vector3(0, 0, 4f);
             for (int i = 0; i < targetAmount; i++)
@@ -473,7 +476,8 @@ public class Allen_Skill : SkillBase
                             Net.RPC("pushOtherTarget", PhotonTargets.All);
                             break;
                         case GameManager.NowTarget.Soldier:
-                            Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
+                            if (!who.noCC)
+                                Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
                             Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 9f);
                             break;
                         case GameManager.NowTarget.Tower:
@@ -491,7 +495,8 @@ public class Allen_Skill : SkillBase
                     }
                 }
             }
-         }
+        }
+        playerScript.deadManager.NoDamage(false);
     }
     #endregion
 
@@ -506,7 +511,7 @@ public class Allen_Skill : SkillBase
 
         if (grabSkill != null)
             grabSkill.Kill();
-        aniScript.anim.SetBool(aniScript.aniHashValue[24], false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[26], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -523,7 +528,7 @@ public class Allen_Skill : SkillBase
     //R
     public override void ResetR_GoCD()
     {
-        playerScript.ChangeMyCollider(true);
+        playerScript.deadManager.NoDamage(false);
         allSkillRange.enabled = false;
 
         if (photonView.isMine)
@@ -545,7 +550,7 @@ public class Allen_Skill : SkillBase
             grabSkill.Kill();
 
         playerScript.CountDown_Q();
-        aniScript.anim.SetBool(aniScript.aniHashValue[24], false);
+        aniScript.anim.SetBool(aniScript.aniHashValue[26], false);
         grab_MovePos.position = chain_Pos[2].position;
         isForward = false;
         catchObj = null;
@@ -577,7 +582,7 @@ public class Allen_Skill : SkillBase
 
         SwitchShieldIcon(false);
         shieldNum = 0;
-        playerScript.ChangeMyCollider(true);
+        playerScript.deadManager.NoDamage(false);
         canShield = false;
         playerScript.CountDown_E();
     }
@@ -593,7 +598,7 @@ public class Allen_Skill : SkillBase
 
         allSkillRange.enabled = false;
         playerScript.CountDown_R();
-        playerScript.ChangeMyCollider(true);
+        playerScript.deadManager.NoDamage(false);
     }
     #endregion
 

@@ -15,7 +15,7 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [Header("ICON")]
     [SerializeField] Image icon_Pos;
     [SerializeField] Image showBornImage;
-    [SerializeField] Image frame_Pos;
+    [SerializeField] CanvasGroup frame_Pos;
     [SerializeField] Image Lock_Pos;
     [SerializeField] Sprite originalImg;
 
@@ -29,7 +29,10 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void OpenSelectImage(bool _t)
     {
-        frame_Pos.enabled = _t;
+        if (_t)
+            frame_Pos.alpha = 1;
+        else
+            frame_Pos.alpha = 0;
     }
 
     //改變此位置
@@ -59,6 +62,16 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
     }
 
+    void ClearThis()
+    {
+        isChose = false;
+        icon_Pos.sprite = originalImg;
+        showBornImage.sprite = icon_Pos.sprite;
+        uiManager.ChangeNowP(nowPopulation);
+        nowPopulation = 0;
+        Data = null;
+    }
+
     public void LockState(bool _t)
     {
         if (Lock_Pos != null)
@@ -72,6 +85,14 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             tmpObj = PoolManager.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
             tmpObj.SendMessage("selectRoad", _pathBool);
+
+            if (!Data.isLowSoldier)
+            {
+                if (!Data.CheckAmountToClear(-1))
+                    Data.ChangeAllAmount(-1);
+                else
+                    ClearThis();
+            }
         }
     }
 

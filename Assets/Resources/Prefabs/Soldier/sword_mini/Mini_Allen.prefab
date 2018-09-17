@@ -1120,8 +1120,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1299396737225026}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.9996824, z: -0, w: 0.025200114}
+  m_LocalPosition: {x: -0.61, y: 0, z: 24.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4990748859831500}
@@ -1130,7 +1130,7 @@ Transform:
   - {fileID: 224717313953337808}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 177.11201, z: 0}
 --- !u!4 &4368968828252330
 Transform:
   m_ObjectHideFlags: 1
@@ -1773,12 +1773,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   extraRange: 2
-  TestNext: []
+  willGoNext: []
   alreadyFull: []
-  myCheckBoxV3: {x: 1.5, y: 1, z: 1.25}
   testLook: 0
-  atkRangeTest: 0
-  atkWidthTest: 0
+  atkRangeTest: 12
+  atkWidthTest: 8.4
 --- !u!114 &114274359384948768
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1818,6 +1817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 2
+  noResetNoCC: 0
   noCC: 0
   notFeedBack: 0
 --- !u!114 &114456865699995108
@@ -2014,13 +2014,13 @@ MonoBehaviour:
       Add_def3: 0
       moveSpeed: 0
   deadManager: {fileID: 0}
-  firstPriority: 3
+  firstPriority: 2
   viewRadius: 23
-  waitTime: 10
+  waitTime: 12
+  waitNextActionTime: 1.7
   currentMask:
     serializedVersion: 2
     m_Bits: 0
-  myTarget: []
   agentPoints: []
   myRender: {fileID: 137878351257650546}
   UI_HpObj: {fileID: 225789213215443254}
@@ -2030,9 +2030,10 @@ MonoBehaviour:
   correctPos: {fileID: 0}
   Net: {fileID: 0}
   checkEnemyBox: {x: 0.65, y: 0.6, z: 2.7}
-  allHashAmount: 6
+  allHashAmount: 5
   canAtking: 1
   alreadytakeDamage: []
+  canLookCheckRadius: 0
 --- !u!136 &136860591904145872
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -2123,10 +2124,10 @@ NavMeshAgent:
   m_GameObject: {fileID: 1299396737225026}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.6
+  m_Radius: 1
   m_Speed: 0
   m_Acceleration: 200
-  avoidancePriority: 40
+  avoidancePriority: 50
   m_AngularSpeed: 0
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 0
@@ -2135,7 +2136,7 @@ NavMeshAgent:
   m_Height: 5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 3
 --- !u!222 &222093109989258438
 CanvasRenderer:
   m_ObjectHideFlags: 1

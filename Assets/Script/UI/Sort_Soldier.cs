@@ -8,7 +8,7 @@ public class Sort_Soldier : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public bool isLowSoldier;
     public int maxAmount;
     private Button soldierBtn;
-    [SerializeField] Image IconImage;
+    [SerializeField] CanvasGroup IconImage;
     [SerializeField] Text amountText;
     [HideInInspector]
     public MyEnemyData.Enemies SoldierData;
@@ -20,27 +20,33 @@ public class Sort_Soldier : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         soldierBtn = GetComponent<Button>();
     }
 
-    void SwitchImage(bool _t)
-    {
-        if (_t)
-            soldierBtn.interactable = _t;
-        else
-            soldierBtn.interactable = _t;
-
-        IconImage.enabled = _t;
-    }
-
     public void ChangeAllAmount(int _amount)
     {
         if (isLowSoldier)
             return;
 
-        maxAmount += _amount;
+        if (maxAmount + _amount >= 0)
+            maxAmount += _amount;
         amountText.text = maxAmount.ToString();
+
         if (maxAmount == 0)
-            SwitchImage(false);
-        else if (!IconImage.isActiveAndEnabled)
-            SwitchImage(true);
+        {
+            soldierBtn.interactable = false;
+            IconImage.alpha = 0.5f;
+        }
+        else if (!soldierBtn.interactable)
+        {
+            soldierBtn.interactable = true;
+            IconImage.alpha = 1;
+        }
+    }
+
+    public bool CheckAmountToClear(int _amount)
+    {
+        if (maxAmount + _amount == -1)
+            return true;
+        else
+            return false;
     }
 
     public void ResetSoldierData()

@@ -35,15 +35,15 @@ public class UpdateManager : MonoBehaviour
         myPlayer = Creatplayer.instance.Player_Script;
     }
 
-    private void Update()
+   /* private void Update()
     {
         if (Input.GetKeyDown("v"))
         {
             Update_ThisAbility(GameManager.NowTarget.Soldier, Myability.Soldier_ATK, 1, GameManager.whichObject.None);
         }
-    }
+    }*/
 
-    public void Update_ThisAbility(GameManager.NowTarget _whoUpdate, Myability _state, int _level, GameManager.whichObject _whoIs)
+    public void Update_ThisAbility(GameManager.NowTarget _whoUpdate, Myability _state, byte _level, GameManager.whichObject _whoIs)
     {
         switch (_whoUpdate)
         {

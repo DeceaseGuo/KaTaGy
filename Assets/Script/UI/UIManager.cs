@@ -145,4 +145,10 @@ public class UIManager : MonoBehaviour
         populationText.text = 0.ToString();
     }
     #endregion
+
+    //生產小兵改變目前人口用
+    public void ChangeNowP(int _amount)
+    {
+        arraySoldier.ChangePopulation(_amount);
+    }
 }   

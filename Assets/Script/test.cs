@@ -21,8 +21,8 @@ namespace Mytest
         public TestData originalData;
         public TestData nowData;
 
-            public NavMeshAgent nav;
-        public Transform newPos;
+            public NavMeshAgent[] nav;
+        public Transform[] p;
 
         [SerializeField] int[] pos;
         private void Start()
@@ -40,7 +40,7 @@ namespace Mytest
             
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                hhh(a);
+                nav[0].SetDestination(p[0].position);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
@@ -51,7 +51,8 @@ namespace Mytest
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                nowData = originalData;
+                // nav[1].SetDestination(p[1].position);
+                kkk();
             }
         }
 
@@ -64,27 +65,26 @@ namespace Mytest
             Debug.Log(j);
         }
 
-        public int a;
-        public List<int> ooo;
-        public List<int> ccc;
+        public bool a;
 
-        void hhh(int a)
+
+        bool hhh()
         {
-            for (int i = 0; i < ooo.Count; i++)
-            {
-                if (ooo[i] == a)
-                    return;
-                else
-                    Debug.Log(ooo[i]);
-            }
+            if (a)
+                return true;
+            else
+                return false;
+        }
 
-            for (int i = 0; i < ccc.Count; i++)
-            {
-                if (ccc[i] == a)
-                    return;
-                else
-                    Debug.Log(ccc[i]);
-            }
+        void kkk()
+        {
+            Debug.Log("1");
+            Debug.Log("2");
+            if (hhh())
+                return;
+            Debug.Log("3");
+            Debug.Log("4");
+
         }
     }
 }

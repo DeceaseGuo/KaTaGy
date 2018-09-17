@@ -60,7 +60,7 @@ public class BuildManager : MonoBehaviour
     {
         playerObtain = PlayerObtain.instance;
         uiManager = UIManager.instance;
-        builder = Creatplayer.instance.MyNowPlayer;
+        builder = Creatplayer.instance.Player_Script.gameObject;
         playerScript = Creatplayer.instance.Player_Script;
         turretData = TurretData.instance;
         objPool = ObjectPooler.instance;

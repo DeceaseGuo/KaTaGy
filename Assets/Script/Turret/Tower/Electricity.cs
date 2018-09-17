@@ -137,11 +137,11 @@ public class Electricity : Photon.MonoBehaviour
             deadManager.ifDead(false);
             if (photonView.isMine)
             {
-                SceneManager.AddMyList(gameObject, deadManager.myAttributes);
+                SceneManager.AddMy_Electricity(this);
             }
             else
             {
-                SceneManager.AddEnemyList(gameObject, deadManager.myAttributes);
+                SceneManager.AddEnemy_Electricity(this);
             }
         }
 
@@ -168,13 +168,13 @@ public class Electricity : Photon.MonoBehaviour
         {
             if(photonView.isMine)
             {
-                SceneManager.RemoveMyList(gameObject, deadManager.myAttributes);
+                SceneManager.RemoveMy_Electricity(this);
                 ShowElectricitRange(false);
                 dead();
             }
             else
             {
-                SceneManager.RemoveEnemyList(gameObject, deadManager.myAttributes);
+                SceneManager.RemoveEnemy_Electricity(this);
             }
             deadManager.ifDead(true);
             StartCoroutine(Death());

@@ -36,7 +36,7 @@ public class ButtonManager_Solider : MonoBehaviour
         uiManager = UIManager.instance;
     }
 
-    private void Update()
+    public void NeedToUpdate()
     {
         if (!uiManager.IsTowerMenu && nowMenu != NowMenu.None)
         {

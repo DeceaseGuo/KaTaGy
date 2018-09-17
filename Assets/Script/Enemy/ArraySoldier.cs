@@ -12,9 +12,10 @@ public class ArraySoldier : MonoBehaviour
 
         private set { maxPopulation = value; }
     }
-    private int nowPopulation = 0;
+    public int nowPopulation = 0;
     public int rewardPopulation = 0;
-    [SerializeField] Text populationText;
+    [SerializeField] Text nowPopulationText;
+    [SerializeField] Text maxPopulationText;
 
     private Sort_nextBornBtn sort_born;
     public List<Sort_nextBornBtn> sort_list;
@@ -93,6 +94,12 @@ public class ArraySoldier : MonoBehaviour
     }
     #endregion
 
+    public void ChangePopulation(int _amount)
+    {
+        nowPopulation -= _amount;
+        nowPopulationText.text = nowPopulation.ToString();
+    }
+
     #region 清除一切
     public void click_clearAll()
     {
@@ -103,7 +110,7 @@ public class ArraySoldier : MonoBehaviour
         sort_soldier = null;
         sort_born.OpenSelectImage(false);
         nowPopulation = 0;
-        populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+        nowPopulationText.text = nowPopulation.ToString();
         nowArray = 0;
         GoNext_SortBorn(sort_list[0]);
     }
@@ -111,7 +118,7 @@ public class ArraySoldier : MonoBehaviour
 
     #region 排序功能
     //自動排順序
-    void RenewArray()
+    public void RenewArray()
     {
         for (byte i = 0; i < MaxPopulation; i++)
         {
@@ -157,7 +164,7 @@ public class ArraySoldier : MonoBehaviour
                 }
             }
             nowPopulation = MaxPopulation;
-            populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+            nowPopulationText.text = nowPopulation.ToString();
         }
     }
     #endregion
@@ -167,13 +174,13 @@ public class ArraySoldier : MonoBehaviour
     //解鎖 → 最大人口+獎勵人口
     void removeLock(byte _max)
     {
-        for (byte i = 7; i < _max; i++)
+        for (byte i = 6; i < _max; i++)
         {
             sort_list[i].LockState(false);
         }
 
         MaxPopulation = _max;
-        populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+        maxPopulationText.text = "/" + MaxPopulation.ToString();
     }
     //上鎖 → 上限值-最大人口
     void LockOn(int _min)
@@ -187,7 +194,7 @@ public class ArraySoldier : MonoBehaviour
                 sort_list[i].removeSoldier();
             }
         }
-        populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+        nowPopulationText.text = nowPopulation.ToString();
     }
     #endregion
 
@@ -203,7 +210,7 @@ public class ArraySoldier : MonoBehaviour
         //刪除原本的
         sort_born.OpenSelectImage(false);
         nowPopulation -= _sort.nowPopulation;
-        populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+        nowPopulationText.text = nowPopulation.ToString();
         _sort.removeSoldier();
         //選擇此位置
         sort_born = _sort;
@@ -265,7 +272,7 @@ public class ArraySoldier : MonoBehaviour
             sort_born.Data.ChangeAllAmount(1);
         }
 
-        populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+        nowPopulationText.text = nowPopulation.ToString();
 
         sort_born.changeSoldier(_sort);
         if (nowArray == MaxPopulation - 1)
@@ -286,7 +293,7 @@ public class ArraySoldier : MonoBehaviour
             else
             {
                 nowPopulation -= sort_list[i].nowPopulation;
-                populationText.text = nowPopulation.ToString() + "/" + MaxPopulation.ToString();
+                nowPopulationText.text = nowPopulation.ToString();
                 sort_list[i].removeSoldier();
                 CheckHaveSpace();
                 return;

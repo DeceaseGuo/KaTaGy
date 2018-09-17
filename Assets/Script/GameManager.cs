@@ -10,9 +10,6 @@ public class GameManager : Photon.MonoBehaviour
     private UIManager uiManagerScript;
     private UIManager UIManagerScript { get { if (uiManagerScript == null) uiManagerScript = UIManager.instance; return uiManagerScript; } }
 
-    private SmoothFollow smoothFollowScript;
-    private SmoothFollow SmoothFollowScript { get { if (smoothFollowScript == null) smoothFollowScript = SmoothFollow.instance; return smoothFollowScript; } }
-
     //單人
     public Toggle singleToggle;
     public void IsSingleToggle()
@@ -147,7 +144,7 @@ public class GameManager : Photon.MonoBehaviour
         Application.targetFrameRate = 70;
     }
 
-    private void Update()
+    public void NeedToUpdate_Btn()
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
@@ -157,16 +154,6 @@ public class GameManager : Photon.MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F2))
         {
             UIManagerScript.switch_Warehouse();
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            SmoothFollowScript.switch_UAV();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SmoothFollowScript.GoBackMyPos();
         }
     }
 

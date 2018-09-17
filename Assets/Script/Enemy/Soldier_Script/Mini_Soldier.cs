@@ -13,9 +13,8 @@ public class Mini_Soldier : EnemyControl
     protected override void SetAniHash()
     {
         base.SetAniHash();
-        aniHashValue[3] = Animator.StringToHash("StunRock");
-        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.Stun");
-        aniHashValue[5] = Animator.StringToHash("Base Layer.DeBuff.HitFly");
+        aniHashValue[3] = Animator.StringToHash("Base Layer.Idle");
+        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.HitFly");
     }
     #endregion
 
@@ -54,11 +53,10 @@ public class Mini_Soldier : EnemyControl
             canAtking = false;
             Net.RPC("getAtkAnimator", PhotonTargets.All);
             delayTimeToAtk();
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(waitNextActionTime);
             nowState = states.Wait_Move;
 
             OverAtkDis = false;
-            shortPos = null;
             sotpWait_time = StartCoroutine(stopWait());
         }
     }
@@ -135,10 +133,15 @@ public class Mini_Soldier : EnemyControl
     {
         if (!deadManager.checkDead)
         {
-            StopAll();
             NowCC = true;
-            ani.CrossFade(aniHashValue[4], 0.01f, 0);
-            ani.SetBool(aniHashValue[3], true);
+            StopAll();
+            ani.CrossFade(aniHashValue[3], 0.01f, 0);
+
+            if (photonView.isMine)
+            {
+                if (correctPos != null)
+                    points.RemoveThisPoint(correctPos);
+            }
 
             StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
         }
@@ -166,9 +169,12 @@ public class Mini_Soldier : EnemyControl
         {
             StopAll();
             NowCC = true;
-            ani.CrossFade(aniHashValue[5], 0.01f, 0);
+            ani.CrossFade(aniHashValue[4], 0.01f, 0);
             if (photonView.isMine)
             {
+                if (correctPos != null)
+                    points.RemoveThisPoint(correctPos);
+                
                 transform.DOMove(transform.localPosition + (_dir.normalized * -15f), .65f);
                 transform.rotation = Quaternion.LookRotation(_dir.normalized);
             }
@@ -179,11 +185,20 @@ public class Mini_Soldier : EnemyControl
     [PunRPC]
     protected override void HitFlayUp()
     {
-        flyUp = transform.DOMoveY(transform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
-        flyUp.onComplete = delegate () { EndFlyUp(); };
-        if (!NowCC)
+        if (!deadManager.checkDead)
         {
-            GetDeBuff_Stun(1.2f);
+            flyUp = transform.DOMoveY(transform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
+            flyUp.onComplete = delegate () { EndFlyUp(); };
+            if (!NowCC)
+            {
+                GetDeBuff_Stun(1.2f);
+            }
+
+            if (photonView.isMine)
+            {
+                if (correctPos != null)
+                    points.RemoveThisPoint(correctPos);
+            }
         }
     }
     #endregion

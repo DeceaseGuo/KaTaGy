@@ -1180,7 +1180,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1299396737225026}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.79, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4171614937699072}
@@ -1859,9 +1859,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   extraRange: 2
-  TestNext: []
+  willGoNext: []
   alreadyFull: []
-  myCheckBoxV3: {x: 1.5, y: 1, z: 1.25}
+  testLook: 0
+  atkRangeTest: 0
+  atkWidthTest: 0
 --- !u!114 &114355912679350634
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1874,6 +1876,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 2
+  noResetNoCC: 0
   noCC: 0
   notFeedBack: 0
 --- !u!114 &114618987064182378
@@ -2070,13 +2073,13 @@ MonoBehaviour:
       Add_def3: 0
       moveSpeed: 0
   deadManager: {fileID: 0}
-  firstPriority: 3
+  firstPriority: 2
   viewRadius: 23
-  waitTime: 10
+  waitTime: 12
+  waitNextActionTime: 1.7
   currentMask:
     serializedVersion: 2
     m_Bits: 0
-  myTarget: []
   agentPoints: []
   myRender: {fileID: 137977568409506972}
   UI_HpObj: {fileID: 225329297914210818}
@@ -2086,9 +2089,10 @@ MonoBehaviour:
   correctPos: {fileID: 0}
   Net: {fileID: 0}
   checkEnemyBox: {x: 0.65, y: 0.6, z: 2.7}
-  allHashAmount: 6
+  allHashAmount: 5
   canAtking: 1
   alreadytakeDamage: []
+  canLookCheckRadius: 0
 --- !u!114 &114864166845612310
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2206,10 +2210,10 @@ NavMeshAgent:
   m_GameObject: {fileID: 1299396737225026}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.6
+  m_Radius: 1
   m_Speed: 0
   m_Acceleration: 200
-  avoidancePriority: 40
+  avoidancePriority: 50
   m_AngularSpeed: 0
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 0
@@ -2218,7 +2222,7 @@ NavMeshAgent:
   m_Height: 5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 3
 --- !u!222 &222122494930303974
 CanvasRenderer:
   m_ObjectHideFlags: 1

@@ -37,7 +37,7 @@ public class EnemyManager : MonoBehaviour
     {
         SetCoroution();
     }
-
+    /////////
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F7))
@@ -45,7 +45,7 @@ public class EnemyManager : MonoBehaviour
             SpawnWave();
         }
     }
-
+    ///////
 
     #region 取得買到的士兵
     public void getEnemyQueue(MyEnemyData.Enemies solider)
@@ -91,6 +91,8 @@ public class EnemyManager : MonoBehaviour
     #region 出產士兵
     public void SpawnWave()
     {
+        arraySoldier.RenewArray();
+        arraySoldier.AIFull();
         StopCoroutine(soldierBorn);
         GetMyPath();
         halfPpopulation = (byte)(arraySoldier.MaxPopulation * 0.5f);

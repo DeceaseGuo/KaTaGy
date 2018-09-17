@@ -84,6 +84,12 @@ public class Attribute_HP : Photon.MonoBehaviour
     [PunRPC]
     public void takeDamage(float _damage, Vector3 _dir, bool ifHit)
     {
+        if (player.deadManager.noDamage)
+        {
+            Debug.Log("產生無敵時被攻擊特效");
+            return;
+        }
+
         if (player.deadManager.checkDead)
             return;
 

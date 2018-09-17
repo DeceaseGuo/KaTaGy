@@ -13,8 +13,9 @@ public class SiegeSoldier : EnemyControl
     protected override void SetAniHash()
     {
         base.SetAniHash();
-        aniHashValue[3] = Animator.StringToHash("StunRock");
-        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.Stun");
+        //激勵
+        aniHashValue[3] = 0;
+        aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuffOrBuff.hit");
         aniHashValue[5] = Animator.StringToHash("Base Layer.ATK.attack1");
         aniHashValue[6] = Animator.StringToHash("Base Layer.ATK.attack2");
         aniHashValue[7] = Animator.StringToHash("Base Layer.ATK.attack3");
@@ -49,11 +50,10 @@ public class SiegeSoldier : EnemyControl
             canAtking = false;
             Net.RPC("getAtkAnimator", PhotonTargets.All, nowAtkIndex);
             delayTimeToAtk();
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(waitNextActionTime);
             nowState = states.Wait_Move;
 
             OverAtkDis = false;
-            shortPos = null;
             sotpWait_time = StartCoroutine(stopWait());
         }
     }
@@ -122,13 +122,13 @@ public class SiegeSoldier : EnemyControl
                     case GameManager.NowTarget.Null:
                         break;
                     case GameManager.NowTarget.Player:
-                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, Vector3.zero, false);
+                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, (atkNet.transform.position-transform.position).normalized, true);
                         break;
                     case GameManager.NowTarget.Soldier:
                         atkNet.RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
                         break;
                     case GameManager.NowTarget.Tower:
-                        atkNet.RPC("takeDamage", PhotonTargets.All, 8.5f);
+                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage * 2);
                         break;
                     case GameManager.NowTarget.Core:
                         break;
@@ -177,4 +177,51 @@ public class SiegeSoldier : EnemyControl
             openPopupObject(_damage);
         }
     }
+
+    #region 打擊感功能
+    protected override void Feedback()
+    {
+        if (!deadManager.notFeedBack)
+        {
+            if (!deadManager.checkDead && !NowCC)
+                ani.SetTrigger(aniHashValue[2]);
+        }
+    }
+    #endregion
+
+    #region 負面效果
+    //暈眩
+    [PunRPC]
+    protected override void GetDeBuff_Stun(float _time)
+    {
+        if (!deadManager.checkDead)
+        {
+            NowCC = true;
+            StopAll();
+            ani.CrossFade(aniHashValue[4], 0.01f, 0);
+            if (photonView.isMine)
+            {
+                if (correctPos != null)
+                    points.RemoveThisPoint(correctPos);
+            }
+
+            StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+        }
+    }
+    //緩速
+    protected override void GetDeBuff_Slow()
+    {
+
+    }
+    //破甲
+    protected override void GetDeBuff_DestoryDef()
+    {
+
+    }
+    //燒傷
+    protected override void GetDeBuff_Burn()
+    {
+
+    }
+    #endregion
 }
