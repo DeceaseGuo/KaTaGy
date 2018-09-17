@@ -130,12 +130,14 @@ public class BuildManager : MonoBehaviour
     #endregion
 
     #region 取消目前的選擇
+    int eAmount;
     public void cancelSelect()
     {
         closeTurretToBuild();//清除目前選擇的塔防
         closeNowDetectObj();//關掉Detect
-
-        for (int i = 0; i < SceneManager.myElectricityObjs.Count; i++)
+        closeTmpObj();
+        eAmount = SceneManager.myElectricityObjs.Count;
+        for (int i = 0; i < eAmount; i++)
         {
             SceneManager.myElectricityObjs[i].changeGridColor(0);
         }
@@ -208,7 +210,7 @@ public class BuildManager : MonoBehaviour
         int _Money = Mathf.RoundToInt(turretToBuild.cost_Money * _percent);
 
         playerObtain.obtaniResource(_Money);
-        closeTmpObj();
+        //closeTmpObj();
     }
     #endregion
 

@@ -34,9 +34,17 @@ public class Building : MonoBehaviour
             {
                 findPos();
                 if (Input.GetMouseButtonDown(1))
+                {
+                    print("取消建造");
                     buildManager.cancelSelect();
+                }
             }
-
+            if (Input.GetMouseButtonDown(1))
+            {
+                print("取消建造222");
+                buildManager.cancelSelect();
+                _start = false;
+            }
             if (!buildManager.nowSelect)
             {
                 goBuild();
@@ -125,13 +133,6 @@ public class Building : MonoBehaviour
                 StartCoroutine("delayToBuildTurret");
                 _start = false;
             }
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            _start = false;
-            buildManager.closeTmpObj();
-            buildManager.closeTurretToBuild();
         }
     }
     #endregion
