@@ -312,6 +312,14 @@ ModelImporter:
         floatParameter: 0
         intParameter: 3
         messageOptions: 0
+      - time: 0.45066684
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 2
+        messageOptions: 0
       - time: 0.51013947
         functionName: SwitchAtkRange
         data: 
@@ -336,7 +344,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 4
         messageOptions: 0
-      - time: 0.99449766
+      - time: 1
         functionName: comboCheck
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
@@ -412,6 +420,14 @@ ModelImporter:
         floatParameter: 0
         intParameter: 2
         messageOptions: 0
+      - time: 0.45866707
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 3
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -440,6 +456,14 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
+      - time: 0.2453328
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
+        messageOptions: 0
       - time: 0.25442973
         functionName: comboCheck
         data: 
@@ -464,7 +488,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 8
         messageOptions: 0
-      - time: 0.8303893
+      - time: 0.8242793
         functionName: comboCheck
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
@@ -472,7 +496,7 @@ ModelImporter:
         floatParameter: 0
         intParameter: 4
         messageOptions: 0
-      - time: 0.9973999
+      - time: 0.98721665
         functionName: comboCheck
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
@@ -539,6 +563,14 @@ ModelImporter:
           type: 3}
         floatParameter: 0
         intParameter: 2
+        messageOptions: 0
+      - time: 0.22666705
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 5
         messageOptions: 0
       transformMask: []
       maskType: 3

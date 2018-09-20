@@ -44,15 +44,14 @@ namespace Mytest
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                if (pos.Length != 0)
-                    Debug.Log("不等於0");
-                else
-                    Debug.Log("等於0");
+                for (int i = 0; i < nav.Length; i++)
+                {
+                    nav[i].SetDestination(p[0].position);
+                }
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                // nav[1].SetDestination(p[1].position);
-                kkk();
+                 nav[1].SetDestination(p[1].position);
             }
         }
 

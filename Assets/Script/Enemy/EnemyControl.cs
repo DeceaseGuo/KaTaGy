@@ -181,6 +181,7 @@ public class EnemyControl : Photon.MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         if (photonView.isMine)
         {
+           // nav.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
             GetComponent<CreatPoints>().enabled = false;
             checkCurrentPlay();
             SetCoroutine();
@@ -277,67 +278,6 @@ public class EnemyControl : Photon.MonoBehaviour
     #endregion
 
     #region 偵測攻擊優先順序
-    /*void getCurrentTarget(isDead _inform)
-    {
-        if (nowTarget != GameManager.NowTarget.NoChange)
-        {
-            if (currentTarget != null)
-            {
-                if (_inform.myAttributes == GameManager.NowTarget.Core)
-                {
-                    //未完成
-                    // currentTarget = _pos;
-                    nowTarget = GameManager.NowTarget.NoChange;
-                    //chaseTime = 9999;
-                }
-                else if (nowTarget != firstPriority && _inform.myAttributes == firstPriority)
-                {
-                    Cpoint = _inform.GetComponent<CreatPoints>();
-                    if (!Cpoint.CheckFull(enemyData.atk_Range))
-                    {
-                        nowTarget = firstPriority;
-                        goAtkPos(Cpoint, _inform);
-                    }
-                }
-                else if (nowTarget != firstPriority && _inform.myAttributes == GameManager.NowTarget.Soldier)
-                {
-                   /* if (!Cpoint.CheckFull(enemyData.atk_Range))
-                    {
-                        nowTarget = GameManager.NowTarget.Soldier;
-                        goAtkPos(Cpoint, _inform);
-                    }*/
-    /*          }
-          }
-          else
-          {
-              Cpoint = _inform.GetComponent<CreatPoints>();
-
-              if (_inform.myAttributes == GameManager.NowTarget.Core)
-              {
-                  //未完成
-                  nowTarget = GameManager.NowTarget.NoChange;
-              }
-              else if (_inform.myAttributes == firstPriority)
-              {
-                  if (!Cpoint.CheckFull(enemyData.atk_Range))
-                  {
-                      nowTarget = firstPriority;
-                      goAtkPos(Cpoint, _inform);
-                  }
-              }
-              else if (_inform.myAttributes == GameManager.NowTarget.Soldier)
-              {
-                  if (!Cpoint.CheckFull(enemyData.atk_Range))
-                  {
-                      nowTarget = GameManager.NowTarget.Soldier;
-                      goAtkPos(Cpoint, _inform);
-                  }
-              }
-          }
-      }
-  }*/
-
-
     void getCurrentTarget()
     {
         if (nowTarget != GameManager.NowTarget.Core)

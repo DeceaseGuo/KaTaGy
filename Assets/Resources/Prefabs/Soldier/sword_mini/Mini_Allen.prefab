@@ -1819,6 +1819,7 @@ MonoBehaviour:
   myAttributes: 2
   noResetNoCC: 0
   noCC: 0
+  noDamage: 0
   notFeedBack: 0
 --- !u!114 &114456865699995108
 MonoBehaviour:

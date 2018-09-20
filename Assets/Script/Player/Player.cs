@@ -13,6 +13,9 @@ public class Player : Photon.MonoBehaviour
     private HintManager hintManager;
     public HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
 
+    private AudioManager audioScript;
+    public AudioManager AudioScript { get { if (audioScript == null) audioScript = AudioManager.instance; return audioScript; } }
+
     #region 數據
     public GameManager.meIs meIs;
     public PlayerData.PlayerDataBase playerData;
@@ -417,7 +420,8 @@ public class Player : Photon.MonoBehaviour
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
                 CharacterRun();
-                CharacterAtk_F();
+                if (AniControll.comboIndex == 0)
+                    CharacterAtk_F();
                 Dodge_Btn();
                 ATK_Build_Btn();
                 break;
@@ -435,6 +439,7 @@ public class Player : Photon.MonoBehaviour
                 CharacterAtk_F();
                 Dodge_Btn();
                 AniControll.DetectAtkRanage();
+                //if()
                 break;
             default:
                 break;

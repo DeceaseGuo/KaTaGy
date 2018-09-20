@@ -2,6 +2,8 @@
 
 public class Allen_Ani : PlayerAni
 {
+    private AudioSource comboAudio;
+
     #region 取得動畫雜湊值
     protected override void SetAniHash()
     {
@@ -15,6 +17,9 @@ public class Allen_Ani : PlayerAni
     {
         checkEnemyBox[0] = new Vector3(1.7f, 4.5f, .85f);
         checkEnemyBox[1] = new Vector3(4f, 4f, 2f);
+
+        //將combo裂痕特效移到外面
+        swordLight[1].transform.SetParent(GameObject.Find("Player_Original").transform);
     }
     #endregion     
 
@@ -27,7 +32,7 @@ public class Allen_Ani : PlayerAni
                 anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[17]))
             {
                 canClick = false;
-                comboFirst(1, atkDir);
+                comboFirst(1, atkDir);                
             }
             if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == aniHashValue[20] && comboIndex == 1)
             {
@@ -60,34 +65,35 @@ public class Allen_Ani : PlayerAni
                 canClick = true;
                 anim.SetBool(aniHashValue[6], false);
                 player.lockDodge = false;
+                NowComboAudio();
                 break;
             //結束點
             case (2):
                 if (nextComboBool)
                 {
-                    goNextCombo();
+                    //anim.SetBool(aniHashValue[6], true);
                     SwitchAtkRange(8);
+                    goNextCombo();
                     player.lockDodge = false;
                 }
-                else
+                else if (!anim.GetBool(aniHashValue[6]))
                 {
-                    if (!anim.GetBool(aniHashValue[6]))
-                    {
-                        player.lockDodge = false;
-                        anim.SetTrigger(aniHashValue[5]);
-                        GoBackIdle_canMove();
-                        SwitchAtkRange(8);
-                    }
+                    SwitchAtkRange(8);
+                    player.lockDodge = false;
+                    GoBackIdle_canMove();
+                    anim.CrossFade(aniHashValue[24], .25f);
                 }
                 break;
             //前搖點
             case (3):
-                if (!photonView.isMine)
-                    return;
-                //鎖閃避
-                player.lockDodge = true;
-                redressOpen = true;
-                brfore_shaking = true;
+                player.AudioScript.ReturnAudioPool(comboAudio);
+                if (photonView.isMine)
+                {
+                    //鎖閃避
+                    player.lockDodge = true;
+                    redressOpen = true;
+                    brfore_shaking = true;
+                }
                 break;
             //後搖點
             case (4):
@@ -181,6 +187,20 @@ public class Allen_Ani : PlayerAni
     }
     #endregion
 
+
+    //粒子特效位子跟旋轉
+    //combo1
+    Vector3 PS1_Pos = new Vector3(0.78f, 2.54f, .6f);
+    Vector3 PS1_Rot = new Vector3(-59.2f, -85, -102.1f);
+    //combo2
+    Vector3 PS2_Pos = new Vector3(.6f, 3.46f, .32f);
+    Vector3 PS2_Rot = new Vector3(54, 96.2f, 102.4f);
+    //combo4
+    Vector3 PS3_Pos = new Vector3(1.1f, 2.96f, 2.76f);
+    Vector3 PS3_Rot = new Vector3(-14.9f, -103.4f, -82.6f);
+    //地裂
+    [SerializeField] Transform PS4_Pos;
+
     #region 目前傷害判定區及刀光特效
     public override void SwitchAtkRange(int _n)
     {
@@ -195,27 +215,76 @@ public class Allen_Ani : PlayerAni
                     StartCoroutine(cameraControl.CameraShake(.2f, .35f));
                 break;
             //刀光1
-            case (3):
-                swordLight[0].SetActive(true);
+            case (2):
+                if (comboIndex == 1 || comboIndex == 2)
+                {
+                    swordLight[0].transform.localPosition = PS1_Pos;
+                    swordLight[0].transform.localEulerAngles = PS1_Rot;
+                    swordLight[0].Play();
+                }
                 break;
             //刀光2
-            case (4):
-                swordLight[1].SetActive(true);
+            case (3):
+                if (comboIndex == 2 || comboIndex == 3)
+                {
+                    swordLight[0].transform.localPosition = PS2_Pos;
+                    swordLight[0].transform.localEulerAngles = PS2_Rot;
+                    swordLight[0].Play();
+                }
                 break;
             //刀光3
-            case (5):
-                swordLight[2].SetActive(true);
+            case (4):
+                if (comboIndex == 3 || comboIndex == 4)
+                {
+                    swordLight[2].Play();
+                    swordLight[3].Play();
+                }
                 break;
-
+            //刀光4
+            case (5):
+                if (comboIndex == 4)
+                {
+                    swordLight[0].transform.localPosition = PS3_Pos;
+                    swordLight[0].transform.localEulerAngles = PS3_Rot;
+                    swordLight[1].transform.forward = transform.forward;
+                    swordLight[1].transform.localPosition = PS4_Pos.transform.position/* + transform.forward * testttt*/;
+                    swordLight[0].Play();
+                    swordLight[1].Play();
+                }
+                break;
             default:
                 startDetect_1 = false;
-                startDetect_2 = false;               
-                swordLight[0].SetActive(false);
-                swordLight[1].SetActive(false);
-                swordLight[2].SetActive(false);
+                startDetect_2 = false;
+                for (int i = 0; i < 4; i++)
+                {
+                    swordLight[i].Stop();
+                }
                 alreadyDamage.Clear();
                 break;
         }
     }
     #endregion
+
+    void NowComboAudio()
+    {
+        if (comboIndex == 1 )
+        {
+            comboAudio = player.AudioScript.GetOneAudioPlay(0, weapon_Detect.position);
+        }
+        //刀光2
+        if (comboIndex == 2 )
+        {
+            comboAudio = player.AudioScript.GetOneAudioPlay(0, weapon_Detect.position);
+        }
+        //刀光3
+        if (comboIndex == 3 )
+        {
+            comboAudio = player.AudioScript.GetOneAudioPlay(1, weapon_Detect.position);
+        }
+        //刀光4
+        if (comboIndex == 4)
+        {
+            comboAudio = player.AudioScript.GetOneAudioPlay(2, weapon_Detect.position);
+        }
+    }
 }

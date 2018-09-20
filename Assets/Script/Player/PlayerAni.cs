@@ -28,12 +28,12 @@ public class PlayerAni : Photon.MonoBehaviour
     //攻擊判定用
     protected bool startDetect_1 = false;
     protected bool startDetect_2 = false;
-    public GameObject[] swordLight = new GameObject[3];
+    public ParticleSystem[] swordLight = new ParticleSystem[3];
     public List<GameObject> alreadyDamage;
 
     protected Vector3 currentAtkDir;
     //combo
-    protected byte comboIndex;
+    public byte comboIndex;
     protected float beHit_time = 0.4f;
     protected bool canStiffness = true;
     //攻擊矯正
@@ -270,8 +270,9 @@ public class PlayerAni : Photon.MonoBehaviour
     [PunRPC]
     protected void TP_Combo(byte _i)
     {
+        comboIndex = _i;
         _i += 19;
-        anim.CrossFade(aniHashValue[_i], 0.02f, 0);
+        anim.CrossFade(aniHashValue[_i], 0.01f, 0);
     }
     #endregion
 
