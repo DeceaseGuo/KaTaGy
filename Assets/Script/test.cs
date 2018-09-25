@@ -11,47 +11,40 @@ namespace Mytest
 {
     public class test : MonoBehaviour
     {
-      
-        [System.Serializable]
-        public struct TestData
-        {
-            public float hp;
-        }
-        public byte aaa;
-        public TestData originalData;
-        public TestData nowData;
 
-            public NavMeshAgent[] nav;
+
+        public NavMeshAgent[] nav;
         public Transform[] p;
 
-        [SerializeField] int[] pos;
-        private void Start()
+        [System.Serializable]
+        public class testUse
         {
-        }
+            public byte findIndex;
+            public int nowIndex;
 
+            public testUse(byte _findIndex, int _t)
+            {
+                findIndex = _findIndex;
+                nowIndex = _t;
+            }
+        }
+        public List<testUse> UseTest = new List<testUse>();
+        testUse lll;
         private void Update()
         {
-            /* if (Input.GetKeyDown(KeyCode.Alpha1))
-             {
-                 kkk.Invoke();
-                 Debug.Log("click");
-             }*/
 
-            
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                nav[0].SetDestination(p[0].position);
+                ClearThis(modifyIndex);
+                // nav[0].SetDestination(p[0].position);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                for (int i = 0; i < nav.Length; i++)
-                {
-                    nav[i].SetDestination(p[0].position);
-                }
+                ModifyThis(modifyIndex);
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                 nav[1].SetDestination(p[1].position);
+                nav[1].SetDestination(p[1].position);
             }
         }
 
@@ -59,31 +52,30 @@ namespace Mytest
          {
              Gizmos.DrawWireSphere(transform.position, testNum);
          }*/
-        void Ttest1(byte j)
+        public byte modifyIndex;
+
+        void ModifyThis(byte _a)
         {
-            Debug.Log(j);
+
+            int a = UseTest.FindIndex(x => x.findIndex == _a);
+            if (a != -1)
+                UseTest[a].nowIndex = 99;
+            // lll.nowIndex = 99;
+
         }
 
-        public bool a;
-
-
-        bool hhh()
+        void ClearThis(byte _a)
         {
-            if (a)
-                return true;
-            else
-                return false;
-        }
-
-        void kkk()
-        {
-            Debug.Log("1");
-            Debug.Log("2");
-            if (hhh())
-                return;
-            Debug.Log("3");
-            Debug.Log("4");
-
+            try
+            {
+                UseTest.Remove(UseTest.Find(x => x.findIndex == _a));
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Debug.Log("Null");
+                throw;
+            }
+            
         }
     }
 }

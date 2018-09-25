@@ -1,11 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using MyCode.Timer;
 
 public class SiegeSoldier : EnemyControl
 {
-    private IEnumerator atkCT;
     private bool changeState;
     private byte nowAtkIndex = 0;
 
@@ -24,21 +22,15 @@ public class SiegeSoldier : EnemyControl
 
     protected override void AtkDetectSet()
     {
-        atkCT = Timer.NextFrame(() =>
-        {
-            if (haveHit)
-            {
-                enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
-                if (enemiesCon.Length != 0)
-                    giveCurrentDamage();
-            }
-        });
+        enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
+        if (enemiesCon.Length != 0)
+            giveCurrentDamage();
     }
 
     #region 小兵攻擊
-    protected override IEnumerator enemyAttack()
+    protected override void SoldierAttack()
     {
-        if (nowState == states.Atk)
+        if (nowState == states.Atk && !NowCC)
         {            
             nowAtkIndex++;
             deadManager.notFeedBack = true;
@@ -50,11 +42,7 @@ public class SiegeSoldier : EnemyControl
             canAtking = false;
             Net.RPC("getAtkAnimator", PhotonTargets.All, nowAtkIndex);
             delayTimeToAtk();
-            yield return new WaitForSeconds(waitNextActionTime);
-            nowState = states.Wait_Move;
-
-            OverAtkDis = false;
-            sotpWait_time = StartCoroutine(stopWait());
+            Invoke("GoWaitMove", waitNextActionTime);
         }
     }
 
@@ -77,31 +65,28 @@ public class SiegeSoldier : EnemyControl
                     break;
             }
         }
-
-        if (!photonView.isMine)
-            StartCoroutine(atkCT);
     }
     #endregion
 
     #region 攻擊動畫判定開關
     public override void changeCanHit(int c)
     {
-        if (!photonView.isMine)
+        if (photonView.isMine)
+            return;
+
+        if (c == 0)
         {
-            if (c == 0)
+            if (haveHit)
             {
-                if (haveHit)
-                {
-                    haveHit = false;
-                    StopCoroutine(atkCT);
-                    alreadytakeDamage.Clear();
-                }
-            }
-            else
-            {
-                haveHit = true;
+                haveHit = false;
+                alreadytakeDamage.Clear();
             }
         }
+        else
+        {
+            haveHit = true;
+        }
+
     }
     #endregion
 
@@ -122,7 +107,7 @@ public class SiegeSoldier : EnemyControl
                     case GameManager.NowTarget.Null:
                         break;
                     case GameManager.NowTarget.Player:
-                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, (atkNet.transform.position-transform.position).normalized, true);
+                        atkNet.RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage, (atkNet.transform.position- myCachedTransform.position).normalized, true);
                         break;
                     case GameManager.NowTarget.Soldier:
                         atkNet.RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
@@ -146,7 +131,6 @@ public class SiegeSoldier : EnemyControl
     protected override void MyHelath(float _damage)
     {
         //血量顯示與消失
-        UI_HpObj.alpha = 1;
         CloseHP();
 
         //扣血
@@ -205,7 +189,7 @@ public class SiegeSoldier : EnemyControl
                     points.RemoveThisPoint(correctPos);
             }
 
-            StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+            MatchTimeManager.SetCountDownNoCancel(Recover_Stun, _time);
         }
     }
     //緩速

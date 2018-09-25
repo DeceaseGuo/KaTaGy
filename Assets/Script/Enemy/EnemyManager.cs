@@ -1,5 +1,4 @@
-﻿using MyCode.Timer;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -33,10 +32,6 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        SetCoroution();
-    }
     /////////
     private void Update()
     {
@@ -60,21 +55,18 @@ public class EnemyManager : MonoBehaviour
     #endregion
 
     #region 協成
-    public void SetCoroution()
+    public void BornSoldiers()
     {
-        soldierBorn = Timer.FirstAction(soldierGapTime,() =>
+        if (nowNum < halfPpopulation)
+            arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, firstPath);
+        else
+            arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, !firstPath);
+        nowNum += 1;
+        if (nowNum == arraySoldier.MaxPopulation)
         {
-            if (nowNum < halfPpopulation)
-                arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, firstPath);
-            else
-                arraySoldier.sort_list[nowNum].BornSoldier(CorrectBornPoint, !firstPath);
-            nowNum += 1;
-            if (nowNum == arraySoldier.MaxPopulation)
-            {
-                nowNum = 0;
-                StopCoroutine(soldierBorn);
-            }
-        });
+            nowNum = 0;
+            CancelInvoke("BornSoldiers");
+        }
     }
     #endregion
 
@@ -93,10 +85,9 @@ public class EnemyManager : MonoBehaviour
     {
         arraySoldier.RenewArray();
         arraySoldier.AIFull();
-        StopCoroutine(soldierBorn);
         GetMyPath();
         halfPpopulation = (byte)(arraySoldier.MaxPopulation * 0.5f);
-        StartCoroutine(soldierBorn);
+        InvokeRepeating("BornSoldiers", 0, soldierGapTime);
     }
     #endregion
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class CreatPoints : MonoBehaviour
@@ -24,6 +23,7 @@ public class CreatPoints : MonoBehaviour
     public Dictionary<float, List<pointData>> atkPoints /*= new Dictionary<float, List<pointData>>()*/;
     public List<Transform> willGoNext;
     public List<Transform> alreadyFull;
+    private LayerMask obstacleMask;
 
     private float lastWidth;
     private Vector3 myCheckBoxV3;
@@ -53,12 +53,30 @@ public class CreatPoints : MonoBehaviour
     private Transform pointParent;
     #endregion
 
-    private void Start()
+    public void ProdecePoints ()
     {
+        obstacleMask = 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11;
         pointParent = GameObject.Find("PointData").transform;
         atkPoints = new Dictionary<float, List<pointData>>(new WhichfloatComparer());
         CalculatePoint(4f, 2.5f);
         CalculatePoint(11, 8);
+    }
+
+    public void NeedToLateUpdate()
+    {
+        for (int i = 0; i < keysList.Count; i++)
+        {
+            if (transform.position != keysList[i].lastPoint)
+            {
+                keysList[i].lastPoint = transform.position;
+                keysList[i].point.position = transform.position + keysList[i].Dir * Vector3.forward * keysList[i].atkDistance;
+            }
+        }
+        //觀看生成點用
+        /*   if (Input.GetKeyDown("f"))
+           {
+             //  CalculatePoint(atkRangeTest, atkWidthTest);
+           }*/
     }
 
     #region 找到離最近的空位
@@ -122,54 +140,43 @@ public class CreatPoints : MonoBehaviour
             alreadyFull.Add(_node);            
         }
     }
-    public void RemovePoint(Transform _node)
+    public void RemoveForAddPoint(Transform _node)
     {
-        if (alreadyFull.Contains(_node))
-            alreadyFull.Remove(_node);      
+        if (willGoNext.Contains(_node))
+            willGoNext.Remove(_node);
+
+        if (!alreadyFull.Contains(_node))
+            alreadyFull.Add(_node);
     }
 
     //WillGo點
     public void AddWillGo_P(Transform _node ,Transform _lastNode)
     {
-        if (willGoNext.Contains(_lastNode))
+        if (_lastNode != null && willGoNext.Contains(_lastNode))
             willGoNext.Remove(_lastNode);
 
         if (!willGoNext.Contains(_node))
             willGoNext.Add(_node);
     }
-    public void RemoveWillGo_P(Transform _node)
-    {
-        if (willGoNext.Contains(_node))
-            willGoNext.Remove(_node);
-    }
 
     //移除任何
     public void RemoveThisPoint(Transform _node)
     {
+        if (_node == null)
+            return;
+
         if (alreadyFull.Contains(_node))
             alreadyFull.Remove(_node);
 
         if (willGoNext.Contains(_node))
             willGoNext.Remove(_node);
     }
-    #endregion
-
-    private void LateUpdate()
+    public void RemoveAllPoint()
     {
-        for (int i = 0; i < keysList.Count; i++)
-        {
-            if (transform.position != keysList[i].lastPoint)
-            {
-                keysList[i].lastPoint = transform.position;
-                keysList[i].point.position = transform.position + keysList[i].Dir * Vector3.forward * keysList[i].atkDistance;
-            }
-        }
-        //觀看生成點用
-     /*   if (Input.GetKeyDown("f"))
-        {
-          //  CalculatePoint(atkRangeTest, atkWidthTest);
-        }*/
+        alreadyFull.Clear();
+        willGoNext.Clear();
     }
+    #endregion
 
     public bool IFDis(float _dis ,float _nowDis)
     {
@@ -203,9 +210,9 @@ public class CreatPoints : MonoBehaviour
         if (_width != lastWidth)
         {
             lastWidth = _width;
-            myCheckBoxV3 = new Vector3(_width / 2, 2, _width / 2);
+            myCheckBoxV3 = new Vector3(_width * 0.5f, 2, _width * 0.5f);
         }
-        if (!(Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11)))
+        if (!(Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, obstacleMask)))
         {
             if ((Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, 1 << 9)))
                 return true;
@@ -229,19 +236,7 @@ public class CreatPoints : MonoBehaviour
                     Gizmos.DrawSphere(item.point.position, .3f);
 
                 }
-
-                /*  if (TestNext.Count != 0)
-                  {
-                      Gizmos.color = Color.blue;
-                      foreach (var item in TestNext)
-                      {
-                          Gizmos.DrawSphere(item.position, .5f);
-                          Gizmos.color = Color.black;
-                          Gizmos.DrawCube(item.position, new Vector3(.7f, 1f, .7f));
-                      }
-                  }
-
-                  if (alreadyFull.Count != 0)
+               /*   if (alreadyFull.Count != 0)
                   {
                       Gizmos.color = Color.yellow;
                       foreach (var item in alreadyFull)

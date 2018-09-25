@@ -172,7 +172,7 @@ public class PlayerAni : Photon.MonoBehaviour
             if (canStiffness)
             {
                 canStiffness = false;
-                StartCoroutine(player.MatchTimeManager.SetCountDown(StiffnessEnd, beHit_time));
+                player.MatchTimeManager.SetCountDownNoCancel(StiffnessEnd, beHit_time);
             }
         }
     }
@@ -320,7 +320,7 @@ public class PlayerAni : Photon.MonoBehaviour
     {
         if (photonView.isMine && !brfore_shaking && !redressOpen)
         {
-            currentAtkDir = player.nowMouseDir();
+            currentAtkDir = player.arrow.forward;
             transform.forward = currentAtkDir.normalized;
         }
     }

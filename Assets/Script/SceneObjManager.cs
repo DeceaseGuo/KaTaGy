@@ -32,6 +32,9 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     private GameManager gameManagerScript;
     private GameManager GameManagerScript { get { if (gameManagerScript == null) gameManagerScript = GameManager.instance; return gameManagerScript; } }
+
+    private MatchTimer matchTime;
+    private MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
     [SerializeField] ButtonManager_Tower buttonTower;
     [SerializeField] ButtonManager_Solider buttonSoldier;
     #endregion
@@ -92,7 +95,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         if (myPlayer != null)
             myPlayer.NeedToUpdate();
 
-        //怪物update
+        //士兵update
         if (mySoldierAmount != 0)
         {
             for (int i = 0; i < mySoldierAmount; i++)
@@ -109,6 +112,22 @@ public class SceneObjManager : Photon.MonoBehaviour
     private void LateUpdate()
     {
         SmoothFollowScript.NeedToLateUpdate();
+
+        //時間管理
+        MatchTimeManager.NeedToLateUpdate();
+
+        //玩家Points的位子跟隨
+        if (enemy_Player != null)
+            enemy_Player.MyCreatPoints.NeedToLateUpdate();
+
+        //敵方Clone士兵
+        if (soldierAmount != 0)
+        {
+            for (int i = 0; i < soldierAmount; i++)
+            {
+                enemySoldierObjs[i].NeedToLateUpdate();
+            }
+        }
     }
 
     private void GameBotton()

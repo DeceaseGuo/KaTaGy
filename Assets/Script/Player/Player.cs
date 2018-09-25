@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -7,14 +8,19 @@ using DG.Tweening;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Player : Photon.MonoBehaviour
 {
+    #region 取得單例
     private MatchTimer matchTime;
     public MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
 
     private HintManager hintManager;
     public HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
 
+    private FloatingTextController floatTextCon;
+    protected FloatingTextController FloatTextCon { get { if (floatTextCon == null) floatTextCon = FloatingTextController.instance; return floatTextCon; } }
+
     private AudioManager audioScript;
     public AudioManager AudioScript { get { if (audioScript == null) audioScript = AudioManager.instance; return audioScript; } }
+    #endregion
 
     #region 數據
     public GameManager.meIs meIs;
@@ -22,6 +28,20 @@ public class Player : Photon.MonoBehaviour
     public PlayerData.PlayerDataBase originalData;
     private bool firstGetData = true;
     #endregion
+
+    #region 血量相關
+    [Header("左上螢幕血量UI")]
+    private Image leftTopHpBar;
+    //角色頭上血量
+    public Image UI_HpBar;
+    private Animator ani;
+    [Header("改變顏色")]
+    private float maxValue;
+    [SerializeField] Renderer myRender;
+    #endregion
+
+    protected Transform myCachedTransform;
+
     public PlayerAni AniControll;
     [HideInInspector]
     public BuildManager buildManager;
@@ -35,7 +55,6 @@ public class Player : Photon.MonoBehaviour
 
     [SerializeField] GameObject clickPointPos;
     [SerializeField] LayerMask canClickToMove_Layer;
-    [SerializeField] LayerMask currentDir_Layer;
 
     [Header("左上能量UI")]
     private Image leftTopPowerBar;
@@ -47,12 +66,15 @@ public class Player : Photon.MonoBehaviour
 
     private bool stopClick;
     public bool StopClick { get { return stopClick; } set { stopClick = value; } }
-        
+
+    public CreatPoints MyCreatPoints;
     public PhotonView Net;
     //方向
     private Vector3 mousePosition;
-    public Vector3 MousePosition { get { return mousePosition; } private set { mousePosition = value; } }
     public Transform arrow;
+    private Vector3 tmpMousePos;
+    private Camera myMainCamera;
+    private Vector3 worldDir;
     [SerializeField] Projector arrowProjector;
 
     public UnityEvent skill_Q;
@@ -121,6 +143,7 @@ public class Player : Photon.MonoBehaviour
     {
         CharaCollider = GetComponent<CapsuleCollider>();
         Net = GetComponent<PhotonView>();
+        myCachedTransform = this.transform;
     }
 
     private void Start()
@@ -136,12 +159,12 @@ public class Player : Photon.MonoBehaviour
 
             headImage.sprite = playerData.headImage;
             checkCurrentPlay();
-            GetComponent<CreatPoints>().enabled = false;
-
+            MyCreatPoints.enabled = false;
             SceneObjManager.Instance.myPlayer = this;
         }
         else
         {
+            MyCreatPoints.ProdecePoints();
             SceneObjManager.Instance.enemy_Player = this;
             this.enabled = false;
         }
@@ -190,18 +213,22 @@ public class Player : Photon.MonoBehaviour
         nav = GetComponent<NavMeshAgent>();
         deadManager = GetComponent<isDead>();
         nav.updateRotation = false;
-        
+        MyCreatPoints = GetComponent<CreatPoints>();
+
+        ani = GetComponent<Animator>();
         AniControll = GetComponent<PlayerAni>();        
 
         if (photonView.isMine)
         {
             if (leftTopPowerBar == null)
                 leftTopPowerBar = GameObject.Find("mpBar_0020").GetComponent<Image>();
+
+            myMainCamera = Camera.main;
         }
         originalData = PlayerData.instance.getPlayerData(meIs);
     }
 
-    public void FormatData()
+    void FormatData()
     {
         if (!firstGetData)
         {
@@ -221,6 +248,20 @@ public class Player : Photon.MonoBehaviour
             deadManager.NoDamage(false);
             CharaCollider.enabled = true;
         }
+    }
+
+    public void GoFormatData()
+    {
+        UI_HpBar.fillAmount = 1;
+        if (photonView.isMine)
+        {
+            if (leftTopHpBar != null)
+                leftTopHpBar.fillAmount = 1;
+            else
+                leftTopHpBar = GameObject.Find("hpBar_0022").GetComponent<Image>();
+        }
+
+        FormatData();
     }
     #endregion
 
@@ -404,9 +445,14 @@ public class Player : Photon.MonoBehaviour
                 ///
                 if (Input.GetKeyDown(KeyCode.LeftShift))
                 {
-                    transform.position = MousePosition;
+                    myCachedTransform.position = GetNowMousePoint();
                 }
             }
+        }
+
+        if (Input.GetKeyDown("z"))
+        {
+            takeDamage(10f, Vector3.zero, true);
         }
     }
 
@@ -439,7 +485,6 @@ public class Player : Photon.MonoBehaviour
                 CharacterAtk_F();
                 Dodge_Btn();
                 AniControll.DetectAtkRanage();
-                //if()
                 break;
             default:
                 break;
@@ -479,7 +524,7 @@ public class Player : Photon.MonoBehaviour
                 if (ConsumeAP(10f, true))
                 {
                     stopAnything_Switch(true);
-                    Dodge_FCN(nowMouseDir());
+                    Dodge_FCN(arrow.forward);
                 }
             }
         }
@@ -499,10 +544,10 @@ public class Player : Photon.MonoBehaviour
                     getIsRunning = false;
                     nav.ResetPath();
                     MyState = statesData.Combo;
-                    transform.forward = nowMouseDir().normalized;
+                    myCachedTransform.forward = arrow.forward;
                 }
 
-                AniControll.TypeCombo(transform.forward);
+                AniControll.TypeCombo(myCachedTransform.forward);
             }
         }
     }
@@ -587,18 +632,16 @@ public class Player : Photon.MonoBehaviour
     {
         if (!IsMap())//我新加的
         {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            ray = myMainCamera.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
+            if (Physics.Raycast(ray, out hit, 165, canClickToMove_Layer))
             {
-                if (hit.transform.CompareTag("CanClickMove"))
-                {
-                    clickPointPos.transform.position = hit.point;
-                    getTatgetPoint(clickPointPos.transform.position);
-                }
+                clickPointPos.transform.position = hit.point;
+                getTatgetPoint(clickPointPos.transform.position);
             }
         }
     }
+
     bool IsMap()
     {
         mapX = Input.mousePosition.x - (map.position.x - (map.rect.width * 0.5f));
@@ -610,20 +653,22 @@ public class Player : Photon.MonoBehaviour
     //無時無刻偵測滑鼠方向
     void CorrectDirection()
     {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, 150, canClickToMove_Layer))
-        {
-            MousePosition = hit.point;
-            nowMouseDir();
-        }
+        tmpMousePos = Input.mousePosition;//鼠标在屏幕上的位置坐标
+        tmpMousePos.z = myMainCamera.WorldToScreenPoint(arrow.position).z;
+        worldDir.x = myMainCamera.ScreenToWorldPoint(tmpMousePos).x;
+        worldDir.z = myMainCamera.ScreenToWorldPoint(tmpMousePos).z;
+        worldDir.y = arrow.position.y;
+        arrow.LookAt(worldDir);
     }
-    //滑鼠目前方向
-    public Vector3 nowMouseDir()
+
+    public Vector3 GetNowMousePoint()
     {
-        MousePosition = new Vector3(MousePosition.x, transform.localPosition.y, MousePosition.z);
-        arrow.rotation = Quaternion.LookRotation(MousePosition - transform.position);
-        return arrow.forward;
+        if (Physics.Raycast(myMainCamera.ScreenPointToRay(Input.mousePosition), out hit, 150, 1<<15))
+        {
+            mousePosition = hit.point;
+            mousePosition.y = myCachedTransform.localPosition.y;
+        }
+        return mousePosition;
     }
     #endregion
 
@@ -648,20 +693,20 @@ public class Player : Photon.MonoBehaviour
         if (getIsRunning)
         {
             #region 尋找下一個位置方向
-            tmpNextPos = nav.steeringTarget - transform.localPosition;
-            tmpNextPos.y = transform.localPosition.y;
+            tmpNextPos = nav.steeringTarget - myCachedTransform.localPosition;
+            tmpNextPos.y = myCachedTransform.localPosition.y;
             CharacterRot = Quaternion.LookRotation(tmpNextPos);
             #endregion
 
             #region 判斷是否到最終目標點→否則執行移動
-            maxDisGap = nav.destination - transform.localPosition;
+            maxDisGap = nav.destination - myCachedTransform.localPosition;
             if (maxDisGap.sqrMagnitude < Mathf.Pow(playerData.stoppingDst, 2))
             {
                 isStop();
             }
             else
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, CharacterRot, playerData.rotSpeed);
+                myCachedTransform.rotation = Quaternion.Lerp(myCachedTransform.rotation, CharacterRot, playerData.rotSpeed);
             }
             #endregion
         }
@@ -672,7 +717,7 @@ public class Player : Photon.MonoBehaviour
     public void beHit(Vector3 _dir)
     {
         CharacterRot = Quaternion.LookRotation(-_dir.normalized);
-        transform.rotation = CharacterRot;
+        myCachedTransform.rotation = CharacterRot;
         if (photonView.isMine)
         {
             AniControll.beOtherHit();
@@ -703,7 +748,7 @@ public class Player : Photon.MonoBehaviour
                 AniControll.anim.CrossFade(AniControll.aniHashValue[18], 0.02f, 0);
                 AniControll.anim.SetBool(AniControll.aniHashValue[9], true);
             }
-            StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+            MatchTimeManager.SetCountDownNoCancel(Recover_Stun, _time);
         }
     }
     //緩速
@@ -747,7 +792,7 @@ public class Player : Photon.MonoBehaviour
         if (deadManager.noCC)
             return;
 
-        flyUp = transform.DOMoveY(transform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
+        flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
         flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
         {
@@ -799,9 +844,9 @@ public class Player : Photon.MonoBehaviour
     private void Dodge_FCN(Vector3 _dir)
     {
         canDodge = false;
-        transform.forward = _dir.normalized;
+        myCachedTransform.forward = _dir.normalized;
         Net.RPC("GoDodge", PhotonTargets.All);
-        StartCoroutine(MatchTimeManager.SetCountDown(Dodge_End, playerData.Dodget_Delay));
+        MatchTimeManager.SetCountDownNoCancel(Dodge_End, playerData.Dodget_Delay);
     }
     //閃避cd結束
     void Dodge_End()
@@ -924,6 +969,92 @@ public class Player : Photon.MonoBehaviour
     }
     #endregion
 
+    #region 打中效果
+    void BeHitChangeColor()
+    {
+        if (maxValue == 0)
+        {
+            maxValue = 10;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+            myRender.material.EnableKeyword("_EMISSION");
+            StartCoroutine(OriginalColor());
+        }
+        else
+        {
+            maxValue = 10;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+        }
+    }
+
+    IEnumerator OriginalColor()
+    {
+        while (maxValue > 0)
+        {
+            maxValue -= Time.deltaTime * 70;
+            myRender.material.SetColor("_EmissionColor", new Color(255, 0, 0, maxValue));
+            if (maxValue <= 0)
+            {
+                maxValue = 0;
+                myRender.material.DisableKeyword("_EMISSION");
+                yield break;
+            }
+            yield return null;
+        }
+    }
+    #endregion
+
+    #region 受到傷害
+    [PunRPC]
+    public void takeDamage(float _damage, Vector3 _dir, bool ifHit)
+    {
+        if (deadManager.noDamage)
+        {
+            Debug.Log("產生無敵時被攻擊特效");
+            return;
+        }
+
+        if (deadManager.checkDead)
+            return;
+
+        float tureDamage = CalculatorDamage(_damage);
+
+        if (playerData.Hp_original > 0)
+        {
+            playerData.Hp_original -= tureDamage;
+            BeHitChangeColor();
+            ani.SetBool(AniControll.aniHashValue[8], true);
+            openPopupObject(tureDamage);
+            if (playerData.Hp_original <= 0)
+            {
+                deadManager.ifDead(true);
+                ani.SetBool(AniControll.aniHashValue[15], true);
+                Death();
+            }
+            if (ifHit && !deadManager.checkDead && !deadManager.notFeedBack && !NowCC)
+            {
+                CancelNowSkill();
+                ani.SetTrigger(AniControll.aniHashValue[14]);
+                beHit(_dir);
+            }
+        }
+    }
+    #endregion
+
+    void openPopupObject(float _damage)
+    {
+        FloatTextCon.CreateFloatingText(_damage, myCachedTransform);
+        UI_HpBar.fillAmount = playerData.Hp_original / playerData.Hp_Max;
+        if (photonView.isMine)
+            leftTopHpBar.fillAmount = playerData.Hp_original / playerData.Hp_Max;
+    }
+
+    #region 計算傷害
+    private float CalculatorDamage(float _damage)
+    {
+        return _damage;
+    }
+    #endregion
+
     #region 死亡
     public void Death()
     {
@@ -942,10 +1073,7 @@ public class Player : Photon.MonoBehaviour
 
     void Return_ObjPool()
     {
-        if (photonView.isMine)
-        {
-            Net.RPC("SetActiveF", PhotonTargets.All);
-        }
+        Net.RPC("SetActiveF", PhotonTargets.All);
     }
     #endregion
 }

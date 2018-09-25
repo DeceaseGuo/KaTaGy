@@ -105,7 +105,7 @@ public class Queen_Skill : SkillBase
     }
     public override void In_Skill_W()
     {
-        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.MousePosition, 22.4f);
+        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.GetNowMousePoint(), 22.4f);
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(skillW_needAP, true))
@@ -177,7 +177,7 @@ public class Queen_Skill : SkillBase
     }
     public override void In_Skill_R()
     {
-        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.MousePosition, 48.75f);
+        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.GetNowMousePoint(), 48.75f);
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(skillR_needAP, true))
@@ -466,7 +466,7 @@ public class Queen_Skill : SkillBase
     public override void ResetQ_GoCD()
     {
         if (photonView.isMine)
-            skillCD_CT[0] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
+            skillCancelIndex[0] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar);
         else
             OpenDetect(false);
 
@@ -478,14 +478,14 @@ public class Queen_Skill : SkillBase
     {
         allSkillRange.enabled = false;
 
-        if (photonView.isMine)
-            skillCD_CT[1] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
+          if (photonView.isMine)
+            skillCancelIndex [1]= playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar);
     }
     //E
     public override void ResetE_GoCD()
     {
         if (photonView.isMine)
-            skillCD_CT[2] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
+            skillCancelIndex[2] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar);
         else
             End_E_skill();
     }
@@ -495,7 +495,7 @@ public class Queen_Skill : SkillBase
         allSkillRange.enabled = false;
 
         if (photonView.isMine)
-            skillCD_CT[3] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
+            skillCancelIndex[3] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar);
     }
     #endregion
 
@@ -507,8 +507,11 @@ public class Queen_Skill : SkillBase
             OpenDetect(false);
         else
         {
-            if (skillCD_CT[0] != null)
-                StopCoroutine(skillCD_CT[0]);
+            if (skillCancelIndex[0] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[0]);
+                skillCancelIndex[0] = 0;
+            }
             SkillIconManager.ClearSkillCD(0);
         }
 
@@ -521,8 +524,11 @@ public class Queen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[1] != null)
-                StopCoroutine(skillCD_CT[1]);
+            if (skillCancelIndex[1] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[1]);
+                skillCancelIndex[1] = 0;
+            }
             SkillIconManager.ClearSkillCD(1);
         }
 
@@ -536,8 +542,11 @@ public class Queen_Skill : SkillBase
             End_E_skill();
         else
         {
-            if (skillCD_CT[2] != null)
-                StopCoroutine(skillCD_CT[2]);
+            if (skillCancelIndex[2] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[2]);
+                skillCancelIndex[2] = 0;
+            }
             SkillIconManager.ClearSkillCD(2);
         }
 
@@ -548,8 +557,11 @@ public class Queen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[3] != null)
-                StopCoroutine(skillCD_CT[3]);
+            if (skillCancelIndex[3] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[3]);
+                skillCancelIndex[3] = 0;
+            }
             SkillIconManager.ClearSkillCD(3);
         }
 
@@ -630,7 +642,7 @@ public class Queen_Skill : SkillBase
                 default:
                     break;
             }
-        }
+        }        
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;

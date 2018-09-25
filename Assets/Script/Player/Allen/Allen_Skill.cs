@@ -291,6 +291,8 @@ public class Allen_Skill : SkillBase
     #region W轉 擊飛
     public void W_Skill()
     {
+
+        skillAudio = playerScript.AudioScript.GetOneAudioPlay(4, whirlwindPos.position);
         //clone體執行
         if (photonView.isMine)
             return;
@@ -338,6 +340,7 @@ public class Allen_Skill : SkillBase
     #endregion
 
     #region E減傷 盾
+    public byte shieldIndex;
     public void E_Skill()
     {
         if (photonView.isMine)
@@ -346,7 +349,7 @@ public class Allen_Skill : SkillBase
             shieldNum = 3;
             canShield = true;
             SwitchShieldIcon(true);
-            shieldCoroutine = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f, null, shieldIcon.cdBar));
+            shieldIndex= playerScript.MatchTimeManager.SetCountDown(CancelShield, 10f, null, shieldIcon.cdBar);
         }
         //特效
     }
@@ -362,10 +365,10 @@ public class Allen_Skill : SkillBase
             playerScript.Net.RPC("NowShield", PhotonTargets.All);
             if (shieldNum == 0)
             {
-                if (shieldCoroutine != null)
+                if (shieldIndex != 0)
                 {
-                    StopCoroutine(shieldCoroutine);
-                    shieldCoroutine = null;
+                    playerScript.MatchTimeManager.ClearThisTask(shieldIndex);
+                    shieldIndex = 0;
                     SwitchShieldIcon(false);
                 }
             }
@@ -384,11 +387,6 @@ public class Allen_Skill : SkillBase
     public void CancelShield()
     {
         Debug.Log("技能E  " + "結束");
-        if (shieldCoroutine != null)
-        {
-            StopCoroutine(shieldCoroutine);
-            shieldCoroutine = null;
-        }
         SwitchShieldIcon(false);
         shieldNum = 0;        
         playerScript.deadManager.NoDamage(false);
@@ -396,7 +394,7 @@ public class Allen_Skill : SkillBase
         if (photonView.isMine)
         {
             shieldCanOpen = false;
-            skillCD_CT[2] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar));
+            skillCancelIndex[2] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar);
         }
     }
     #region 盾牌功能
@@ -436,7 +434,7 @@ public class Allen_Skill : SkillBase
     public void NowShield()
     {
         playerScript.deadManager.NoDamage(true);
-        StartCoroutine(playerScript.MatchTimeManager.SetCountDown(EndShield, 0.7f));
+        playerScript.MatchTimeManager.SetCountDownNoCancel(EndShield, 0.7f);
     }
     #endregion
 
@@ -449,7 +447,7 @@ public class Allen_Skill : SkillBase
         ProjectorManager.Setsize(allSkillRange, 17.5f, 1, true);
         //clone體執行
         if (!photonView.isMine)
-            StartCoroutine(playerScript.MatchTimeManager.SetCountDown(R_Skill, .9f));
+            playerScript.MatchTimeManager.SetCountDownNoCancel(R_Skill, .9f);
     }
 
     public void R_Skill()
@@ -495,8 +493,7 @@ public class Allen_Skill : SkillBase
                     }
                 }
             }
-        }
-        playerScript.deadManager.NoDamage(false);
+        }        
     }
     #endregion
 
@@ -507,7 +504,7 @@ public class Allen_Skill : SkillBase
         playerScript.GoBack_AtkState();
 
         if (photonView.isMine)
-            skillCD_CT[0] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar));
+            skillCancelIndex[0] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_Q, playerScript.playerData.skillCD_Q, SkillIconManager.skillContainer[0].nowTime, SkillIconManager.skillContainer[0].cdBar);
 
         if (grabSkill != null)
             grabSkill.Kill();
@@ -523,7 +520,7 @@ public class Allen_Skill : SkillBase
     public override void ResetW_GoCD()
     {
         if (photonView.isMine)
-            skillCD_CT[1] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar));
+            skillCancelIndex[1]= playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_W, playerScript.playerData.skillCD_W, SkillIconManager.skillContainer[1].nowTime, SkillIconManager.skillContainer[1].cdBar);
     }
     //R
     public override void ResetR_GoCD()
@@ -532,7 +529,7 @@ public class Allen_Skill : SkillBase
         allSkillRange.enabled = false;
 
         if (photonView.isMine)
-            skillCD_CT[3] = StartCoroutine(playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar));
+            skillCancelIndex[3]= playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_R, playerScript.playerData.skillCD_R, SkillIconManager.skillContainer[3].nowTime, SkillIconManager.skillContainer[3].cdBar);
     }
     #endregion
 
@@ -542,8 +539,11 @@ public class Allen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[0] != null)
-                StopCoroutine(skillCD_CT[0]);
+            if (skillCancelIndex[0] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[0]);
+                skillCancelIndex[0] = 0;
+            }
             SkillIconManager.ClearSkillCD(0);
         }
         if (grabSkill != null)
@@ -563,8 +563,11 @@ public class Allen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[1] != null)
-                StopCoroutine(skillCD_CT[1]);
+            if (skillCancelIndex[1] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[1]);
+                skillCancelIndex[1] = 0;
+            }
             SkillIconManager.ClearSkillCD(1);
         }
 
@@ -575,8 +578,11 @@ public class Allen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[2] != null)
-                StopCoroutine(skillCD_CT[2]);
+            if (skillCancelIndex[2] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[2]);
+                skillCancelIndex[2] = 0;
+            }
             SkillIconManager.ClearSkillCD(2);
         }
 
@@ -591,8 +597,11 @@ public class Allen_Skill : SkillBase
     {
         if (photonView.isMine)
         {
-            if (skillCD_CT[3] != null)
-                StopCoroutine(skillCD_CT[3]);
+            if (skillCancelIndex[3] != 0)
+            {
+                playerScript.MatchTimeManager.ClearThisTask(skillCancelIndex[3]);
+                skillCancelIndex[3] = 0;
+            }
             SkillIconManager.ClearSkillCD(3);
         }
 
@@ -663,6 +672,8 @@ public class Allen_Skill : SkillBase
             }
         }
 
+        playerScript.AudioScript.ReturnAudioPool(skillAudio);
+        Debug.Log("返回");
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;

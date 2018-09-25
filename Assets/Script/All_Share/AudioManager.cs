@@ -72,29 +72,23 @@ public class AudioManager : MonoBehaviour
         return tmpAudioSource;
     }
 
-    public void ReturnAudioPool(AudioSource _container)
+    public void PlayAppointAudio(AudioSource _audioSource,byte _whichClip)
     {
+        audioContainer tmpAudioClip;
+        tmpAudioClip = audioClipPool[_whichClip];
 
-        audioSourcesPool.Enqueue(_container);
-        //Debug.Log(audioSourcesPool.Count);
+        _audioSource.priority = tmpAudioClip._priorty;
+        _audioSource.pitch = tmpAudioClip._pitch;
+        _audioSource.volume = tmpAudioClip._volume;
+        _audioSource.minDistance = tmpAudioClip._min3D;
+        _audioSource.maxDistance = tmpAudioClip._max3D;
+        _audioSource.PlayOneShot(tmpAudioClip.audioClip);
     }
 
-
-
-    /*[SerializeField] Transform TestPos;
-    public AudioSource testAudioS;
-    private void Update()
+    public void ReturnAudioPool(AudioSource _container)
     {
-        if (Input.GetKeyDown("q"))
-        {
-            testAudioS = GetOneAudioPlay(0, TestPos.position);
-            Debug.Log(audioSourcesPool.Count);
-        }
-
-        if (Input.GetKeyDown("w"))
-        {
-            ReturnAudioPool(testAudioS);
-            Debug.Log(audioSourcesPool.Count);
-        }
-    }*/
+        if (_container != null)
+            audioSourcesPool.Enqueue(_container);
+        //Debug.Log(audioSourcesPool.Count);
+    }
 }

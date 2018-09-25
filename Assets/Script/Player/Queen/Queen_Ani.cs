@@ -2,6 +2,8 @@
 
 public class Queen_Ani : PlayerAni
 {
+    public AudioSource comboAudio;
+
     #region 設定攻擊Collider
     protected override void SetCheckBox()
     {
@@ -47,11 +49,13 @@ public class Queen_Ani : PlayerAni
         {
             //預測點
             case (0):
-                if (!photonView.isMine)
-                    return;
-                canClick = true;
-                anim.SetBool(aniHashValue[6], false);
-                player.lockDodge = false;
+                NowComboAudio();
+                if (photonView.isMine)
+                {
+                    canClick = true;
+                    anim.SetBool(aniHashValue[6], false);
+                    player.lockDodge = false;
+                }
                 break;
             //結束點
             case (2):
@@ -61,38 +65,37 @@ public class Queen_Ani : PlayerAni
                     SwitchAtkRange(8);
                     player.lockDodge = false;
                 }
-                else
+                else if (!anim.GetBool(aniHashValue[6]))
                 {
-                    if (!anim.GetBool(aniHashValue[6]))
-                    {
-                        player.lockDodge = false;
-                        anim.SetTrigger(aniHashValue[5]);
-                        GoBackIdle_canMove();
-                        SwitchAtkRange(8);
-                    }
+                    SwitchAtkRange(8);
+                    player.lockDodge = false;                    
+                    GoBackIdle_canMove();
+                    anim.CrossFade(aniHashValue[24], .25f);
                 }
                 break;
             //前搖點
             case (3):
-                if (!photonView.isMine)
-                    return;
-                //鎖閃避
-                player.lockDodge = true;
-                redressOpen = true;
-                brfore_shaking = true;
+                if (photonView.isMine)
+                {
+                    //鎖閃避
+                    player.lockDodge = true;
+                    redressOpen = true;
+                    brfore_shaking = true;
+                }
                 break;
             //後搖點
             case (4):
-                if (!photonView.isMine)
-                    return;
-                //解閃避
-                player.lockDodge = false;
-                redressOpen = false;
-                after_shaking = true;
-                if (!canClick && nextComboBool)
+                if (photonView.isMine)
                 {
-                    goNextCombo();
-                    SwitchAtkRange(8);
+                    //解閃避
+                    player.lockDodge = false;
+                    redressOpen = false;
+                    after_shaking = true;
+                    if (!canClick && nextComboBool)
+                    {
+                        goNextCombo();
+                        SwitchAtkRange(8);
+                    }
                 }
                 break;
             default:
@@ -153,6 +156,9 @@ public class Queen_Ani : PlayerAni
                         Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                         break;
                     case (GameManager.NowTarget.Player):
+                        if (checkTag.noDamage)
+                            return;
+
                         if (startDetect_1)
                         {
                             Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);                           
@@ -184,30 +190,73 @@ public class Queen_Ani : PlayerAni
             case (1):
                 startDetect_2 = true;
                 break;
-            case (2):
-                break;
-            case (3):
-
-                break;
             //刀光1
-            case (4):
-               // swordLight[0].SetActive(true);
+            case (2):
+                /*if (comboIndex == 1 || comboIndex == 2)
+                {
+                    swordLight[0].transform.localPosition = PS1_Pos;
+                    swordLight[0].transform.localEulerAngles = PS1_Rot;
+                    swordLight[0].Play();
+                }*/
                 break;
             //刀光2
-            case (5):
-             //   swordLight[1].SetActive(true);
+            case (3):
+              /*  if (comboIndex == 2 || comboIndex == 3)
+                {
+                    swordLight[0].transform.localPosition = PS2_Pos;
+                    swordLight[0].transform.localEulerAngles = PS2_Rot;
+                    swordLight[0].Play();
+                }*/
                 break;
             //刀光3
-            case (6):
-               // swordLight[2].SetActive(true);
+            case (4):
+                /*if (comboIndex == 3 || comboIndex == 4)
+                {
+                    swordLight[2].Play();
+                    swordLight[3].Play();
+                }*/
                 break;
-
-            default:
+            //刀光4
+            case (5):
+                /*if (comboIndex == 4)
+                {
+                    swordLight[0].transform.localPosition = PS3_Pos;
+                    swordLight[0].transform.localEulerAngles = PS3_Rot;
+                    swordLight[1].transform.forward = transform.forward;
+                    swordLight[1].transform.localPosition = PS4_Pos.transform.position;
+                    swordLight[0].Play();
+                    swordLight[1].Play();
+                }*/
+                break;            
+            default://8
                 startDetect_1 = false;
                 startDetect_2 = false;
+                /*for (int i = 0; i < 4; i++)
+                {
+                    swordLight[i].Stop();
+                }*/
                 alreadyDamage.Clear();
                 break;
         }
     }
     #endregion
+
+    void NowComboAudio()
+    {
+        //刀光1,2
+        if (comboIndex == 1 || comboIndex == 2)
+        {
+            //  player.AudioScript.PlayAppointAudio(comboAudio, 0);
+        }
+        //刀光3
+        if (comboIndex == 3)
+        {
+            //  player.AudioScript.PlayAppointAudio(comboAudio, 0);
+        }
+        //刀光4
+        if (comboIndex == 4)
+        {
+            // player.AudioScript.PlayAppointAudio(comboAudio, 0);
+        }
+    }
 }

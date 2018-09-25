@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 8e1d8424bea70a94c9256d7c9c5554b5
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
     100000: Bone001
     100002: Bone002
@@ -358,6 +358,8 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 0.02159
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0

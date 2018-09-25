@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MatchTimer : PunBehaviour
 {
@@ -51,6 +52,44 @@ public class MatchTimer : PunBehaviour
     int timeMin;
     int timeSec;
 
+    ///     
+    [System.Serializable]
+    public class TmpFunction
+    {
+        public byte taskIndex;
+        public float needTime;
+        public float arriveTime;
+        public float nowTime;
+        public methods doFunction;        
+        public Text showText;
+        public Image showBar;
+        public bool needToShow;
+
+        public TmpFunction(float _time,float _arriveTime, methods _function,byte _num)
+        {
+            taskIndex = _num;
+            needTime = _time;
+            arriveTime = _arriveTime;
+            doFunction = _function;
+            needToShow = false;
+        }
+
+        public TmpFunction(float _time, float _arriveTime ,methods _function, Text _text, Image _img, byte _num)
+        {
+            taskIndex = _num;
+            needTime = _time;
+            arriveTime = _arriveTime;
+            doFunction = _function;
+            showText = _text;
+            showBar = _img;
+            needToShow = true;
+        }
+    }
+    private byte numberPlate;
+    private int allTaskAmount;
+    private int modifyIndex;
+    public List<TmpFunction> myTasks = new List<TmpFunction>();
+    ///
 
     public bool IsTimeToStop
     {
@@ -68,8 +107,38 @@ public class MatchTimer : PunBehaviour
             NextWaveTime();
     }
 
-    private void LateUpdate()
+    public void NeedToLateUpdate()
     {
+        timeToStart = PhotonNetwork.time - temp;
+
+        if (allTaskAmount != 0)
+        {
+            for (int i = 0; i < allTaskAmount; i++)
+            {
+                if (myTasks[i].arriveTime <= (float)timeToStart)
+                {
+                    if (myTasks[i].needToShow)
+                    {
+                        if (myTasks[i].showText != null)
+                            myTasks[i].showText.text = "";
+                        if (myTasks[i].showBar != null)
+                            myTasks[i].showBar.fillAmount = 0;
+                    }
+                    myTasks[i].doFunction();
+                    myTasks.Remove(myTasks[i]);
+                    allTaskAmount = myTasks.Count;
+                }
+                else if (myTasks[i].needToShow)
+                {
+                    myTasks[i].nowTime = myTasks[i].arriveTime - (float)timeToStart;
+                    if (myTasks[i].showText != null)
+                        myTasks[i].showText.text = myTasks[i].nowTime.ToString("0");
+                    if (myTasks[i].showBar != null)
+                        myTasks[i].showBar.fillAmount = myTasks[i].nowTime / myTasks[i].needTime;
+                }
+            }
+        }
+
         if (totalTimeShow)
             CorrectTimeText();
 
@@ -80,13 +149,13 @@ public class MatchTimer : PunBehaviour
     #region 計算總遊戲時間
     public void FirstOpen()
     {
-        timeMin = (int)SecondsUntilItsTime / 60;
+        timeMin = (int)timeToStart / 60;
         TotalTimeShow = true;
     }
 
     void CorrectTimeText()
     {
-        timeSec = (int)SecondsUntilItsTime - (timeMin * 60);
+        timeSec = (int)timeToStart - (timeMin * 60);
         if (timeSec == 60)
             timeMin++;
 
@@ -124,17 +193,7 @@ public class MatchTimer : PunBehaviour
     }
     #endregion
 
-    #region 取得時間
-    //取得總時間
-    public double SecondsUntilItsTime
-    {
-        get
-        {
-            timeToStart = PhotonNetwork.time - temp;
-            return timeToStart;
-        }
-    }
-    //取得生兵倒數時間
+    #region 生兵倒數時間
     public double SecondsToNextWave
     {
         get
@@ -161,49 +220,51 @@ public class MatchTimer : PunBehaviour
     #endregion
 
     #region 真實時間倒數
-    //需要每秒時間
-    public IEnumerator SetCountDown(methods _function, float a, Text _text, Image _img)
+    //[需要每秒時間]
+    public byte SetCountDown(methods _function, float a, Text _text, Image _img)
     {
-        float firstTime = (float)SecondsUntilItsTime + a;
-        float nowTime = 0;
-        while (true)
-        {
-            nowTime = firstTime - (float)SecondsUntilItsTime;
-            if (nowTime <= 0)
-            {
-                if (_text != null)
-                    _text.text = "";
-                if (_function != null)
-                    _function();
-                if (_img != null)
-                    _img.fillAmount = 0;
-                yield break;
-            }
-            else
-            {
-                if (_text != null)
-                    _text.text = nowTime.ToString("0");
-                if (_img != null)
-                    _img.fillAmount = nowTime / a;
-            }
+        //號碼牌從1開始
+        if (numberPlate < 230)
+            numberPlate++;
+        else
+            numberPlate = 0;
 
-            yield return null;
-        }
+        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, _text, _img, numberPlate));
+        allTaskAmount = myTasks.Count;
+        return numberPlate;
     }
-    //不需要每秒時間
-    public IEnumerator SetCountDown(methods _function, float a)
+
+    //[不需要每秒時間] 可取消修改
+    public byte SetCountDown(methods _function, float a)
     {
-        float firstTime = (float)SecondsUntilItsTime + a;
-        while (true)
-        {
-            if (firstTime - (float)SecondsUntilItsTime <= 0)
-            {
-                if (_function != null)
-                    _function();
-                yield break;
-            }
-            yield return null;
-        }
+        if (numberPlate < 230)
+            numberPlate++;
+        else
+            numberPlate = 0;
+
+        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, numberPlate));
+        allTaskAmount = myTasks.Count;
+        return numberPlate;
+    }
+    //[不需要每秒時間]不可取消修改
+    public void SetCountDownNoCancel(methods _function, float a)
+    {
+        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, 255));
+        allTaskAmount = myTasks.Count;
+    }
+
+    //修改時間
+    public void ModifyTime(byte _index,float _time)
+    {
+        modifyIndex = myTasks.FindIndex(x => x.taskIndex == _index);
+        if (modifyIndex != -1)
+            myTasks[modifyIndex].arriveTime = _time + (float)timeToStart;
+    }
+    //取消這個任務
+    public void ClearThisTask(byte _index)
+    {
+        myTasks.Remove(myTasks.Find(x => x.taskIndex == _index));
+        allTaskAmount = myTasks.Count;
     }
     #endregion
 

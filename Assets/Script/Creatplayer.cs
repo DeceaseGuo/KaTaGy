@@ -112,7 +112,6 @@ public class Creatplayer : Photon.MonoBehaviour
         GameObject myNowPlayer = PhotonNetwork.Instantiate("Prefabs/Player/" + player, _pos.localPosition, Quaternion.identity, 0);
         Instantiate(Resources.Load("Prefabs/ObjectPool/" + poolNumber), Vector3.zero, Quaternion.identity);
         myNowPlayer.transform.SetParent(MyPlayer);
-        //GameManager.instance.changeNowMask();
         Player_Script = myNowPlayer.GetComponent<Player>();
     }
 
@@ -122,7 +121,7 @@ public class Creatplayer : Photon.MonoBehaviour
         if (dieCD_Obj.alpha == 0)
             dieCD_Obj.alpha = 1;
 
-        StartCoroutine(MatchTimeManager.SetCountDown(ReBorn, _countDown, countDownText, null));
+        MatchTimeManager.SetCountDown(ReBorn, _countDown, countDownText, null);
     }
 
     void ReBorn()

@@ -113,7 +113,8 @@ public class MinMapSyn : MonoBehaviour, IPointerClickHandler
             #endregion
 
             #region 敵方
-            UpdatePos(SceneManager.enemy_Player.gameObject, enemyplayerIcon);//更新玩家icon
+            if (SceneManager.enemy_Player != null)
+                UpdatePos(SceneManager.enemy_Player.gameObject, enemyplayerIcon);//更新玩家icon
             //Tower
             for (int i = 0; i < enemyTowerIcons.Count; i++)
             {

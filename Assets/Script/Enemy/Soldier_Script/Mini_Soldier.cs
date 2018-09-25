@@ -1,12 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using MyCode.Timer;
 using DG.Tweening;
 
 public class Mini_Soldier : EnemyControl
 {
-    private IEnumerator atkCT;
     private Tweener flyUp;
 
     #region 取得動畫雜湊值
@@ -20,27 +17,25 @@ public class Mini_Soldier : EnemyControl
 
     protected override void AtkDetectSet()
     {
-        atkCT = Timer.NextFrame(() =>
-          {
-              if (haveHit)
-              {
-                  //checkBox (.65 .6 2.7)
-                  enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
-                  if (enemiesCon.Length != 0)
-                  {
-                      atkTarget = enemiesCon[0].gameObject.GetComponent<isDead>();
-                      if (!atkTarget.checkDead)
-                      {
-                          giveCurrentDamage();
-                          changeCanHit(0);
-                      }
-                  }
-              }
-          });
+        //checkBox (.65 .6 2.7)
+        enemiesCon = Physics.OverlapBox(sword_1.position, checkEnemyBox, Quaternion.identity, currentMask);
+        if (enemiesCon.Length != 0)
+        {
+            for (int i = 0; i < enemiesCon.Length; i++)
+            {
+                atkTarget = enemiesCon[i].gameObject.GetComponent<isDead>();
+                if (!atkTarget.checkDead)
+                {
+                    giveCurrentDamage();
+                    changeCanHit(0);
+                    break;
+                }
+            }
+        }
     }
 
     #region 小兵攻擊
-    protected override IEnumerator enemyAttack()
+    protected override void SoldierAttack()
     {
         if (nowState == states.Atk && !NowCC)
         {
@@ -48,16 +43,13 @@ public class Mini_Soldier : EnemyControl
 
             //轉向目標
             rotToTarget();
-
             resetChaseTime();
             canAtking = false;
-            Net.RPC("getAtkAnimator", PhotonTargets.All);
-            delayTimeToAtk();
-            yield return new WaitForSeconds(waitNextActionTime);
-            nowState = states.Wait_Move;
 
-            OverAtkDis = false;
-            sotpWait_time = StartCoroutine(stopWait());
+            Net.RPC("getAtkAnimator", PhotonTargets.All);
+
+            delayTimeToAtk();
+            Invoke("GoWaitMove", waitNextActionTime);
         }
     }
 
@@ -66,30 +58,22 @@ public class Mini_Soldier : EnemyControl
     {
         if (!deadManager.checkDead && !NowCC)
             ani.CrossFade("attack", 0.01f, 0);
-
-        if (!photonView.isMine)
-            StartCoroutine(atkCT);
     }
     #endregion
 
     #region 攻擊動畫判定開關
     public override void changeCanHit(int c)
     {
-        if (!photonView.isMine)
+        if (photonView.isMine)
+            return;
+
+        if (c == 0)
         {
-            if (c == 0)
-            {
-                if (haveHit)
-                {
-                    haveHit = false;
-                    StopCoroutine(atkCT);
-                }
-            }
-            else
-            {
-                haveHit = true;
-            }
+            if (haveHit)
+                haveHit = false;
         }
+        else
+            haveHit = true;
     }
     #endregion
 
@@ -105,7 +89,7 @@ public class Mini_Soldier : EnemyControl
                 atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, Net.viewID, enemyData.atk_Damage);
                 break;
             case GameManager.NowTarget.Tower:
-                atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, 8.5f);
+                atkTarget.GetComponent<PhotonView>().RPC("takeDamage", PhotonTargets.All, enemyData.atk_Damage);
                 break;
             case GameManager.NowTarget.Core:
                 break;
@@ -143,7 +127,7 @@ public class Mini_Soldier : EnemyControl
                     points.RemoveThisPoint(correctPos);
             }
 
-            StartCoroutine(MatchTimeManager.SetCountDown(Recover_Stun, _time));
+            MatchTimeManager.SetCountDownNoCancel(Recover_Stun, _time);
         }
     }
     //緩速
@@ -174,9 +158,9 @@ public class Mini_Soldier : EnemyControl
             {
                 if (correctPos != null)
                     points.RemoveThisPoint(correctPos);
-                
-                transform.DOMove(transform.localPosition + (_dir.normalized * -15f), .65f);
-                transform.rotation = Quaternion.LookRotation(_dir.normalized);
+
+                myCachedTransform.DOMove(myCachedTransform.localPosition + (_dir.normalized * -15f), .65f);
+                myCachedTransform.rotation = Quaternion.LookRotation(_dir.normalized);
             }
         }
     }
@@ -187,7 +171,7 @@ public class Mini_Soldier : EnemyControl
     {
         if (!deadManager.checkDead)
         {
-            flyUp = transform.DOMoveY(transform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
+            flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
             flyUp.onComplete = delegate () { EndFlyUp(); };
             if (!NowCC)
             {

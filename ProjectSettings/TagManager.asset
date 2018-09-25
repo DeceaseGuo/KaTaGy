@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - notBuild
-  - CanClickMove
   - Soldier
   layers:
   - Default
@@ -23,7 +22,7 @@ TagManager:
   - Simulator
   - 
   - NoGrid
-  - currentDir
+  - currenntDir
   - TouchSoldier
   - 
   - 

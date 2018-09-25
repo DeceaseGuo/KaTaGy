@@ -15,7 +15,7 @@ public class SkillBase : Photon.MonoBehaviour
     public float skillE_needAP = 1;
     public float skillR_needAP = 1;
 
-    protected Coroutine[] skillCD_CT = new Coroutine[4]; 
+    protected byte[] skillCancelIndex = new byte[4]; 
 
     public enum SkillAction
     {
@@ -35,6 +35,8 @@ public class SkillBase : Photon.MonoBehaviour
     protected Vector3 dirToTarget;
     protected int targetAmount;
     #endregion
+
+    protected AudioSource skillAudio;
 
     private void Awake()
     {

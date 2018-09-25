@@ -2,7 +2,7 @@
 
 public class Allen_Ani : PlayerAni
 {
-    private AudioSource comboAudio;
+    public AudioSource comboAudio;
 
     #region 取得動畫雜湊值
     protected override void SetAniHash()
@@ -60,20 +60,20 @@ public class Allen_Ani : PlayerAni
         {
             //預測點
             case (0):
-                if (!photonView.isMine)
-                    return;
-                canClick = true;
-                anim.SetBool(aniHashValue[6], false);
-                player.lockDodge = false;
                 NowComboAudio();
+                if (photonView.isMine)
+                {
+                    canClick = true;
+                    anim.SetBool(aniHashValue[6], false);
+                    player.lockDodge = false;
+                }
                 break;
             //結束點
             case (2):
                 if (nextComboBool)
                 {
-                    //anim.SetBool(aniHashValue[6], true);
-                    SwitchAtkRange(8);
                     goNextCombo();
+                    SwitchAtkRange(8);
                     player.lockDodge = false;
                 }
                 else if (!anim.GetBool(aniHashValue[6]))
@@ -86,7 +86,6 @@ public class Allen_Ani : PlayerAni
                 break;
             //前搖點
             case (3):
-                player.AudioScript.ReturnAudioPool(comboAudio);
                 if (photonView.isMine)
                 {
                     //鎖閃避
@@ -97,16 +96,17 @@ public class Allen_Ani : PlayerAni
                 break;
             //後搖點
             case (4):
-                if (!photonView.isMine)
-                    return;
-                //解閃避
-                player.lockDodge = false;
-                redressOpen = false;
-                after_shaking = true;
-                if (!canClick && nextComboBool)
+                if (photonView.isMine)
                 {
-                    goNextCombo();
-                    SwitchAtkRange(8);
+                    //解閃避
+                    player.lockDodge = false;
+                    redressOpen = false;
+                    after_shaking = true;
+                    if (!canClick && nextComboBool)
+                    {
+                        goNextCombo();
+                        SwitchAtkRange(8);
+                    }
                 }
                 break;
             default:
@@ -156,7 +156,7 @@ public class Allen_Ani : PlayerAni
                     case (GameManager.NowTarget.Soldier):
                         if (startDetect_1)
                         {
-                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 2.5f);
+                            Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 4f);
                         }
                         else
                             Net.RPC("takeDamage", PhotonTargets.All, player.Net.viewID, 6.0f);
@@ -165,6 +165,9 @@ public class Allen_Ani : PlayerAni
                         Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                         break;
                     case (GameManager.NowTarget.Player):
+                        if (checkTag.noDamage)
+                            return;
+
                         if (startDetect_1)
                         {
                             Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
@@ -186,7 +189,6 @@ public class Allen_Ani : PlayerAni
         }
     }
     #endregion
-
 
     //粒子特效位子跟旋轉
     //combo1
@@ -247,12 +249,12 @@ public class Allen_Ani : PlayerAni
                     swordLight[0].transform.localPosition = PS3_Pos;
                     swordLight[0].transform.localEulerAngles = PS3_Rot;
                     swordLight[1].transform.forward = transform.forward;
-                    swordLight[1].transform.localPosition = PS4_Pos.transform.position/* + transform.forward * testttt*/;
+                    swordLight[1].transform.localPosition = PS4_Pos.transform.position;
                     swordLight[0].Play();
                     swordLight[1].Play();
                 }
                 break;
-            default:
+            default://8
                 startDetect_1 = false;
                 startDetect_2 = false;
                 for (int i = 0; i < 4; i++)
@@ -267,24 +269,20 @@ public class Allen_Ani : PlayerAni
 
     void NowComboAudio()
     {
-        if (comboIndex == 1 )
+        //刀光1,2
+        if (comboIndex == 1 || comboIndex == 2 )
         {
-            comboAudio = player.AudioScript.GetOneAudioPlay(0, weapon_Detect.position);
-        }
-        //刀光2
-        if (comboIndex == 2 )
-        {
-            comboAudio = player.AudioScript.GetOneAudioPlay(0, weapon_Detect.position);
+            player.AudioScript.PlayAppointAudio(comboAudio, 0);
         }
         //刀光3
         if (comboIndex == 3 )
         {
-            comboAudio = player.AudioScript.GetOneAudioPlay(1, weapon_Detect.position);
+            player.AudioScript.PlayAppointAudio(comboAudio, 1);
         }
         //刀光4
         if (comboIndex == 4)
         {
-            comboAudio = player.AudioScript.GetOneAudioPlay(2, weapon_Detect.position);
+            player.AudioScript.PlayAppointAudio(comboAudio, 2);
         }
     }
 }

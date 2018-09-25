@@ -19,7 +19,7 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] Image Lock_Pos;
     [SerializeField] Sprite originalImg;
 
-    private GameObject tmpObj;
+    private EnemyControl tmpObj;
     
     private void Start()
     {
@@ -83,8 +83,8 @@ public class Sort_nextBornBtn : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (isChose)
         {
-            tmpObj = PoolManager.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward));
-            tmpObj.SendMessage("selectRoad", _pathBool);
+            tmpObj = PoolManager.getPoolObject(Data.SoldierData._soldierName, _pos.localPosition, Quaternion.LookRotation(_pos.forward)).GetComponent<EnemyControl>();
+            tmpObj.selectRoad(_pathBool);
 
             if (!Data.isLowSoldier)
             {

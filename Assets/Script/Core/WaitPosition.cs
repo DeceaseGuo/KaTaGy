@@ -12,7 +12,7 @@ public class WaitPosition : MonoBehaviour
     
     [SerializeField] Image myImage;
     [SerializeField] Image myCDBar;
-    private Coroutine cnacle;
+    private byte cnacle;
     private int cancelMoney = 0;
 
     //取消升級
@@ -20,8 +20,8 @@ public class WaitPosition : MonoBehaviour
     {
         if (selectSort != null)
         {
-            StopCoroutine(cnacle);
-            cnacle = null;
+            CoreManager.MatchTimeManager.ClearThisTask(cnacle);
+            cnacle = 0;
             selectSort.nowUpdate = false;
             //返回一部分錢
             ResetData();
@@ -33,12 +33,12 @@ public class WaitPosition : MonoBehaviour
         selectSort = _sort;
         cancelMoney = selectSort.needMoney;
         myImage.sprite = selectSort.abilityImg;
-        cnacle = StartCoroutine(CoreManager.MatchTimeManager.SetCountDown(UpdateSuccess, selectSort.time_CD, null, myCDBar));
+        cnacle = CoreManager.MatchTimeManager.SetCountDown(UpdateSuccess, selectSort.time_CD, null, myCDBar);
     }
     //升級成功
     void UpdateSuccess()
     {
-        cnacle = null;
+        cnacle = 0;
         selectSort.Overto_UnLock();
         UpdateScript.Update_ThisAbility(selectSort.whoUpdate, selectSort.abilityData, selectSort.myLevel, selectSort.unLockObj);
         ResetData();
