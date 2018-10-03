@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: daoguang01
   m_Shader: {fileID: 4800000, guid: 6e10c198c214bbe439fed0feddff209f, type: 3}
@@ -90,7 +90,7 @@ Material:
     - _node_5121: 0
     - _switch: 0
     m_Colors:
-    - _3_color: {r: 4.867144, g: 1.6818404, b: 0.6370607, a: 1}
+    - _3_color: {r: 10.432951, g: 3.6051035, b: 1.3655695, a: 1}
     - _Color: {r: 0.83137256, g: 0.49019608, b: 0.043137256, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _node_2056: {r: 0, g: 0.08677298, b: 0.745283, a: 1}

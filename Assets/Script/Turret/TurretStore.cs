@@ -6,6 +6,7 @@ public class TurretStore : MonoBehaviour
     private BuildManager buildManager;
     private PlayerObtain playerObtain;
     private HintManager hintManager;
+    private TurretData.TowerDataBase tmpTurret;
 
     private void Start()
     {
@@ -29,7 +30,7 @@ public class TurretStore : MonoBehaviour
             return;
         }
 
-        TurretData.TowerDataBase tmpTurret = Data.getTowerData(_name);
+        tmpTurret = Data.getTowerData(_name);
 
         if (tmpTurret.TurretName != GameManager.whichObject.None)
         {

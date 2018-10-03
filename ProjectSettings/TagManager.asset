@@ -6,6 +6,7 @@ TagManager:
   tags:
   - notBuild
   - Soldier
+  - CanClickMove
   layers:
   - Default
   - TransparentFX
@@ -18,12 +19,11 @@ TagManager:
   - obstacle
   - CanClickMove
   - grid
-  - NotHere
-  - Simulator
+  - 
+  - 
   - 
   - NoGrid
   - currenntDir
-  - TouchSoldier
   - 
   - 
   - 
@@ -32,6 +32,7 @@ TagManager:
   - 
   - 
   - 
+  - TouchTower
   - CanBuildGrid
   - Camera
   - ownSelf

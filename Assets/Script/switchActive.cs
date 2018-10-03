@@ -5,7 +5,6 @@ using UnityEngine;
 public class switchActive : Photon.PunBehaviour
 {
     Transform parentPool;
-    PhotonTransformView transformView;
 
     private void Awake()
     {
@@ -15,7 +14,6 @@ public class switchActive : Photon.PunBehaviour
             return;
         }
         parentPool = ObjectPooler.instance.transform;
-        transformView = GetComponent<PhotonTransformView>();
     }
 
     #region 開關gameObj
@@ -23,26 +21,17 @@ public class switchActive : Photon.PunBehaviour
     public void SetActiveT()
     {
         gameObject.SetActive(true);
-
-        if (transformView != null)
-            transformView.enabled = true;
     }
     [PunRPC]
     public void SetActiveT(Vector3 _pos)
     {
         transform.position = _pos;
         gameObject.SetActive(true);
-
-        if (transformView != null)
-            transformView.enabled = true;
     }
     [PunRPC]
     public void SetActiveF()
     {
         gameObject.SetActive(false);
-
-        if (transformView != null)
-            transformView.enabled = false;
 
         if (parentPool != null)
             gameObject.transform.SetParent(parentPool);

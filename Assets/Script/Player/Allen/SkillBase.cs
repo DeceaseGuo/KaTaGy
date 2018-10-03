@@ -36,7 +36,7 @@ public class SkillBase : Photon.MonoBehaviour
     protected int targetAmount;
     #endregion
 
-    protected AudioSource skillAudio;
+    public AudioSource skillAudio;
 
     private void Awake()
     {
@@ -103,9 +103,15 @@ public class SkillBase : Photon.MonoBehaviour
     { }
     #endregion
 
+    //音效
+    protected virtual void NowSkillAudio()
+    { }
+
+    //關閉技能提示
     public virtual void CancelDetectSkill(Player.SkillData _nowSkill)
     { }
 
+    //中斷或結束技能
     public virtual void InterruptSkill()
     { }
 }

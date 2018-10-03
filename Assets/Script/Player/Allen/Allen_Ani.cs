@@ -2,8 +2,6 @@
 
 public class Allen_Ani : PlayerAni
 {
-    public AudioSource comboAudio;
-
     #region 取得動畫雜湊值
     protected override void SetAniHash()
     {
@@ -267,6 +265,7 @@ public class Allen_Ani : PlayerAni
     }
     #endregion
 
+    #region 音效
     void NowComboAudio()
     {
         //刀光1,2
@@ -285,4 +284,5 @@ public class Allen_Ani : PlayerAni
             player.AudioScript.PlayAppointAudio(comboAudio, 2);
         }
     }
+    #endregion
 }

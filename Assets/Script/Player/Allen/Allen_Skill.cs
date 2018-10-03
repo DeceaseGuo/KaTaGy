@@ -7,7 +7,8 @@ public class Allen_Skill : SkillBase
 {
     //技能提示
     private Projector allSkillRange;
-    
+    private Transform myCachedTransform;
+
     [Tooltip("抓取範圍")]
     [SerializeField] Projector projector_Q;
     [Tooltip("大絕範圍")]
@@ -53,6 +54,8 @@ public class Allen_Skill : SkillBase
 
     private void Start()
     {
+        myCachedTransform = this.transform;
+
         if (photonView.isMine)
         {
             allSkillRange = GameObject.Find("AllSkillRange_G").GetComponent<Projector>();
@@ -108,7 +111,7 @@ public class Allen_Skill : SkillBase
                 //關閉顯示範圍
 
                 playerScript.stopAnything_Switch(true);
-                transform.forward = playerScript.arrow.forward;
+                myCachedTransform.forward = playerScript.arrow.forward;
                 playerScript.Net.RPC("Skill_Q_Fun", PhotonTargets.All);
             }
         }
@@ -127,7 +130,7 @@ public class Allen_Skill : SkillBase
             playerScript.SkillState = Player.SkillData.None;
             playerScript.canSkill_W = false;
             playerScript.stopAnything_Switch(true);
-            transform.forward = playerScript.arrow.forward;
+            myCachedTransform.forward = playerScript.arrow.forward;
             playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
         }
     }
@@ -164,7 +167,7 @@ public class Allen_Skill : SkillBase
                 playerScript.Net.RPC("GetSkillPos", PhotonTargets.All, projector_R[0].transform.position);
                 //關閉顯示範圍
                 ProjectorManager.SwitchPorjector(projector_R, false);
-                transform.forward = playerScript.arrow.forward;
+                myCachedTransform.forward = playerScript.arrow.forward;
 
                 playerScript.stopAnything_Switch(true);
                 playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
@@ -292,7 +295,7 @@ public class Allen_Skill : SkillBase
     public void W_Skill()
     {
 
-        skillAudio = playerScript.AudioScript.GetOneAudioPlay(4, whirlwindPos.position);
+        NowSkillAudio();
         //clone體執行
         if (photonView.isMine)
             return;
@@ -307,7 +310,7 @@ public class Allen_Skill : SkillBase
                 if (who != null)
                 {
                     Net = tmpEnemy[i].GetComponent<PhotonView>();
-                    dirToTarget = transform.position - tmpEnemy[i].transform.position;
+                    dirToTarget = myCachedTransform.position - tmpEnemy[i].transform.position;
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
@@ -452,11 +455,11 @@ public class Allen_Skill : SkillBase
 
     public void R_Skill()
     {
-        tmpEnemy = Physics.OverlapSphere(transform.localPosition, skillR_radius, aniScript.canAtkMask);
+        tmpEnemy = Physics.OverlapSphere(myCachedTransform.localPosition, skillR_radius, aniScript.canAtkMask);
         if (tmpEnemy.Length != 0)
         {
             targetAmount = tmpEnemy.Length;
-            Vector3 hitPoint = transform.position + new Vector3(0, 0, 4f);
+            Vector3 hitPoint = myCachedTransform.position + new Vector3(0, 0, 4f);
             for (int i = 0; i < targetAmount; i++)
             {
                 who = tmpEnemy[i].GetComponent<isDead>();
@@ -482,7 +485,6 @@ public class Allen_Skill : SkillBase
                             Net.RPC("takeDamage", PhotonTargets.All, 9f);
                             break;
                         case GameManager.NowTarget.Core:
-                            transform.forward = dirToTarget.normalized;
                             break;
                         case GameManager.NowTarget.NoChange:
                             // playerScript.Net.RPC("HitNull", PhotonTargets.All);
@@ -611,6 +613,26 @@ public class Allen_Skill : SkillBase
     }
     #endregion
 
+    #region 音效
+    protected override void NowSkillAudio()
+    {
+        switch (nowSkill)
+        {
+            case SkillAction.is_Q:
+                break;
+            case SkillAction.is_W:
+                playerScript.AudioScript.PlayAppointAudio(skillAudio, 4);
+                break;
+            case SkillAction.is_E:
+                break;
+            case SkillAction.is_R:
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
+
     #region 關閉技能提示
     public override void CancelDetectSkill(Player.SkillData _nowSkill)
     {
@@ -672,8 +694,6 @@ public class Allen_Skill : SkillBase
             }
         }
 
-        playerScript.AudioScript.ReturnAudioPool(skillAudio);
-        Debug.Log("返回");
         playerScript.deadManager.notFeedBack = false;
         nowSkill = SkillAction.None;
         brfore_shaking = true;

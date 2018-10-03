@@ -14,7 +14,7 @@ MonoBehaviour:
   AppID: 2ea5b911-cc0f-4ed0-a00d-a4f2e5192b6e
   VoiceAppID: 
   ChatAppID: 
-  HostType: 2
+  HostType: 1
   PreferredRegion: 3
   EnabledRegions: -1
   Protocol: 0
@@ -57,6 +57,7 @@ MonoBehaviour:
   - Skill_Q_Fun
   - Skill_R_Fun
   - Skill_W_Fun
+  - StopAtkAnimator
   - takeDamage
   - TP_Combo
   - TP_Data
@@ -66,5 +67,4 @@ MonoBehaviour:
   - UpdataTower
   - waitBuild
   - weaponOC
-  - GetSingleAtkAnimator
   DisableAutoOpenWizard: 1

@@ -21,11 +21,7 @@ public class AudioManager : MonoBehaviour
         public float _volume;
         [Range(-3, 3)]
         public float _pitch;
-        public float _min3D;        
-        public float _max3D;
     }
-
-
 
     private void Awake()
     {
@@ -64,8 +60,6 @@ public class AudioManager : MonoBehaviour
         tmpAudioSource.priority = tmpAudioClip._priorty;
         tmpAudioSource.pitch = tmpAudioClip._pitch;
         tmpAudioSource.volume = tmpAudioClip._volume;
-        tmpAudioSource.minDistance = tmpAudioClip._min3D;
-        tmpAudioSource.maxDistance = tmpAudioClip._max3D;
 
         tmpAudioSource.PlayOneShot(tmpAudioClip.audioClip);
         //Debug.Log(audioSourcesPool.Count);
@@ -80,8 +74,6 @@ public class AudioManager : MonoBehaviour
         _audioSource.priority = tmpAudioClip._priorty;
         _audioSource.pitch = tmpAudioClip._pitch;
         _audioSource.volume = tmpAudioClip._volume;
-        _audioSource.minDistance = tmpAudioClip._min3D;
-        _audioSource.maxDistance = tmpAudioClip._max3D;
         _audioSource.PlayOneShot(tmpAudioClip.audioClip);
     }
 

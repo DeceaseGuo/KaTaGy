@@ -111,7 +111,7 @@ public class ButtonManager_Solider : MonoBehaviour
                 break;
             case NowMenu.soldier_4:
                 if (Input.GetKeyDown(KeyCode.Alpha1))
-                    clickSolider(GameManager.whichObject.None);
+                    clickSolider(GameManager.whichObject.Soldier5_Fire);
                 if (Input.GetKeyDown(KeyCode.Alpha2))
                     clickSolider(GameManager.whichObject.None);
                 if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -142,6 +142,7 @@ public class ButtonManager_Solider : MonoBehaviour
         }
     }
     #endregion
+
     #region 按鈕列
     public void Key_Atk_S1()
     {

@@ -18,9 +18,8 @@ public class Bullet_WindTower : BulletManager
     private List<GameObject> tmpNoDamage = new List<GameObject>();
     Tweener myTweener;
 
-    protected override void OnEnable()
+    protected void OnEnable()
     {
-        base.OnEnable();
         if (photonView.isMine)
             StartCoroutine(DisappearThis());
 
@@ -59,7 +58,7 @@ public class Bullet_WindTower : BulletManager
     #region 子彈移動
     protected override void BulletMove()
     {       
-        targetPos = dir.normalized * Data.bullet_Speed * flyTime;
+        targetPos = dir.normalized * bullet_Speed * flyTime;
         targetPos.y = targetDead.transform.localPosition.y;
         myTweener = transform.DOBlendableMoveBy(targetPos, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);

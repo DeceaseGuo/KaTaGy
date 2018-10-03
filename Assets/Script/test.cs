@@ -11,8 +11,7 @@ namespace Mytest
 {
     public class test : MonoBehaviour
     {
-
-
+        public LinkedList<Transform> linkTest=new LinkedList<Transform>();
         public NavMeshAgent[] nav;
         public Transform[] p;
 
@@ -30,21 +29,24 @@ namespace Mytest
         }
         public List<testUse> UseTest = new List<testUse>();
         testUse lll;
+        public Transform linkaaa;
+        public Transform linkbbb;
         private void Update()
         {
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                ClearThis(modifyIndex);
+                linkTest.Remove(linkaaa);
                 // nav[0].SetDestination(p[0].position);
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                ModifyThis(modifyIndex);
+                linkTest.AddLast(linkbbb);
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                nav[1].SetDestination(p[1].position);
+               // print(linkTest.AddLast)
+                //nav[1].SetDestination(p[1].position);
             }
         }
 
@@ -76,6 +78,17 @@ namespace Mytest
                 throw;
             }
             
+        }
+
+
+        void iii()
+        {
+            Invoke("uuu", 2.5f);
+        }
+
+        void uuu()
+        {
+            Debug.Log("123");
         }
     }
 }

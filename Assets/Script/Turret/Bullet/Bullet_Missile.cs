@@ -8,9 +8,8 @@ public class Bullet_Missile : BulletManager
     [SerializeField] float pushDis;
     Collider[] colliders;
     
-    protected override void OnEnable()
+    protected void OnEnable()
     {
-        base.OnEnable();
         Isfllow = true;
     }
 

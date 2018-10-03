@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Grid_Snap : MonoBehaviour
 {
@@ -20,7 +18,6 @@ public class Grid_Snap : MonoBehaviour
 
     private void Awake()
     {
-
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.FloorToInt(Mathf.Abs(gridSize.x / nodeDiameter));
         gridSizeY = Mathf.FloorToInt(Mathf.Abs(gridSize.y / nodeDiameter));
@@ -39,15 +36,14 @@ public class Grid_Snap : MonoBehaviour
         Vector3 firstPos = transform.position - Vector3.right * gridSize.x / 2 - Vector3.right * 1f + Vector3.forward * gridSize.y / 2 + Vector3.forward * nodeRadius * 1.5f;
         for (int z = gridSizeY; z > 0; z--)
         {
+            Vector3 nodePos;
             for (int x = 0; x < gridSizeX; x++)
             {
-                Vector3 nodePos = firstPos + Vector3.right * (x * nodeDiameter + nodeRadius) - Vector3.forward * (z * nodeDiameter + nodeRadius);
-
-                bool walkable = !(Physics.CheckBox(nodePos, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, mask));
-                if (walkable)
+                nodePos = firstPos + Vector3.right * (x * nodeDiameter + nodeRadius) - Vector3.forward * (z * nodeDiameter + nodeRadius);
+                
+                if (!(Physics.CheckBox(nodePos, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, mask)))
                 {
-                    bool walkableTwo = (Physics.CheckBox(nodePos, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, mask2));
-                    if (walkableTwo)
+                    if (Physics.CheckBox(nodePos, new Vector3(nodeRadius, nodeRadius, nodeRadius), Quaternion.identity, mask2))
                     {
                         GameObject gridPrefab = Instantiate(meshGridPrefab);
                         gridPrefab.transform.position = nodePos;
@@ -71,24 +67,16 @@ public class Grid_Snap : MonoBehaviour
     }
     #endregion
 
-    public Vector2 GetGridOffset()
+   /* public Vector2 GetGridOffset()
     {
         gridOffset.x = transform.localPosition.x;
         gridOffset.y = transform.localPosition.y;
         return gridOffset;
-    }
+    }/*
 
-    private void OnDrawGizmosSelected()
+   /* private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, nodeRadius, gridSize.y));
-    }
-    //新增
-    /* public void AddPosition(Vector4 pos)
-     {
-         if (!occupiedPositions.Contains(pos))
-         {
-             occupiedPositions.Add(pos);
-         }
-     }*/
+    }*/
 }

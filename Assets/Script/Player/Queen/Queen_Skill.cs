@@ -570,6 +570,26 @@ public class Queen_Skill : SkillBase
     }
     #endregion
 
+    #region 音效
+    protected override void NowSkillAudio()
+    {
+        switch (nowSkill)
+        {
+            case SkillAction.is_Q:
+                break;
+            case SkillAction.is_W:
+                //playerScript.AudioScript.PlayAppointAudio(skillAudio, 4);
+                break;
+            case SkillAction.is_E:
+                break;
+            case SkillAction.is_R:
+                break;
+            default:
+                break;
+        }
+    }
+    #endregion
+
     #region 關閉技能提示
     public override void CancelDetectSkill(Player.SkillData _nowSkill)
     {

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using MyCode.Timer;
 
 public class SiegeSoldier : EnemyControl
 {
+    private List<Collider> alreadytakeDamage = new List<Collider>();
     private bool changeState;
     private byte nowAtkIndex = 0;
 
@@ -51,6 +52,7 @@ public class SiegeSoldier : EnemyControl
     {
         if (!deadManager.checkDead && !NowCC)
         {
+            alreadytakeDamage.Clear();
             switch (_index)
             {
                 case (1):
@@ -73,7 +75,7 @@ public class SiegeSoldier : EnemyControl
     {
         if (photonView.isMine)
             return;
-
+        
         if (c == 0)
         {
             if (haveHit)
@@ -95,7 +97,7 @@ public class SiegeSoldier : EnemyControl
     {
         for (int i = 0; i < enemiesCon.Length; i++)
         {
-            if (alreadytakeDamage.Contains(enemiesCon[i].gameObject))
+            if (alreadytakeDamage.Contains(enemiesCon[i]))
                 continue;
 
             atkTarget = enemiesCon[i].GetComponent<isDead>();
@@ -122,7 +124,7 @@ public class SiegeSoldier : EnemyControl
                     default:
                         break;
                 }
-                alreadytakeDamage.Add(atkNet.gameObject);
+                alreadytakeDamage.Add(enemiesCon[i]);
             }
         }
     }

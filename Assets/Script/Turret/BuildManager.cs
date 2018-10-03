@@ -1,11 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.UI;
 using AtkTower;
 
 public class BuildManager : MonoBehaviour
 {
+    #region 取得單例
+    private MatchTimer matchTime;
+    private MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+
+    private SceneObjManager sceneObjManager;
+    private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
+
+    private HintManager hintManager;
+    private HintManager HintScript { get { if (hintManager == null) hintManager = HintManager.instance; return hintManager; } }
+
+    private ObjectPooler poolManager;
+    protected ObjectPooler PoolManager { get { if (poolManager == null) poolManager = ObjectPooler.instance; return poolManager; } }
+    #endregion
+
     public static BuildManager instance;
     private PlayerObtain playerObtain;
     [HideInInspector]
@@ -15,34 +29,43 @@ public class BuildManager : MonoBehaviour
 
     [Header("鷹架")]
     [SerializeField] PhotonView build_Scaffolding;
-    [SerializeField] GameObject build_CD_Obj;
-    [SerializeField] Image build_CD_Bar;
+    public CanvasGroup build_CD_Obj;
+    public Image build_CD_Bar;
 
     [Header("目標")]
-    public GameObject builder;
+    public Transform builder;
     public Player playerScript;
     [HideInInspector]
     public Vector3 currentPlayerPos;
     //塔防
-    private TurretData turretData;
     private TurretData.TowerDataBase turretToBuild;
     private GameObject detectObj;
 
-    public bool stopBuild = false;
     //偵測
     private GameObject detectObjectPrefab;
-    private GameObject lastDetectObj;
     private GameObject TmpObj;
 
     public bool nowBuilding = false;  //是否在建造模式
     public bool nowSelect = true;   //是否可以按下按鈕
-    private bool haveTower;
-    public bool HaveTower { get { return haveTower; } private set { haveTower = value; } }
+    private bool haveTower;  
 
-    private SceneObjManager sceneObjManager;
-    public SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
+    private Vector3 NodePos;
     
-    ObjectPooler objPool;
+
+    public LayerMask canBuild;
+    public bool ifCanBuild;
+
+    [Header("stop")]
+    [SerializeField] LayerMask stopMask;
+    private bool _start; //前往蓋塔位子(移動)
+    private bool nowBuild;//現在是否正在蓋塔
+    private byte cancelBuildIndex = 0;//蓋塔取消
+
+    #region 緩存
+    private int eAmount;
+    private Vector3 withTowerDis;
+    private SnapGrid_Pos gridPosScript;
+    #endregion
 
     private void Awake()
     {
@@ -60,34 +83,29 @@ public class BuildManager : MonoBehaviour
     {
         playerObtain = PlayerObtain.instance;
         uiManager = UIManager.instance;
-        builder = Creatplayer.instance.Player_Script.gameObject;
+        builder = Creatplayer.instance.Player_Script.transform;
         playerScript = Creatplayer.instance.Player_Script;
-        turretData = TurretData.instance;
-        objPool = ObjectPooler.instance;
     }
 
     #region 付款
-    public bool payment(bool _paid)
+    public void Payment()
     {
-        if (_paid)
-        {
-            playerObtain.consumeResource(turretToBuild.cost_Money);
-        }
-        return true;
+        playerObtain.consumeResource(turretToBuild.cost_Money);
     }
     #endregion
 
     #region 商店選擇的塔防與偵測器
     public void SelectToBuild(TurretData.TowerDataBase turret, GameObject detect)
     {
-        HaveTower = true;
+        haveTower = true;
         turretToBuild = turret;
-
+        gridPosScript = turretToBuild.detectObjPrefab.GetComponentInChildren<SnapGrid_Pos>();
         closeNowDetectObj();//關掉原本開啟的
         detectObjectPrefab = detect;
         detectObjectPrefab.SetActive(true);
 
-        for (int i = 0; i < SceneManager.myElectricityObjs.Count; i++)
+        eAmount = SceneManager.myElectricityObjs.Count;
+        for (int i = 0; i < eAmount; i++)
         {
             SceneManager.myElectricityObjs[i].changeGridColor(turretToBuild.cost_Electricity);
         }
@@ -129,8 +147,7 @@ public class BuildManager : MonoBehaviour
     }
     #endregion
 
-    #region 取消目前的選擇
-    int eAmount;
+    #region 取消目前的選擇    
     public void cancelSelect()
     {
         closeTurretToBuild();//清除目前選擇的塔防
@@ -155,69 +172,42 @@ public class BuildManager : MonoBehaviour
     #region 創建 和 關閉蓋塔提示透明物件
     public void creatTmpObj(Vector3 _pos)
     {
-        TmpObj = objPool.getPoolObject(turretToBuild.tspObject_Name, _pos, Quaternion.identity);
+        TmpObj = PoolManager.getPoolObject(turretToBuild.tspObject_Name, _pos, Quaternion.identity);
     }
 
     public void closeTmpObj()
     {
         if (TmpObj != null)
         {
-            returnPoolTower(turretToBuild.tspObject_Name, TmpObj);
+            PoolManager.Repool(turretToBuild.tspObject_Name, TmpObj);
             TmpObj = null;
         }
-    }
-    #endregion
-
-    #region 生成 與 關閉塔防 從物件池
-    public GameObject creatTower(GameManager.whichObject _name, Vector3 _pos, Quaternion _rot)
-    {
-        GameObject towerObj = objPool.getPoolObject(_name, _pos, _rot);
-        return towerObj;
-    }
-
-    public void returnPoolTower(GameManager.whichObject _name, GameObject _tower)
-    {
-        objPool.Repool(_name, _tower);
     }
     #endregion
 
     #region 鷹架的開啟 和 關閉
     public void openScaffolding(Vector3 _pos)
     {
-        if (build_Scaffolding == null)
-        {
-            build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0).GetComponent<PhotonView>();
-        }
-        else
-        {
+        if (build_Scaffolding != null)
             build_Scaffolding.RPC("SetActiveT", PhotonTargets.All, _pos);
-        }
+        else
+            build_Scaffolding = PhotonNetwork.Instantiate("Scaffolding", _pos, Quaternion.identity, 0).GetComponent<PhotonView>();
 
-        build_CD_Obj.transform.position = _pos + new Vector3(0, 7.5f, 0);
-        build_CD_Obj.SetActive(true);
+        build_CD_Obj.transform.position = _pos;
+        build_CD_Obj.alpha = 1;
     }
 
     public void closeScaffolding()
     {
         build_Scaffolding.RPC("SetActiveF", PhotonTargets.All);
-        build_CD_Obj.SetActive(false);
+        build_CD_Obj.alpha = 0;
     }
     #endregion
 
     #region 返回資源懲罰
     public void cancelPunish(float _percent)
     {
-        int _Money = Mathf.RoundToInt(turretToBuild.cost_Money * _percent);
-
-        playerObtain.obtaniResource(_Money);
-        //closeTmpObj();
-    }
-    #endregion
-
-    #region 鷹架出現時蓋塔時間
-    public void build_countDown(float _cd)
-    {
-        build_CD_Bar.fillAmount = _cd / turretToBuild.turret_delayTime;
+        playerObtain.obtaniResource(Mathf.RoundToInt(turretToBuild.cost_Money * _percent));
     }
     #endregion
 
@@ -225,15 +215,7 @@ public class BuildManager : MonoBehaviour
     public void closeTurretToBuild()
     {
         nowNotSelectSwitch(true);
-        HaveTower = false;
-        turretToBuild = new TurretData.TowerDataBase();
-    }
-    #endregion
-
-    #region 將選擇的塔防傳給其他腳本
-    public TurretData.TowerDataBase GetTurretToBuild()
-    {
-        return turretToBuild;
+        haveTower = false;
     }
     #endregion
 
@@ -242,12 +224,11 @@ public class BuildManager : MonoBehaviour
     {
         for (int i = 0; i < e.Count; i++)
         {
-            if (Vector3.Distance(tur_manager.transform.position, e[i].transform.position) <= e[i].range)
+            if (Vector3.SqrMagnitude(tur_manager.transform.position - e[i].transform.position) <= e[i].range * e[i].range)
             {
                 tur_manager.power = e[i];
                 e[i].firstE.connectTowers.Add(tur_manager.gameObject);
-                int t = findCost_Electricity(tur_manager.DataName);
-                e[i].firstE.Use_Electricit(-t);
+                e[i].firstE.Use_Electricit(-(tur_manager.GetMyElectricity()));
                 //Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
                 return;
             }
@@ -264,17 +245,9 @@ public class BuildManager : MonoBehaviour
     {
         if (tur_manager.power != null)
         {
-            int t = findCost_Electricity(tur_manager.DataName);
-            tur_manager.power.firstE.Use_Electricit(t);
+            tur_manager.power.firstE.Use_Electricit(tur_manager.GetMyElectricity());
             //Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
         }
-    }
-    #endregion
-
-    #region 找物件消耗電力
-    public int findCost_Electricity(GameManager.whichObject _name)
-    {
-        return turretData.getTowerData(_name).cost_Electricity;
     }
     #endregion
 
@@ -361,4 +334,162 @@ public class BuildManager : MonoBehaviour
         }
     }
     #endregion
+
+    ///////////////////////////////////////蓋塔防相關
+    public void NeedToUpdate()
+    {
+        if (nowBuilding && haveTower)
+        {
+            if (nowSelect)
+            {
+                FindCorrectPos();
+            }
+
+            if (!nowBuild)
+            {
+                if (Input.GetMouseButtonDown(1))
+                {
+                    print("取消建造");
+                    cancelSelect();
+                    _start = false;
+                }
+
+                if (_start && !nowSelect)
+                {
+                    goBuild();
+                }
+            }
+            else
+            {
+                if ((Input.GetKeyDown(KeyCode.Escape)) || Input.GetMouseButtonDown(1) || playerScript.deadManager.checkDead)
+                {
+                    nowBuild = false;
+                    if (cancelBuildIndex != 0)
+                        MatchTimeManager.ClearThisTask(cancelBuildIndex);
+                    cancelBuildIndex = 0;
+                    playerScript.switchScaffolding(false);
+                    cancelPunish(0.8f);
+                    closeScaffolding();
+                    closeTurretToBuild();
+                    playerScript.stopAnything_Switch(false);
+                    HintScript.CreatHint("中斷建造");
+                }
+            }
+        }
+    }
+
+    #region 選擇好蓋塔位子
+    void FindCorrectPos()
+    {
+        gridPosScript.NeedToUpdate();
+
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (ifCanBuild)
+            {
+                NodePos = gridPosScript.nodePos();
+
+                nowNotSelectSwitch(false);
+
+                if (Vector3.SqrMagnitude(NodePos - builder.position) <= (turretToBuild.turret_buildDistance * turretToBuild.turret_buildDistance))
+                {
+                    Payment();
+                    playerScript.stopAnything_Switch(true);
+                    openScaffolding(NodePos);
+                    playerScript.switchScaffolding(true);
+                    DelayToBuild();
+                }
+                else
+                {
+                    creatTmpObj(NodePos);
+                    playerScript.getTatgetPoint(NodePos);
+                    _start = true;
+
+                    Debug.Log("距離過遠");
+                }
+            }
+            else
+            {
+                HintScript.CreatHint("此處不能建造");
+            }
+        }
+    }
+    #endregion
+
+    #region 前往蓋塔防位置
+    void goBuild()
+    {
+        if (CheckStopPos())
+        {
+            Payment();
+            playerScript.stopAnything_Switch(true);
+            openScaffolding(NodePos);
+            closeTmpObj();
+            playerScript.switchScaffolding(true);
+            DelayToBuild();
+            _start = false;
+        }
+    }
+    #endregion
+
+    #region 確認是否到達目標位置了
+    bool CheckStopPos()
+    {
+        withTowerDis = builder.position + builder.up * 2f;
+        if (Physics.Linecast(withTowerDis, withTowerDis + builder.forward * 5f, stopMask))
+        {
+            playerScript.isStop();
+            return true;
+        }
+        else
+        {
+            if (!playerScript.getNavPath())
+                playerScript.getTatgetPoint(NodePos);
+            return false;
+        }
+    }
+    #endregion
+
+    #region 開始建造(延遲)
+    void DelayToBuild()
+    {
+        nowBuild = true;
+        cancelBuildIndex = MatchTimeManager.SetCountDownReveres(BuildFinish, turretToBuild.turret_delayTime, build_CD_Bar);
+    }
+
+    void BuildFinish()
+    {
+        if (nowBuild)
+        {
+            nowBuild = false;
+            cancelBuildIndex = 0;
+            playerScript.switchScaffolding(false);
+            BuildTurret(NodePos);
+            playerScript.stopAnything_Switch(false);
+        }        
+    }
+    #endregion
+
+    #region 蓋塔防
+    void BuildTurret(Vector3 _pos)
+    {
+        closeScaffolding();
+
+        GameObject obj = PoolManager.getPoolObject(turretToBuild.TurretName, _pos, Quaternion.identity);
+
+        if (turretToBuild.TurretName != GameManager.whichObject.Tower_Electricity)
+        {
+            consumeElectricity(SceneManager.myElectricityObjs, obj.GetComponent<Turret_Manager>());
+        }
+        else
+        {
+            FindfirstE(SceneManager.myElectricityObjs, obj.GetComponent<Electricity>());
+        }
+        closeTurretToBuild();
+    }
+    #endregion
+
 }

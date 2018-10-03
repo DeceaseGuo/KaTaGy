@@ -53,14 +53,28 @@ public class CreatPoints : MonoBehaviour
     private Transform pointParent;
     #endregion
 
+    #region 其他腳本初始化數據
     public void ProdecePoints ()
     {
-        obstacleMask = 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8 | 1 << 11;
+        GetBaseData();
+        CalculatePoint(4f, 2.5f, null);
+        CalculatePoint(11, 4.8f, null);
+    }
+
+    public void ProdecePoints(Transform _Pos)
+    {
+        GetBaseData();
+        CalculatePoint(4f, 2.5f, _Pos);
+        CalculatePoint(11, 4.8f, _Pos);
+    }
+
+    void GetBaseData()
+    {
+        obstacleMask = 1 << 30 | 1 << 31 | 1 << 29 | 1 << 28 | 1 << 14 | 1 << 8;
         pointParent = GameObject.Find("PointData").transform;
         atkPoints = new Dictionary<float, List<pointData>>(new WhichfloatComparer());
-        CalculatePoint(4f, 2.5f);
-        CalculatePoint(11, 8);
     }
+    #endregion
 
     public void NeedToLateUpdate()
     {
@@ -183,7 +197,7 @@ public class CreatPoints : MonoBehaviour
         return (_nowDis <= atkPoints[_dis][0].atkDistance) ? true : false;
     }
 
-    void CalculatePoint(float _range, float width)
+    void CalculatePoint(float _range, float width ,Transform _myPos)
     {
         float angle = (width * 180) / (Mathf.PI * _range);
         int count = (int)(360 / angle);
@@ -194,7 +208,10 @@ public class CreatPoints : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             _tmpPpoint = new GameObject(i + "Point").transform;
-            _tmpPpoint.SetParent(/*transform*/pointParent);
+            if (_myPos == null)
+                _tmpPpoint.SetParent(pointParent);
+            else
+                _tmpPpoint.SetParent(_myPos);
             _tmpPpoint.position = Vector3.forward * (_range + extraRange);
             q = Quaternion.AngleAxis(angle * i, Vector3.up);
             _tmpPpoint.position = q * _tmpPpoint.position + transform.position;
@@ -210,7 +227,7 @@ public class CreatPoints : MonoBehaviour
         if (_width != lastWidth)
         {
             lastWidth = _width;
-            myCheckBoxV3 = new Vector3(_width * 0.5f, 2, _width * 0.5f);
+            myCheckBoxV3 = new Vector3(_width, 2, _width);
         }
         if (!(Physics.CheckBox(_pos.position, myCheckBoxV3, Quaternion.identity, obstacleMask)))
         {
@@ -220,9 +237,19 @@ public class CreatPoints : MonoBehaviour
         return false;
     }
 
-    public bool testLook;
-    public float atkRangeTest;
+
+    //觀看點用
+    public bool testLook;    
+    /*public float atkRangeTest;
     public float atkWidthTest;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown("a"))
+        {
+            CalculatePoint(atkRangeTest, atkWidthTest);
+        }
+    }*/
     private void OnDrawGizmos()
     {
         if (testLook)

@@ -2,8 +2,6 @@
 
 public class Queen_Ani : PlayerAni
 {
-    public AudioSource comboAudio;
-
     #region 設定攻擊Collider
     protected override void SetCheckBox()
     {
@@ -246,17 +244,17 @@ public class Queen_Ani : PlayerAni
         //刀光1,2
         if (comboIndex == 1 || comboIndex == 2)
         {
-            //  player.AudioScript.PlayAppointAudio(comboAudio, 0);
+              player.AudioScript.PlayAppointAudio(comboAudio, 5);
         }
         //刀光3
         if (comboIndex == 3)
         {
-            //  player.AudioScript.PlayAppointAudio(comboAudio, 0);
+              player.AudioScript.PlayAppointAudio(comboAudio, 6);
         }
         //刀光4
         if (comboIndex == 4)
         {
-            // player.AudioScript.PlayAppointAudio(comboAudio, 0);
+             player.AudioScript.PlayAppointAudio(comboAudio, 7);
         }
     }
 }

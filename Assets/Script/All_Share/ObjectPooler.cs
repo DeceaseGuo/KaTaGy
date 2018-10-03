@@ -28,6 +28,13 @@ public class ObjectPooler : MonoBehaviour
     [SerializeField] List<pool> pools;
     [SerializeField] Dictionary<GameManager.whichObject, Queue<GameObject>> poolDictionary;
     GameManager.WhichObjectEnumComparer myEnumComparer = new GameManager.WhichObjectEnumComparer();
+
+    #region 緩存
+    private PhotonView returnNet;
+    private PhotonView getNet;
+    private GameObject objectToSpawn;
+    #endregion
+
     private void Start()
     {
         producePool();
@@ -40,6 +47,11 @@ public class ObjectPooler : MonoBehaviour
 
         for (int a = 0; a < pools.Count; a++)
         {
+            ///
+            if (pools[a].pool_amount == 0)
+                continue;
+            ///
+
             Queue<GameObject> objectPool = new Queue<GameObject>();
 
             for (int i = 0; i < pools[a].pool_amount; i++)
@@ -74,23 +86,23 @@ public class ObjectPooler : MonoBehaviour
             return null;
         }
 
-        GameObject objectToSpawn = poolDictionary[_name].Dequeue();
+        objectToSpawn = poolDictionary[_name].Dequeue();
         if (poolDictionary[_name].Count == 0)//拿出來之後等於0就會增加
         {
             Repool(_name, PoolAddNewObj(_name));
         }
 
         objectToSpawn.transform.rotation = _rot;
-        PhotonView Net = objectToSpawn.GetComponent<PhotonView>();
+        getNet = objectToSpawn.GetComponent<PhotonView>();
 
-        if (Net == null)
+        if (getNet == null)
         {
             objectToSpawn.transform.position = _pos;
             objectToSpawn.SetActive(true);
         }
         else
         {
-            Net.RPC("SetActiveT", PhotonTargets.All, _pos);
+            getNet.RPC("SetActiveT", PhotonTargets.All, _pos);
         }
         return objectToSpawn;
     }
@@ -99,15 +111,15 @@ public class ObjectPooler : MonoBehaviour
     #region 返回物件池
     public void Repool(GameManager.whichObject _name, GameObject _obj)
     {
-        PhotonView Net = _obj.GetComponent<PhotonView>();
-        if (Net == null)
+        returnNet = _obj.GetComponent<PhotonView>();
+        if (returnNet == null)
         {
             _obj.SetActive(false);
             _obj.transform.SetParent(transform);
         }
         else
         {
-            Net.RPC("SetActiveF", PhotonTargets.All);
+            returnNet.RPC("SetActiveF", PhotonTargets.All);
         }
         poolDictionary[_name].Enqueue(_obj);
     }

@@ -7,108 +7,141 @@ namespace AtkTower
     [RequireComponent(typeof(isDead))]
     public class Turret_Manager : Photon.MonoBehaviour
     {
+        #region 取得單例
+        private FloatingTextController floatTextCon;
+        protected FloatingTextController FloatTextCon { get { if (floatTextCon == null) floatTextCon = FloatingTextController.instance; return floatTextCon; } }
+
+        private MatchTimer matchTime;
+        protected MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
+
+        private SceneObjManager sceneObjManager;
+        protected SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
+
+        private ObjectPooler poolManager;
+        protected ObjectPooler PoolManager { get { if (poolManager == null) poolManager = ObjectPooler.instance; return poolManager; } }
+        #endregion
+
         //數據
         public GameManager.whichObject DataName;
         protected TurretData.TowerDataBase turretData;
         protected TurretData.TowerDataBase originalTurretData;
-        protected float nowCD = 0;
-        [SerializeField] LayerMask currentMask;
+        private CreatPoints MyCreatPoints;
+        protected Transform myCachedTransform;
+        private bool firstGetData = true;
         public int GridNumber;
         public Electricity power;
+        //242 235 0
+        //255 142 81
+        public Color overHeatColor;
+        public Color orininalColor;
+        //是否能開火
+        private bool canFire = true;
 
         //正確目標
+        private GameObject tmpTarget;
         protected Transform target;
+        protected isDead targetDeadScript;
         [Header("位置")]
-        [SerializeField] Transform Pos_rotation;
+        public Transform Pos_rotation;
         public Transform Pos_attack;
+
+        //旋轉方向所需
+        private Quaternion lookRotation;
+        private Vector3 rotationEuler;
+        private float tmpAngle;
+
+        //是否超過塔防的距離
+        protected float distanceToEnemy;
 
         [Header("UI部分")]
         public Image Fad_energyBar;
 
         protected isDead deadManager;
-        protected FloatingTextController floatingText;
         protected PhotonView Net;
-
-        private SceneObjManager sceneObjManager;
-        private SceneObjManager SceneManager { get { if (sceneObjManager == null) sceneObjManager = SceneObjManager.Instance; return sceneObjManager; } }
-
-        private void Awake()
-        {
-            Net = GetComponent<PhotonView>();
-            floatingText = FloatingTextController.instance;            
-        }
-
-        private void Start()
-        {           
-            if (photonView.isMine)
-            {
-                checkCurrentPlay();
-            }
-            else
-            {
-                this.enabled = false;
-            }
-        }
-
-        private void OnEnable()
-        {
-            formatData();
-        }
 
         private void Update()
         {
-            if (turretData.Fad_thermalEnergy > 0)
-            {
-                overHeat();
-            }
-
-            if (deadManager.checkDead || turretData.Fad_overHeat || power == null || power.resource_Electricity < 0)  //死亡、沒電、過熱
-            {
+            //死亡
+            if (deadManager.checkDead)
                 return;
-            }
+
+            //減少熱能
+            if (turretData.Fad_thermalEnergy > 0)
+                overHeat();            
+
+            //沒電、過熱
+            if (turretData.Fad_overHeat || power == null || power.resource_Electricity < 0)
+                return;            
 
             if (target == null)
             {
                 FindEnemy();
             }
-
-            if (target != null)
+            else
             {
-                DetectTarget();
                 LockOnTarget();
             }
-            nowCD -= Time.deltaTime;
         }
 
         #region 恢復初始數據
-        protected void formatData()
+        protected void FirstformatData()
         {
+            firstGetData = false;
+            Net = GetComponent<PhotonView>();
+            myCachedTransform = this.transform;
+            MyCreatPoints = GetComponent<CreatPoints>();
+
             if (deadManager == null)
-            {
                 deadManager = GetComponent<isDead>();
+
+            if (photonView.isMine)
+            {
+                MyCreatPoints.enabled = false;
+                originalTurretData = TurretData.instance.getTowerData(DataName);
+                checkCurrentPlay();
             }
             else
             {
-                if (photonView.isMine)
-                {
-                    originalTurretData = TurretData.instance.getTowerData(DataName);
-                    SceneManager.AddMy_TowerList(gameObject);
-                }
-                else
-                {
-                    originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
-                    SceneManager.AddEnemy_TowerList(gameObject);
-                }
-
-                deadManager.ifDead(false);
-                turretData = originalTurretData;
-                nowCD = turretData.Atk_Gap;
-                turretData.UI_Hp = turretData.UI_maxHp;
-                turretData.Fad_thermalEnergy = 0;
+                MyCreatPoints.ProdecePoints(myCachedTransform);
+                originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
+                this.enabled = false;
             }
+        }
+
+        protected void FormatData()
+        {
+            if (photonView.isMine)
+            {
+                SceneManager.AddMy_TowerList(gameObject);
+                if (originalTurretData.ATK_Level != TurretData.myTowerAtkLevel || originalTurretData.DEF_Level != TurretData.myTowerDefLevel)
+                    originalTurretData = TurretData.instance.getTowerData(DataName);
+            }
+            else
+            {
+                SceneManager.AddEnemy_TowerList(gameObject);
+                if (originalTurretData.ATK_Level != TurretData.enemyTowerAtkLevel || originalTurretData.DEF_Level != TurretData.enemyTowerDefLevel)
+                    originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
+            }
+
+            turretData = originalTurretData;
+            deadManager.ifDead(false);
+            turretData.UI_Hp = turretData.UI_maxHp;
+            turretData.Fad_thermalEnergy = 0;
 
             healthBar.fillAmount = 1;
             Fad_energyBar.fillAmount = 0.0f;
+        }
+
+        public void GoFormatData()
+        {
+            //myRender.material.SetFloat("Vector1_D655974D", 0);
+
+            //(true物件池生成會先第一次執行一次)
+            //false從物件池哪出後執行
+            if (!firstGetData)
+                FormatData();
+            else
+                FirstformatData();
         }
         #endregion
 
@@ -118,95 +151,88 @@ namespace AtkTower
             if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_1)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 30);
-                currentMask = GameManager.instance.getPlayer1_Mask;
             }
             else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
             {
                 Net.RPC("changeLayer", PhotonTargets.All, 31);
-                currentMask = GameManager.instance.getPlayer2_Mask;
             }
         }
         #endregion
 
-        GameObject tmpTarget;
+        public int GetMyElectricity()
+        {
+            return originalTurretData.cost_Electricity;
+        }
+
         #region 尋找敵人
         public void FindEnemy()
         {
-            tmpTarget = null;
-            tmpTarget = SceneManager.CalculationDis(gameObject, turretData.Atk_Range, turretData.Atk_MinRange);
+            tmpTarget = SceneManager.CalculationDis(myCachedTransform, turretData.Atk_Range, turretData.Atk_MinRange);
 
             if (tmpTarget != null)
             {
                 target = tmpTarget.transform;
+                targetDeadScript = target.GetComponent<isDead>();
             }
         }
         #endregion
 
         #region 偵測是否死亡與超出攻擊範圍
-        void DetectTarget()
+        bool DetectTarget()
         {
-            if (target.GetComponent<isDead>().checkDead)
+            if (targetDeadScript.checkDead)
             {
                 target = null;
+                return false;
             }
             else
             {
-                float distanceToEnemy = Vector3.Distance(target.transform.position, transform.position);
+                distanceToEnemy = Vector3.SqrMagnitude(target.position - myCachedTransform.position);
 
-                if (distanceToEnemy > turretData.Atk_Range || distanceToEnemy < turretData.Atk_MinRange)
+                if (distanceToEnemy > turretData.Atk_Range * turretData.Atk_Range || distanceToEnemy < turretData.Atk_MinRange * turretData.Atk_MinRange)
                 {
                     target = null;
+                    return false;
                 }
             }
+            return true;
         }
         #endregion
 
-        #region 朝向敵方目標
+        #region 朝向敵方目標與偵測開火
         void LockOnTarget()
         {
-            if (target == null)
-            {
-                return;
-            }
-
             //轉向
-            Quaternion lookRotation = Quaternion.LookRotation(target.position - Pos_attack.position);
-            Vector3 rotation = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
-            Pos_rotation.rotation = Quaternion.Euler(0/*rotation.x*/, rotation.y, 0f);
-            float tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
-
-            // Debug.Log("角度" + tmpAngle);
-            if (tmpAngle < 30)
+            lookRotation = Quaternion.LookRotation(target.position - Pos_attack.position);
+            rotationEuler = Quaternion.Lerp(Pos_rotation.rotation, lookRotation, Time.deltaTime * 10).eulerAngles;
+            Pos_rotation.rotation = Quaternion.Euler(0, rotationEuler.y, 0f);
+            
+            // Debug.Log("角度" + tmpAngle);            
+            if (canFire)
             {
-                DecidedNowTurret();
-            }
-        }
-        #endregion
-
-        #region 攻擊間隔
-        void DecidedNowTurret()
-        {
-            if (target != null && !turretData.Fad_overHeat)
-            {
-                if (nowCD <= 0 && photonView.isMine)
+                tmpAngle = Quaternion.Angle(Pos_rotation.rotation, lookRotation);
+                if (DetectTarget() && tmpAngle < 30)
                 {
+                    canFire = false;
                     Tower_shoot();
-                    nowCD = turretData.Atk_Gap;
+                    Invoke("EndCountDown", turretData.Atk_Gap);
                 }
             }
         }
+
+        public void EndCountDown()
+        {
+            canFire = true;
+        }
         #endregion
 
-        #region 攻擊函式_覆蓋區
+        #region 攻擊函式(射擊生成子彈)
         protected virtual void Tower_shoot()
         {
             addHeat(1.0f);
-            float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-            Fad_energyBar.fillAmount = _value;
-
-            GameObject bulletObj = ObjectPooler.instance.getPoolObject(turretData.bullet_Name, Pos_attack.position, Pos_attack.rotation);
-            BulletManager bullet = bulletObj.GetComponent<BulletManager>();
-            bullet.getTarget(target);
+            Fad_energyBar.fillAmount = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
+            //物件池生成子彈                                                                               //取得子彈管理            //傳送目標與傷害
+            PoolManager.getPoolObject(turretData.bullet_Name, Pos_attack.position, Pos_attack.rotation).GetComponent<BulletManager>().getTarget(target, turretData.Atk_Damage);
         }
         #endregion
 
@@ -214,48 +240,42 @@ namespace AtkTower
         void overHeat()
         {
             reduceHeat((!turretData.Fad_overHeat) ? 1.0f : turretData.Over_downSpd);
-
-            float _value = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
-            Fad_energyBar.fillAmount = _value;
+            Fad_energyBar.fillAmount = turretData.Fad_thermalEnergy / turretData.Fad_maxThermalEnergy;
         }
         #endregion
 
         [PunRPC]
-        public void OverheatChange(int _r, int _b, int _g)
+        public void OverheatChange(bool _nowOverHeat)
         {
-            Fad_energyBar.color = new Color(_r, _b, _g);
+            if (_nowOverHeat)
+                Fad_energyBar.color = overHeatColor;
+            else
+                Fad_energyBar.color = orininalColor;
         }
 
         #region 增加減少熱能
         //減少
         public void reduceHeat(float _speed)
         {
-            float tmpValue = turretData.Fad_decreaseRate * Time.deltaTime * _speed;
-
-            turretData.Fad_thermalEnergy -= tmpValue;
+            turretData.Fad_thermalEnergy -= (turretData.Fad_decreaseRate * Time.deltaTime * _speed);
 
             if (turretData.Fad_thermalEnergy <= 0)
             {
                 turretData.Fad_thermalEnergy = 0;
                 turretData.Fad_overHeat = false;
-                Net.RPC("OverheatChange", PhotonTargets.All, 242, 235, 0);
-                //Fad_energyBar.color = new Color(242, 235, 0);
+                Net.RPC("OverheatChange", PhotonTargets.All, turretData.Fad_overHeat);
             }
         }
         //增加
         public void addHeat(float _speed)
         {
-            print("增加熱量");
-            float tmpValue = turretData.Fad_oneEnergy * _speed;
-
-            turretData.Fad_thermalEnergy += tmpValue;
+            turretData.Fad_thermalEnergy += (turretData.Fad_oneEnergy * _speed);
 
             if (turretData.Fad_thermalEnergy >= turretData.Fad_maxThermalEnergy)
             {
                 turretData.Fad_thermalEnergy = turretData.Fad_maxThermalEnergy;
                 turretData.Fad_overHeat = true;
-                Net.RPC("OverheatChange", PhotonTargets.All, 255, 142, 81);
-                //Fad_energyBar.color = new Color(255, 142, 81);
+                Net.RPC("OverheatChange", PhotonTargets.All, turretData.Fad_overHeat);
             }
         }
         #endregion
@@ -268,56 +288,64 @@ namespace AtkTower
             if (deadManager.checkDead)
                 return;
 
-            float tureDamage = CalculatorDamage(_damage);
-            turretData.UI_Hp -= tureDamage;
-            openPopupObject(tureDamage);
+            MyHelath(CalculatorDamage(_damage));
+        }
 
-            if (turretData.UI_Hp <= 0)
+        private void MyHelath(float _damage)
+        {
+            if (turretData.UI_Hp > 0)
             {
-                if (photonView.isMine)
+                turretData.UI_Hp -= _damage;
+                if (turretData.UI_Hp <= 0)
                 {
-                    SceneManager.RemoveMy_TowerList(gameObject);
-                    BuildManager.instance.obtaniElectricity(this);
+                    deadManager.ifDead(true);
+                    Death();
                 }
-                else
-                {
-                    SceneManager.RemoveEnemy_TowerList(gameObject);
-                }
-
-                deadManager.ifDead(true);
-                StartCoroutine(Death());
+                openPopupObject(_damage);
             }
         }
+
         #endregion
 
         #region 傷害顯示
         void openPopupObject(float _damage)
         {
-            floatingText.CreateFloatingText(_damage, this.transform);
+            FloatTextCon.CreateFloatingText(_damage, myCachedTransform);
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
         }
         #endregion
 
         #region 計算傷害
-        protected virtual float CalculatorDamage(float _damage)
+        protected  float CalculatorDamage(float _damage)
         {
-            return 0.0f;
+            return _damage;
         }
         #endregion
 
         #region 死亡
-        protected virtual IEnumerator Death()
+        protected void Death()
         {
-            yield return new WaitForSeconds(1.5f);
-            returnBulletPool();
+            if (photonView.isMine)
+            {
+                SceneManager.RemoveMy_TowerList(gameObject);
+                BuildManager.instance.obtaniElectricity(this);
+            }
+            else
+            {
+                SceneManager.RemoveEnemy_TowerList(gameObject);
+            }
+
+            Invoke("Return_ObjPool", 1.5f);
         }
         #endregion
 
         #region 返回物件池
-        protected void returnBulletPool()
+        protected void Return_ObjPool()
         {
             if (photonView.isMine)
-                ObjectPooler.instance.Repool(DataName, this.gameObject);
+                poolManager.Repool(DataName, this.gameObject);
+            else
+                gameObject.SetActive(false);
         }
         #endregion
 
@@ -326,33 +354,13 @@ namespace AtkTower
         {
             if (stream.isWriting)
             {
-                //stream.SendNext(turretData.UI_Hp);
-                //stream.SendNext(turretData.UI_maxHp);
                 stream.SendNext(Fad_energyBar.fillAmount);
-                /*stream.SendNext(Fad_energyBar.color.r);
-                stream.SendNext(Fad_energyBar.color.g);
-                stream.SendNext(Fad_energyBar.color.b);*/
+              //  stream.SendNext(Pos_rotation.localEulerAngles);
             }
             else
             {
-                //turretData.UI_Hp = (float)stream.ReceiveNext();
-                //turretData.UI_maxHp = (float)stream.ReceiveNext();
                 Fad_energyBar.fillAmount = (float)stream.ReceiveNext();
-                /*float _r = (float)stream.ReceiveNext();
-                float _g = (float)stream.ReceiveNext();
-                float _b = (float)stream.ReceiveNext();*/
-
-                /*if (Fad_energyBar.color.r != _r)
-                {
-                    Fad_energyBar.color = new Color(_r, _g, _b);
-                }*/
-
-                /*if (turretData.UI_maxHp != originalTurretData.UI_maxHp)
-                {
-                    originalTurretData.UI_maxHp = turretData.UI_maxHp;
-                    print("升級血量變動");
-                    healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
-                }*/
+                //Pos_rotation.localEulerAngles = (Vector3)stream.ReceiveNext();
             }
         }
         #endregion

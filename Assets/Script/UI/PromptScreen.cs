@@ -44,12 +44,12 @@ public class PromptScreen : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 return;
             case (Prompt_SelectLocalPos.whois.Soldier):
                 prompt_localPos.setMoInBtMenu(SoldierData.headImage, SoldierData.firstAtk, SoldierData.objectName);
-                prompt_localPos.setMoInBtMenu_Need(/*SoldierData.cost_Ore,*/ SoldierData.cost_Money, 0, SoldierData.soldier_CountDown);
+                prompt_localPos.setMoInBtMenu_Need(SoldierData.cost_Money, 0, 0);
                 prompt_localPos.setMoInBtMenu_Bar(SoldierData.atk_Damage, SoldierData.atk_delay, SoldierData.def_base, SoldierData.moveSpeed);
                 break;
             case (Prompt_SelectLocalPos.whois.Tower):
                 prompt_localPos.setMoInBtMenu(TowerData.headImage, null, TowerData.objectName);
-                prompt_localPos.setMoInBtMenu_Need(/*TowerData.cost_Ore,*/ TowerData.cost_Money, TowerData.cost_Electricity, TowerData.turret_delayTime);
+                prompt_localPos.setMoInBtMenu_Need(TowerData.cost_Money, TowerData.cost_Electricity, TowerData.turret_delayTime);
                 prompt_localPos.setMoInBtMenu_Bar(TowerData.Atk_Damage, TowerData.Atk_Gap, TowerData.def_base, 0);
                 break;
         }

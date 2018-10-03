@@ -12,6 +12,7 @@ public class Mini_Soldier : EnemyControl
         base.SetAniHash();
         aniHashValue[3] = Animator.StringToHash("Base Layer.Idle");
         aniHashValue[4] = Animator.StringToHash("Base Layer.DeBuff.HitFly");
+        aniHashValue[5] = Animator.StringToHash("Base Layer.attack");
     }
     #endregion
 
@@ -57,7 +58,7 @@ public class Mini_Soldier : EnemyControl
     public void getAtkAnimator()
     {
         if (!deadManager.checkDead && !NowCC)
-            ani.CrossFade("attack", 0.01f, 0);
+            ani.CrossFade(aniHashValue[5], 0.01f, 0);
     }
     #endregion
 
@@ -159,7 +160,7 @@ public class Mini_Soldier : EnemyControl
                 if (correctPos != null)
                     points.RemoveThisPoint(correctPos);
 
-                myCachedTransform.DOMove(myCachedTransform.localPosition + (_dir.normalized * -15f), .65f);
+                myCachedTransform.DOMove(myCachedTransform.localPosition + (_dir.normalized * -15f), .85f);
                 myCachedTransform.rotation = Quaternion.LookRotation(_dir.normalized);
             }
         }
@@ -171,6 +172,7 @@ public class Mini_Soldier : EnemyControl
     {
         if (!deadManager.checkDead)
         {
+            StopAll();
             flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 5.5f, 0.27f).SetAutoKill(false).SetEase(Ease.OutBack);
             flyUp.onComplete = delegate () { EndFlyUp(); };
             if (!NowCC)

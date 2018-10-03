@@ -3,48 +3,56 @@ using System.Collections;
 
 public class SnapGrid_Pos : MonoBehaviour
 {
+    private Transform myCachedTransform;
     [SerializeField] Grid_Snap grid2;
     private BuildManager buildManager;
-    [Header("Restrictions")]
-    public bool considerScale = true;
-
-    [Header("移動格數")]
-    public Vector2 dragScale = new Vector2(1, 1);
 
     //網格中心與大小
-    Vector2 gridOffset = Vector2.zero;
-    Vector2 gridSize = Vector2.one;
+  //  Vector2 gridOffset = Vector2.zero;
+  //  Vector2 gridSize = Vector2.one;
     //網格偵測
     [SerializeField] LayerMask gridMask;
     //物件變大中心位移量
     private Vector3 offsetPos;
-    [SerializeField] Transform testPos;
+   // [SerializeField] Transform testPos;
 
     Vector3 mousePos;
     [SerializeField]float tmpY;
 
+    [Header("判斷是否可蓋塔防")]
+    //public Building ifBuild;
+    public Renderer render;
+    public Renderer belowRender;
+    public Color origonalColor;
+    public Color notBuildColor;
+    public LayerMask DetectMask;
+    public Vector3 DetectCube;
+
+    #region 緩存
+    private Camera myCamera;
+    //限制區XY
+    private float maxXPos;
+    private float maxYPos;
+    private Ray detectRay;
+    private RaycastHit hit;
+    private Vector3 tmpPos;
+    #endregion
+
     public Vector3 nodePos()
     {
-        Vector3 nowNodePos = transform.position;
-        return nowNodePos;
+        return myCachedTransform.position;
     }
 
     private void Start()
     {
+        myCachedTransform = this.transform;
+        myCamera = Camera.main;
         UpdateGridData();
         buildManager = BuildManager.instance;
     }
 
-    private void OnEnable()
+    public void NeedToUpdate()
     {
-        DetectPos();       
-    }
-
-    private void Update()
-    {
-        if (!buildManager.nowBuilding)
-            return;
-
         if (mousePos != Input.mousePosition)
         {
             mousePos = Input.mousePosition;
@@ -56,13 +64,13 @@ public class SnapGrid_Pos : MonoBehaviour
     void UpdateGridData()
     {
         //將中心變到最左
-        offsetPos = transform.localPosition;
-        offsetPos.x = (transform.localScale.x / 2f) - grid2.nodeRadius;
-        offsetPos.y = -((transform.localScale.y / 2f) - grid2.nodeRadius);
-        transform.localPosition = offsetPos;
+        offsetPos = myCachedTransform.localPosition;
+        offsetPos.x = (myCachedTransform.localScale.x / 2f) - grid2.nodeRadius;
+        offsetPos.y = -((myCachedTransform.localScale.y / 2f) - grid2.nodeRadius);
+        myCachedTransform.localPosition = offsetPos;
 
-        gridSize = grid2.gridSize;
-        gridOffset = grid2.GetGridOffset();
+       // gridSize = grid2.gridSize;
+        //gridOffset = grid2.GetGridOffset();
     }
     #endregion
 
@@ -70,19 +78,50 @@ public class SnapGrid_Pos : MonoBehaviour
     void DetectPos()
     {
         //Debug.Log("偵測網格正確位子");
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 500, gridMask))
+        detectRay = myCamera.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(detectRay, out hit, 300, gridMask))
         {
-            Vector3 tmpPos = hit.transform.position;
+            tmpPos = hit.transform.position;
             tmpPos.y += tmpY;
-            transform.parent.position = tmpPos;
+            myCachedTransform.parent.position = tmpPos;
+            DetectCanBuild();
         }
     }
     #endregion
 
+    #region 偵測是否可蓋塔防
+    void DetectCanBuild()
+    {
+        if (!Physics.CheckBox(myCachedTransform.position, DetectCube, myCachedTransform.localRotation, DetectMask))
+        {
+            buildManager.ifCanBuild = true;
+            render.material.color = origonalColor;
+            belowRender.material.color = origonalColor;
+        }
+        else
+        {
+            buildManager.ifCanBuild = false;
+            render.material.color = notBuildColor;
+            belowRender.material.color = notBuildColor;
+        }
+    }
+    #endregion
+
+    #region 觀看大小
+    /*private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(centerPos.position, DetectCube);
+    }*/
+    #endregion
+
+    // [Header("Restrictions")]
+    // public bool considerScale = true;
+    // [Header("移動格數")]
+    // public Vector2 dragScale = new Vector2(1, 1);
     #region 取得網格正確位置
-    Vector3 SnapToGrid(Vector3 dragPos)
+    /*Vector3 SnapToGrid(Vector3 dragPos)
     {
         if (gridSize.x % 2 == 0)
         {
@@ -104,15 +143,15 @@ public class SnapGrid_Pos : MonoBehaviour
 
         #region 限制區域
 
-        var maxXPos = ((gridSize.x - 1) * 0.5f) + gridOffset.x;
-        var maxYPos = ((gridSize.y - 1) * 0.5f) + gridOffset.y;
+        maxXPos = ((gridSize.x - 1) * 0.5f) + gridOffset.x;
+        maxYPos = ((gridSize.y - 1) * 0.5f) + gridOffset.y;
 
         if (considerScale)
         {
             //右
-            if (dragPos.x > maxXPos - transform.localScale.x + .5f)
+            if (dragPos.x > maxXPos - myCachedTransform.localScale.x + .5f)
             {
-                dragPos.x = maxXPos - transform.localScale.x + grid2.nodeRadius;
+                dragPos.x = maxXPos - myCachedTransform.localScale.x + grid2.nodeRadius;
             }
             //左
             if (dragPos.x < -maxXPos + gridOffset.x + gridOffset.x)
@@ -125,9 +164,9 @@ public class SnapGrid_Pos : MonoBehaviour
                 dragPos.z = maxYPos;
             }
             //下
-            if (dragPos.z < (-maxYPos + gridOffset.y + gridOffset.y) + transform.localScale.y - 1)
+            if (dragPos.z < (-maxYPos + gridOffset.y + gridOffset.y) + myCachedTransform.localScale.y - 1)
             {
-                dragPos.z = -maxYPos + gridOffset.y + gridOffset.y + transform.localScale.y - grid2.nodeRadius;
+                dragPos.z = -maxYPos + gridOffset.y + gridOffset.y + myCachedTransform.localScale.y - grid2.nodeRadius;
             }
         }
 
@@ -158,9 +197,6 @@ public class SnapGrid_Pos : MonoBehaviour
         #endregion
         dragPos.y = 0;
         return dragPos;
-    }
+    }*/
     #endregion
 }
-
-
-

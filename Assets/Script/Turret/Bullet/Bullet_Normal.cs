@@ -1,27 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bullet_Normal : BulletManager
 {
     void Update()
     {
-        if (photonView.isMine)
+        if (targetDead.checkDead)
         {
-            if (targetDead.checkDead)
-            {
-                returnBulletPool();
-                print("目標已死亡");
-                return;
-            }
+            returnBulletPool();
+            print("目標已死亡");
+            return;
+        }
 
-            if (dir.magnitude <= distanceThisFrame && !hit)
-            {
-                print("擊中");
-                hit = true;
+        if (Vector3.SqrMagnitude(targetPos - myCachedTransform.position) <= distanceThisFrame * distanceThisFrame && !hit)
+        {
+            print("擊中");
+            hit = true;
+            returnBulletPool();
+
+            if (photonView.isMine)
                 GiveDamage();
-                returnBulletPool();
-            }
         }
 
         BulletMove();

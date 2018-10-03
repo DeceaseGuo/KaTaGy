@@ -4,7 +4,7 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: d_knife079
   m_Shader: {fileID: 4800000, guid: 6f1ba370914cbf84eaa944c57b01bafb, type: 3}
@@ -95,7 +95,7 @@ Material:
     - _Mode: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Power: 13.31
+    - _Power: 20
     - _S: 0.431
     - _Shininess: 0.078125
     - _Size: 0.332
@@ -119,4 +119,5 @@ Material:
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _TintColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     - _edge_Color: {r: 0.745283, g: 0.3109422, b: 0, a: 1}
+    - _node_7781: {r: 7.6847825, g: 4.627371, b: 1.1237181, a: 1}
     - _node_8022: {r: 0.745283, g: 0.3109422, b: 0, a: 1}

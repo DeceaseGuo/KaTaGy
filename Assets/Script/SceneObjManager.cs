@@ -24,6 +24,9 @@ public class SceneObjManager : Photon.MonoBehaviour
             return instance;
         }
     }
+
+    private ObjectPooler poolManager;
+    private ObjectPooler PoolManager { get { if (poolManager == null) poolManager = ObjectPooler.instance; return poolManager; } }
     #endregion
 
     #region 其他腳本Update需求
@@ -35,8 +38,12 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     private MatchTimer matchTime;
     private MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
-    [SerializeField] ButtonManager_Tower buttonTower;
-    [SerializeField] ButtonManager_Solider buttonSoldier;
+
+    public ButtonManager_Tower buttonTower;
+    public ButtonManager_Solider buttonSoldier;
+
+    private BuildManager buildScript;
+    private BuildManager BuildScript { get { if (buildScript == null) buildScript = BuildManager.instance; return buildScript; } }
     #endregion
 
     [HideInInspector]
@@ -53,9 +60,6 @@ public class SceneObjManager : Photon.MonoBehaviour
     //玩家
     public Player myPlayer;
     public Player enemy_Player;
-
-
-    ObjectPooler pool;
 
     //我方數量
     private int mySoldierAmount = 0;
@@ -84,8 +88,6 @@ public class SceneObjManager : Photon.MonoBehaviour
     {
         if (Instance != this)
             Destroy(this);
-
-        pool = ObjectPooler.instance;
     }
 
 
@@ -105,6 +107,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
 
         GameBotton();
+        BuildScript.NeedToUpdate();
         buttonSoldier.NeedToUpdate();
         buttonTower.NeedToUpdate();
     }
@@ -153,7 +156,7 @@ public class SceneObjManager : Photon.MonoBehaviour
          enemySoldierObjs.Add(_core);
      }*/
 
-    public GameObject CalculationDis(GameObject _me, float _maxdis,float _mindis)
+    public GameObject CalculationDis(Transform _me, float _maxdis,float _mindis)
     {
         tmpTowerTarget = null;
         compareDis = 0;
@@ -163,8 +166,8 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < soldierAmount; i++)
             {
-                tmpDistance = Vector3.Distance(enemySoldierObjs[i].transform.position, _me.transform.position);
-                if (tmpDistance < _maxdis && tmpDistance > _mindis)
+                tmpDistance = Vector3.SqrMagnitude(enemySoldierObjs[i].transform.position - _me.position);
+                if (tmpDistance < (_maxdis * _maxdis) && tmpDistance > (_mindis * _mindis))
                 {
                     if (compareDis < tmpDistance)
                     {
@@ -182,8 +185,8 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < towerAmount; i++)
             {
-                tmpDistance = Vector3.Distance(enemyTowerObjs[i].transform.position, _me.transform.position);
-                if (tmpDistance < _maxdis && tmpDistance > _mindis)
+                tmpDistance = Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _me.position);
+                if (tmpDistance < (_maxdis * _maxdis) && tmpDistance > (_mindis * _mindis))
                 {
                     if (compareDis < tmpDistance)
                     {
@@ -201,8 +204,8 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             if (!enemy_Player.GetComponent<isDead>().checkDead)//player不會被移出去，所以要判斷死了沒
             {
-                tmpDistance = Vector3.Distance(enemy_Player.transform.position, _me.transform.position);
-                if (tmpDistance < _maxdis && tmpDistance > _mindis)
+                tmpDistance = Vector3.SqrMagnitude(enemy_Player.transform.position - _me.position);
+                if (tmpDistance < (_maxdis * _maxdis) && tmpDistance > (_mindis * _mindis))
                     return enemy_Player.gameObject;
             }
         }
@@ -221,7 +224,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < towerAmount; i++)
             {
-                if (Vector3.Distance(enemyTowerObjs[i].transform.position, _soldierScript.transform.position) < _soldierScript.viewRadius)
+                if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
                     tmpPointScript = enemyTowerObjs[i].GetComponent<CreatPoints>();
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
@@ -231,7 +234,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                         {
                             if (tmpTargetStruct.myTarget != null)
                             {
-                                if ((enemyTowerObjs[i].transform.position - _soldierScript.transform.position).magnitude < (tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position).magnitude)
+                                if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
                                     tmpTargetStruct.myTarget = enemyTowerObjs[i];
@@ -257,9 +260,9 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < soldierAmount; i++)
             {
-                if (Vector3.Distance(enemySoldierObjs[i].transform.position, _soldierScript.transform.position) < _soldierScript.viewRadius)
+                if (Vector3.SqrMagnitude(enemySoldierObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
-                    tmpPointScript = enemySoldierObjs[i].GetComponent<CreatPoints>();
+                    tmpPointScript = enemySoldierObjs[i].myCreatPoints;
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
                     {
                         tmpTransform = tmpPointScript.FindClosePoint(_soldierScript.enemyData.atk_Range, _soldierScript.transform, _soldierScript.enemyData.width);
@@ -267,7 +270,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                         {
                             if (tmpTargetStruct.myTarget != null)
                             {
-                                if ((enemySoldierObjs[i].transform.position - _soldierScript.transform.position).magnitude < (tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position).magnitude)
+                                if (Vector3.SqrMagnitude(enemySoldierObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
                                     tmpTargetStruct.myTarget = enemySoldierObjs[i].gameObject;
@@ -303,9 +306,9 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             if (!enemy_Player.GetComponent<isDead>().checkDead)//player不會被移出去，所以要判斷死了沒
             {
-                if (Vector3.Distance(enemy_Player.transform.position, _soldierScript.transform.position) < _soldierScript.viewRadius)
+                if (Vector3.SqrMagnitude(enemy_Player.transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
-                    tmpPointScript = enemy_Player.GetComponent<CreatPoints>();
+                    tmpPointScript = enemy_Player.MyCreatPoints;
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
                     {
                         tmpTransform = tmpPointScript.FindClosePoint(_soldierScript.enemyData.atk_Range, _soldierScript.transform, _soldierScript.enemyData.width);
@@ -326,9 +329,9 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < soldierAmount; i++)
             {
-                if (Vector3.Distance(enemySoldierObjs[i].transform.position, _soldierScript.transform.position) < _soldierScript.viewRadius)
+                if (Vector3.SqrMagnitude(enemySoldierObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
-                    tmpPointScript = enemySoldierObjs[i].GetComponent<CreatPoints>();
+                    tmpPointScript = enemySoldierObjs[i].myCreatPoints;
                     if(!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
                     {
                         tmpTransform = tmpPointScript.FindClosePoint(_soldierScript.enemyData.atk_Range, _soldierScript.transform, _soldierScript.enemyData.width);
@@ -336,7 +339,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                         {
                             if (tmpTargetStruct.myTarget != null)
                             {
-                                if ((enemySoldierObjs[i].transform.position - _soldierScript.transform.position).magnitude < (tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position).magnitude)
+                                if (Vector3.SqrMagnitude(enemySoldierObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
                                     tmpTargetStruct.myTarget = enemySoldierObjs[i].gameObject;
@@ -362,7 +365,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             for (int i = 0; i < towerAmount; i++)
             {
-                if (Vector3.Distance(enemyTowerObjs[i].transform.position, _soldierScript.transform.position) < _soldierScript.viewRadius)
+                if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
                     tmpPointScript = enemyTowerObjs[i].GetComponent<CreatPoints>();
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
@@ -372,7 +375,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                         {
                             if (tmpTargetStruct.myTarget != null)
                             {
-                                if ((enemyTowerObjs[i].transform.position - _soldierScript.transform.position).magnitude < (tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position).magnitude)
+                                if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
                                     tmpTargetStruct.myTarget = enemyTowerObjs[i];
@@ -400,7 +403,7 @@ public class SceneObjManager : Photon.MonoBehaviour
     //取出icon
     void GetIcon(GameManager.whichObject whichObject, List<RectTransform> Icons)
     {
-        GameObject icon_obj = pool.getPoolObject(whichObject, Vector3.zero, Quaternion.identity);
+        GameObject icon_obj = PoolManager.getPoolObject(whichObject, Vector3.zero, Quaternion.identity);
         if (Icons == minmap.enemySoliderIcons || Icons == minmap.enemyTowerIcons)
         {
             icon_obj.GetComponent<Image>().color = Color.red;
@@ -427,7 +430,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         {
             Icons[_index].gameObject.GetComponent<Image>().color = Color.white;
         }
-        pool.Repool(whichObject, Icons[_index].gameObject);
+        PoolManager.Repool(whichObject, Icons[_index].gameObject);
         Icons.RemoveAt(_index);
     }
     #endregion

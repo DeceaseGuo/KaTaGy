@@ -35,7 +35,7 @@ public class MyEnemyData : MonoBehaviour
         public byte DEF_Level;
         [Header("生產所需")]
         public int population_need;
-        public float soldier_CountDown;
+       // public float soldier_CountDown;單一生兵倒數計時
         [Header("花費")]
         public int cost_Money;
         public UpdateDataBase.SoldierUpdateData updateData;

@@ -28,9 +28,6 @@ public class Electricity : Photon.MonoBehaviour
     [SerializeField] LayerMask GridMask;
     [SerializeField] LayerMask TowerMask;
 
-    [Header("位置")]
-    public Transform Pos_rotation;
-
     [Header("UI部分")]
     public Image healthBar;
 
@@ -78,7 +75,7 @@ public class Electricity : Photon.MonoBehaviour
                     if (Vector3.Distance(ColliderGrids[i].transform.position, transform.position) <= range)
                     {
                         gridparent = ColliderGrids[i].transform.parent;
-                        gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
+                        //gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = true;
                         ColliderGrids[i].gameObject.layer = 25;
                         gridList.Add(ColliderGrids[i]);
                     }
@@ -226,7 +223,7 @@ public class Electricity : Photon.MonoBehaviour
         for (int i = 0; i < gridList.Count; i++)
         {
             gridparent = gridList[i].transform.parent;
-            gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = _open;
+            //gridparent.Find("_grid").GetComponent<MeshRenderer>().enabled = _open;
             gridList[i].gameObject.layer = (_open) ? 25 : 10;
         }
     }
@@ -246,7 +243,7 @@ public class Electricity : Photon.MonoBehaviour
                 if (t.GridNumber <= 1)
                 {
                     _electricity.firstE.connectTowers.Add(TurretList[i]);
-                    _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(t.DataName));
+                    _electricity.firstE.Use_Electricit(-(t.GetMyElectricity()));
                     t.power = _electricity;
                     continue;
                 }
@@ -255,7 +252,7 @@ public class Electricity : Photon.MonoBehaviour
                 if (TowerGrids.Length >= t.GridNumber)
                 {
                     _electricity.firstE.connectTowers.Add(TurretList[i]);
-                    _electricity.firstE.Use_Electricit(-buildManager.findCost_Electricity(t.DataName));
+                    _electricity.firstE.Use_Electricit(-(t.GetMyElectricity()));
                     t.power = _electricity;
                 }
                 else

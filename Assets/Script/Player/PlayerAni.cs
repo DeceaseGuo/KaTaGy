@@ -8,7 +8,8 @@ public class PlayerAni : Photon.MonoBehaviour
     protected SmoothFollow cameraControl;
     protected Player player;
     public Animator anim;
-    
+    public AudioSource comboAudio;
+
     [Header("武器")]
     public MeshRenderer swordRecyclePos;   //回收武器的地方
     public MeshRenderer pullSwordPos;      //拔起武器的地方
@@ -347,6 +348,11 @@ public class PlayerAni : Photon.MonoBehaviour
     public virtual void SwitchAtkRange(int _n)
     {
 
+    }
+
+    public void StopComboAudio()
+    {
+        comboAudio.Stop();
     }
 
     [PunRPC]

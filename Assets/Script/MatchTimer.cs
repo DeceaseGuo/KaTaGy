@@ -57,6 +57,7 @@ public class MatchTimer : PunBehaviour
     public class TmpFunction
     {
         public byte taskIndex;
+        public bool reverseBar;
         public float needTime;
         public float arriveTime;
         public float nowTime;
@@ -88,6 +89,7 @@ public class MatchTimer : PunBehaviour
     private byte numberPlate;
     private int allTaskAmount;
     private int modifyIndex;
+    private TmpFunction tmpFunction;
     public List<TmpFunction> myTasks = new List<TmpFunction>();
     ///
 
@@ -134,7 +136,12 @@ public class MatchTimer : PunBehaviour
                     if (myTasks[i].showText != null)
                         myTasks[i].showText.text = myTasks[i].nowTime.ToString("0");
                     if (myTasks[i].showBar != null)
-                        myTasks[i].showBar.fillAmount = myTasks[i].nowTime / myTasks[i].needTime;
+                    {
+                        if (!myTasks[i].reverseBar)
+                            myTasks[i].showBar.fillAmount = myTasks[i].nowTime / myTasks[i].needTime;
+                        else
+                            myTasks[i].showBar.fillAmount = ((myTasks[i].nowTime / myTasks[i].needTime) - 1) * -1;
+                    }
                 }
             }
         }
@@ -228,8 +235,8 @@ public class MatchTimer : PunBehaviour
             numberPlate++;
         else
             numberPlate = 0;
-
-        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, _text, _img, numberPlate));
+        tmpFunction = new TmpFunction(a, a + (float)timeToStart, _function, _text, _img, numberPlate);
+        myTasks.Add(tmpFunction);
         allTaskAmount = myTasks.Count;
         return numberPlate;
     }
@@ -241,15 +248,30 @@ public class MatchTimer : PunBehaviour
             numberPlate++;
         else
             numberPlate = 0;
-
-        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, numberPlate));
+        tmpFunction = new TmpFunction(a, a + (float)timeToStart, _function, numberPlate);
+        myTasks.Add(tmpFunction);
+        allTaskAmount = myTasks.Count;
+        return numberPlate;
+    }
+    //[需要每秒時間] 可取消修改 但bar條從0到1(Bar條反轉)
+    public byte SetCountDownReveres(methods _function, float a, Image _img)
+    {
+        //號碼牌從1開始
+        if (numberPlate < 230)
+            numberPlate++;
+        else
+            numberPlate = 0;
+        tmpFunction = new TmpFunction(a, a + (float)timeToStart, _function, null, _img, numberPlate);
+        tmpFunction.reverseBar = true;
+        myTasks.Add(tmpFunction);
         allTaskAmount = myTasks.Count;
         return numberPlate;
     }
     //[不需要每秒時間]不可取消修改
     public void SetCountDownNoCancel(methods _function, float a)
     {
-        myTasks.Add(new TmpFunction(a, a + (float)timeToStart, _function, 255));
+        tmpFunction = new TmpFunction(a, a + (float)timeToStart, _function, 255);
+        myTasks.Add(tmpFunction);
         allTaskAmount = myTasks.Count;
     }
 

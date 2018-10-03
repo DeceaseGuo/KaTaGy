@@ -524,7 +524,7 @@ public class Player : Photon.MonoBehaviour
                 if (ConsumeAP(10f, true))
                 {
                     stopAnything_Switch(true);
-                    Dodge_FCN(arrow.forward);
+                    Dodge_FCN();
                 }
             }
         }
@@ -700,7 +700,7 @@ public class Player : Photon.MonoBehaviour
 
             #region 判斷是否到最終目標點→否則執行移動
             maxDisGap = nav.destination - myCachedTransform.localPosition;
-            if (maxDisGap.sqrMagnitude < Mathf.Pow(playerData.stoppingDst, 2))
+            if (maxDisGap.sqrMagnitude < playerData.stoppingDst * playerData.stoppingDst)
             {
                 isStop();
             }
@@ -791,7 +791,7 @@ public class Player : Photon.MonoBehaviour
     {
         if (deadManager.noCC)
             return;
-
+        stopAnything_Switch(true);
         flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
         flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
@@ -841,10 +841,10 @@ public class Player : Photon.MonoBehaviour
         leftTopPowerBar.fillAmount = playerData.Ap_original / playerData.Ap_Max;
     }
     //閃避執行
-    private void Dodge_FCN(Vector3 _dir)
+    private void Dodge_FCN()
     {
         canDodge = false;
-        myCachedTransform.forward = _dir.normalized;
+        myCachedTransform.forward = arrow.forward;
         Net.RPC("GoDodge", PhotonTargets.All);
         MatchTimeManager.SetCountDownNoCancel(Dodge_End, playerData.Dodget_Delay);
     }
@@ -916,6 +916,7 @@ public class Player : Photon.MonoBehaviour
         isStop();
         if (_stop)
         {
+            AniControll.StopComboAudio();
             MyState = statesData.None;
         }
         else
