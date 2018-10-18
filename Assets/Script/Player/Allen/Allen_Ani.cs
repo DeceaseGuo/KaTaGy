@@ -163,9 +163,6 @@ public class Allen_Ani : PlayerAni
                         Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                         break;
                     case (GameManager.NowTarget.Player):
-                        if (checkTag.noDamage)
-                            return;
-
                         if (startDetect_1)
                         {
                             Net.RPC("takeDamage", PhotonTargets.All, 4f, currentAtkDir.normalized, true);
@@ -175,6 +172,9 @@ public class Allen_Ani : PlayerAni
                             Net.RPC("takeDamage", PhotonTargets.All, 7f, currentAtkDir.normalized, true);                            
                         }
                         break;
+                    case (GameManager.NowTarget.Ore):
+                        Net.RPC("takeDamage", PhotonTargets.All, true, player.Net.viewID);
+                        break;                    
                     case (GameManager.NowTarget.Core):
                         Debug.Log("還沒寫");
                         break;

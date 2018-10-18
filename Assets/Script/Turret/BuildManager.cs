@@ -70,13 +70,9 @@ public class BuildManager : MonoBehaviour
     private void Awake()
     {
         if (instance == null)
-        {
             instance = this;
-        }
         else if (instance != null)
-        {
             Destroy(gameObject);
-        }
     }
 
     private void Start()
@@ -227,26 +223,11 @@ public class BuildManager : MonoBehaviour
             if (Vector3.SqrMagnitude(tur_manager.transform.position - e[i].transform.position) <= e[i].range * e[i].range)
             {
                 tur_manager.power = e[i];
-                e[i].firstE.connectTowers.Add(tur_manager.gameObject);
+                e[i].firstE.connectTowers.Add(tur_manager);
                 e[i].firstE.Use_Electricit(-(tur_manager.GetMyElectricity()));
-                //Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);
-                return;
+                //Debug.LogFormat("{0}扣除電量:{1}，剩餘電量:{2}", item.firstE.name, t, item.firstE.resource_Electricity);     
+                break;
             }
-            else
-            {
-                tur_manager.power = null;
-            }
-        }
-    }
-    #endregion
-
-    #region 退回電量
-    public void obtaniElectricity(Turret_Manager tur_manager)
-    {
-        if (tur_manager.power != null)
-        {
-            tur_manager.power.firstE.Use_Electricit(tur_manager.GetMyElectricity());
-            //Debug.LogFormat("{0}回復電量:{1}，剩餘電量:{2}", tur_manager.power.firstE.name, t, tur_manager.power.firstE.resource_Electricity);
         }
     }
     #endregion
@@ -274,7 +255,7 @@ public class BuildManager : MonoBehaviour
                 continue;
             }
 
-            if (Vector3.Distance(_build.transform.position, electricities[a].transform.position) <= _build.range * 2)
+            if (Vector3.SqrMagnitude(_build.transform.position - electricities[a].transform.position) <= _build.range * _build.range * 4)
             {
                 if (!_build.myTouch.Contains(electricities[a]))
                 {
@@ -491,5 +472,4 @@ public class BuildManager : MonoBehaviour
         closeTurretToBuild();
     }
     #endregion
-
 }

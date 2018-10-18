@@ -56,6 +56,7 @@ public class TurretData : MonoBehaviour
     private List<GameManager.whichObject> towerKey = new List<GameManager.whichObject>();
     private TowerDataBase tmpUpdateData;
 
+    #region 初始化數據
     private void Awake()
     {
         if (instance == null)
@@ -77,6 +78,7 @@ public class TurretData : MonoBehaviour
             enemyDataBase.Add(Towers[i].TurretName, Towers[i]);
         }
     }
+    #endregion
 
     #region 改變塔防數據
     /*//我方

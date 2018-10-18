@@ -4,7 +4,6 @@ using UnityEngine;
 using MyCode.Timer;
 using MyCode.Projector;
 
-
 public class Queen_Skill : SkillBase
 {
     //技能提示
@@ -16,6 +15,7 @@ public class Queen_Skill : SkillBase
 
     [Tooltip("技能圖")]
     public List<Sprite> mySkillIcon;
+    private bool isOkGo;
 
     //Q技能
     private bool firstQAtk;
@@ -38,7 +38,7 @@ public class Queen_Skill : SkillBase
         else
         {
             checkEnemyBox[0] = new Vector3(3.1f, 1.5f, 4f);
-            checkEnemyBox[1] = new Vector3(12, 1, 8);
+            checkEnemyBox[1] = new Vector3(12, 1, 9.5f);
             allSkillRange = GameObject.Find("AllSkillRange_R").GetComponent<Projector>();
             skillQ_CT = Timer.NextFrame(SetQ_CT);
         }
@@ -105,7 +105,7 @@ public class Queen_Skill : SkillBase
     }
     public override void In_Skill_W()
     {
-        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.GetNowMousePoint(), 22.4f);
+        playerScript.GetRangeAnyPoint(projector_W[1].transform, projector_W[0].transform, 22.4f);
         if (Input.GetMouseButtonDown(0))
         {
             if (playerScript.ConsumeAP(skillW_needAP, true))
@@ -121,6 +121,7 @@ public class Queen_Skill : SkillBase
                 playerScript.Net.RPC("Skill_W_Fun", PhotonTargets.All);
             }
         }
+
         if (Input.GetMouseButtonDown(1))
         {
             playerScript.CancelNowSkill();
@@ -177,22 +178,31 @@ public class Queen_Skill : SkillBase
     }
     public override void In_Skill_R()
     {
-        ProjectorManager.ChangePos(projector_W[1], projector_W[0].transform, playerScript.GetNowMousePoint(), 48.75f);
+        isOkGo = playerScript.GetRangeAnyPoint(projector_W[1].transform, projector_W[0].transform, 48.75f);
+
         if (Input.GetMouseButtonDown(0))
         {
-            if (playerScript.ConsumeAP(skillR_needAP, true))
+            if (isOkGo)
             {
-                playerScript.SkillState = Player.SkillData.None;
-                //開啟攻擊範圍
-                playerScript.Net.RPC("GetSkillPos", PhotonTargets.All, projector_W[1].transform.position);
-                //關閉顯示範圍
-                ProjectorManager.SwitchPorjector(projector_W, false);
+                if (playerScript.ConsumeAP(skillR_needAP, true))
+                {
+                    playerScript.SkillState = Player.SkillData.None;
+                    //開啟攻擊範圍
+                    playerScript.Net.RPC("GetSkillPos", PhotonTargets.All, projector_W[1].transform.position);
+                    //關閉顯示範圍
+                    ProjectorManager.SwitchPorjector(projector_W, false);
 
-                transform.forward = playerScript.arrow.forward;
-                playerScript.stopAnything_Switch(true);
-                playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
+                    transform.forward = playerScript.arrow.forward;
+                    playerScript.stopAnything_Switch(true);
+                    playerScript.Net.RPC("Skill_R_Fun", PhotonTargets.All);
+                }
+            }
+            else
+            {
+                playerScript.HintScript.CreatHint("不能在此處傳送");
             }
         }
+
         if (Input.GetMouseButtonDown(1))
         {
             playerScript.CancelNowSkill();
@@ -261,10 +271,12 @@ public class Queen_Skill : SkillBase
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
-                                if (!who.noCC)
-                                    tmpEnemy[i].transform.forward = -transform.forward.normalized;
                                 Net.RPC("takeDamage", PhotonTargets.All, 4.5f, Vector3.zero, false);
-                                Net.RPC("pushOtherTarget", PhotonTargets.All);
+                                if (!who.noCC)
+                                {
+                                    tmpEnemy[i].transform.forward = -transform.forward.normalized;
+                                    Net.RPC("pushOtherTarget", PhotonTargets.All);
+                                }
                                 break;
                             case GameManager.NowTarget.Soldier:
                                 if (!who.noCC)
@@ -276,8 +288,6 @@ public class Queen_Skill : SkillBase
                                 break;
                             case GameManager.NowTarget.Core:
                                 break;
-                            case GameManager.NowTarget.NoChange:
-                                return;
                             default:
                                 break;
                         }
@@ -305,8 +315,7 @@ public class Queen_Skill : SkillBase
                             case GameManager.NowTarget.Player:
                                 if (!who.noCC)
                                     tmpEnemy[i].transform.forward = -transform.forward.normalized;
-                                Net.RPC("HitFlayUp", PhotonTargets.All);
-                                Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
+                                Net.RPC("HitFlayUp", PhotonTargets.All, 9f, 1.2f);
                                 break;
                             case GameManager.NowTarget.Soldier:
                                 if (!who.noCC)
@@ -318,8 +327,6 @@ public class Queen_Skill : SkillBase
                                 break;
                             case GameManager.NowTarget.Core:
                                 break;
-                            case GameManager.NowTarget.NoChange:
-                                return;
                             default:
                                 break;
                         }
@@ -358,9 +365,7 @@ public class Queen_Skill : SkillBase
                         switch (who.myAttributes)
                         {
                             case GameManager.NowTarget.Player:
-                                Net.RPC("HitFlayUp", PhotonTargets.All);
-                                Net.RPC("takeDamage", PhotonTargets.All, 8f, Vector3.zero, false);
-                                Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
+                                Net.RPC("HitFlayUp", PhotonTargets.All,8f,1.8f);
                                 break;
                             case GameManager.NowTarget.Soldier:
                                 Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.8f);
@@ -373,8 +378,6 @@ public class Queen_Skill : SkillBase
                                 break;
                             case GameManager.NowTarget.Core:
                                 break;
-                            case GameManager.NowTarget.NoChange:
-                                return;
                             default:
                                 break;
                         }
@@ -391,9 +394,10 @@ public class Queen_Skill : SkillBase
     #region E技能
     public void E_Skill()
     {
+        NowSkillAudio();
         if (!photonView.isMine)
         {
-            skillE_CT = Timer.FirstAction(0.23f, () =>
+            skillE_CT = Timer.FirstAction(0.2f, () =>
             {
                 tmpEnemy = Physics.OverlapBox(transform.localPosition + transform.forward * 10f, checkEnemyBox[1], Quaternion.identity, aniScript.canAtkMask);
                 if (tmpEnemy.Length != 0)
@@ -422,8 +426,6 @@ public class Queen_Skill : SkillBase
                                     break;
                                 case GameManager.NowTarget.Core:
                                     break;
-                                case GameManager.NowTarget.NoChange:
-                                    return;
                                 default:
                                     break;
                             }
@@ -431,7 +433,6 @@ public class Queen_Skill : SkillBase
                     }
                 }
             });
-            Debug.Log("開始計算傷害");
             StartCoroutine(skillE_CT);
         }
     }
@@ -458,6 +459,49 @@ public class Queen_Skill : SkillBase
     public void Teleport()
     {
         playerScript.TeleportPos(allSkillRange.transform.position);
+        if (!photonView.isMine)
+            R_Damage();
+    }
+
+    public void R_Damage()
+    {
+        tmpEnemy = Physics.OverlapBox(transform.localPosition, checkEnemyBox[1], Quaternion.identity, aniScript.canAtkMask);
+        if (tmpEnemy.Length != 0)
+        {
+            targetAmount = tmpEnemy.Length;
+            for (int i = 0; i < targetAmount; i++)
+            {
+                who = tmpEnemy[i].GetComponent<isDead>();
+                if (who != null)
+                {
+                    dirToTarget = (tmpEnemy[i].transform.position - transform.position).normalized;
+                    Net = tmpEnemy[i].GetComponent<PhotonView>();
+                    switch (who.myAttributes)
+                    {
+                        case GameManager.NowTarget.Player:
+                            Net.RPC("takeDamage", PhotonTargets.All, 4f, Vector3.zero, false);
+                            if (!who.noCC)
+                            {
+                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
+                                Net.RPC("pushOtherTarget", PhotonTargets.All);
+                            }
+                            break;
+                        case GameManager.NowTarget.Soldier:
+                            if (!who.noCC)
+                                Net.RPC("pushOtherTarget", PhotonTargets.All, dirToTarget.normalized);
+                            Net.RPC("takeDamage", PhotonTargets.All, playerScript.Net.viewID, 4f);
+                            break;
+                        case GameManager.NowTarget.Tower:
+                            Net.RPC("takeDamage", PhotonTargets.All, 4f);
+                            break;
+                        case GameManager.NowTarget.Core:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
     }
     #endregion
 
@@ -486,8 +530,6 @@ public class Queen_Skill : SkillBase
     {
         if (photonView.isMine)
             skillCancelIndex[2] = playerScript.MatchTimeManager.SetCountDown(playerScript.CountDown_E, playerScript.playerData.skillCD_E, SkillIconManager.skillContainer[2].nowTime, SkillIconManager.skillContainer[2].cdBar);
-        else
-            End_E_skill();
     }
     //R
     public override void ResetR_GoCD()
@@ -581,6 +623,7 @@ public class Queen_Skill : SkillBase
                 //playerScript.AudioScript.PlayAppointAudio(skillAudio, 4);
                 break;
             case SkillAction.is_E:
+                playerScript.AudioScript.PlayAppointAudio(skillAudio, 12);
                 break;
             case SkillAction.is_R:
                 break;

@@ -303,9 +303,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.16004753
+  m_TransitionDuration: 0.009534897
   m_TransitionOffset: 0
-  m_ExitTime: 0.7794119
+  m_ExitTime: 0.0024783479
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -660,9 +660,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.061928034
-  m_TransitionOffset: 0.013438215
-  m_ExitTime: 0.8046569
+  m_TransitionDuration: 0.014010668
+  m_TransitionOffset: 0
+  m_ExitTime: 0.82598346
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -897,9 +897,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.089782715
+  m_TransitionDuration: 0.011894485
   m_TransitionOffset: 0
-  m_ExitTime: 0.64285755
+  m_ExitTime: 0.011033396
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1431,7 +1431,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: build_run
-  m_Speed: 1
+  m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101710951513183370}
@@ -1543,7 +1543,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: buildingLoop
-  m_Speed: 1
+  m_Speed: 1.1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101301760336203862}
@@ -1764,7 +1764,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: building
-  m_Speed: 1
+  m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101740146684367962}
@@ -2127,7 +2127,7 @@ AnimatorStateMachine:
     m_Position: {x: 360, y: -36, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102158742596769680}
-    m_Position: {x: 372, y: 144, z: 0}
+    m_Position: {x: 360, y: 144, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102537479230013524}
     m_Position: {x: 624, y: 144, z: 0}

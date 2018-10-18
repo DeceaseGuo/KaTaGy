@@ -13,7 +13,6 @@ public class AudioManager : MonoBehaviour
     [System.Serializable]
     public class audioContainer
     {
-        public byte whichOne;
         public AudioClip audioClip;
         [Range(0, 256)]
         public int _priorty;

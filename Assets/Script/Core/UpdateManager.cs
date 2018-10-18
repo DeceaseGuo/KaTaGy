@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class UpdateManager : MonoBehaviour
@@ -35,14 +34,6 @@ public class UpdateManager : MonoBehaviour
         myPlayer = Creatplayer.instance.Player_Script;
     }
 
-   /* private void Update()
-    {
-        if (Input.GetKeyDown("v"))
-        {
-            Update_ThisAbility(GameManager.NowTarget.Soldier, Myability.Soldier_ATK, 1, GameManager.whichObject.None);
-        }
-    }*/
-
     public void Update_ThisAbility(GameManager.NowTarget _whoUpdate, Myability _state, byte _level, GameManager.whichObject _whoIs)
     {
         switch (_whoUpdate)
@@ -54,10 +45,10 @@ public class UpdateManager : MonoBehaviour
                 myPlayer.Net.RPC("UpdataData", PhotonTargets.All, _level, (int)_state);
                 break;
             case GameManager.NowTarget.Soldier:
-                myPlayer.Net.RPC("UpdataSoldier", PhotonTargets.All, _level, (int)_state);
+                myPlayer.Net.RPC("UpdateSoldier", PhotonTargets.All, _level, (int)_state);
                 break;
             case GameManager.NowTarget.Tower:
-                myPlayer.Net.RPC("UpdataTower", PhotonTargets.All, _level, (int)_state);
+                myPlayer.Net.RPC("UpdateTower", PhotonTargets.All, _level, (int)_state);
                 break;
             default:
                 break;

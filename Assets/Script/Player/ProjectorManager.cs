@@ -28,18 +28,5 @@
                 _projectors[i].enabled = _open;
             }
         }
-
-        public static void ChangePos(Projector _projector, Transform _originalPos, Vector3 _pos, float _maxRange)
-        {
-            if (_projector != null)
-            {
-                if (Vector3.Distance(_pos, _originalPos.position) <= _maxRange)
-                    _projector.transform.position = _pos;
-                else
-                {
-                    _projector.transform.position = _originalPos.position + ((_pos - _originalPos.position).normalized * _maxRange);
-                }
-            }
-        }
     }
 }

@@ -154,15 +154,13 @@ public class Queen_Ani : PlayerAni
                         Net.RPC("takeDamage", PhotonTargets.All, 10.0f);
                         break;
                     case (GameManager.NowTarget.Player):
-                        if (checkTag.noDamage)
-                            return;
-
                         if (startDetect_1)
-                        {
-                            Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);                           
-                        }
+                            Net.RPC("takeDamage", PhotonTargets.All, 3.0f, currentAtkDir.normalized, true);
                         else
                             Net.RPC("takeDamage", PhotonTargets.All, 5.5f, currentAtkDir.normalized, true);                        
+                        break;
+                    case (GameManager.NowTarget.Ore):
+                        Net.RPC("takeDamage", PhotonTargets.All, false, player.Net.viewID);
                         break;
                     case (GameManager.NowTarget.Core):
                         Debug.Log("還沒寫");
@@ -177,6 +175,13 @@ public class Queen_Ani : PlayerAni
     }
     #endregion
 
+    //粒子特效位子跟旋轉
+    //combo1
+    Vector3 PS1_Pos = new Vector3(0.07f, 1.58f, .12f);
+    Vector3 PS1_Rot = new Vector3(285.54f, -65.7f, 271.8f);
+    //combo2
+    Vector3 PS2_Pos = new Vector3(.74f, 2.57f, .89f);
+    Vector3 PS2_Rot = new Vector3(80.76f, -136.5f, -148.6f);
     #region 目前傷害判定區及刀光特效
     public override void SwitchAtkRange(int _n)
     {
@@ -190,49 +195,45 @@ public class Queen_Ani : PlayerAni
                 break;
             //刀光1
             case (2):
-                /*if (comboIndex == 1 || comboIndex == 2)
+                if (comboIndex == 1 || comboIndex == 2)
                 {
                     swordLight[0].transform.localPosition = PS1_Pos;
                     swordLight[0].transform.localEulerAngles = PS1_Rot;
                     swordLight[0].Play();
-                }*/
+                }
                 break;
             //刀光2
             case (3):
-              /*  if (comboIndex == 2 || comboIndex == 3)
+                if (comboIndex == 2 || comboIndex == 3)
                 {
                     swordLight[0].transform.localPosition = PS2_Pos;
                     swordLight[0].transform.localEulerAngles = PS2_Rot;
                     swordLight[0].Play();
-                }*/
+                }
                 break;
             //刀光3
             case (4):
-                /*if (comboIndex == 3 || comboIndex == 4)
+                if (comboIndex == 3 || comboIndex == 4)
                 {
-                    swordLight[2].Play();
-                    swordLight[3].Play();
-                }*/
+                    swordLight[1].Play();
+                }
                 break;
             //刀光4
             case (5):
-                /*if (comboIndex == 4)
+                if (comboIndex == 4)
                 {
-                    swordLight[0].transform.localPosition = PS3_Pos;
-                    swordLight[0].transform.localEulerAngles = PS3_Rot;
-                    swordLight[1].transform.forward = transform.forward;
-                    swordLight[1].transform.localPosition = PS4_Pos.transform.position;
-                    swordLight[0].Play();
-                    swordLight[1].Play();
-                }*/
+                    swordLight[3].transform.forward = transform.forward;
+                    swordLight[2].Play();
+                    swordLight[3].Play();
+                }
                 break;            
             default://8
                 startDetect_1 = false;
                 startDetect_2 = false;
-                /*for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     swordLight[i].Stop();
-                }*/
+                }
                 alreadyDamage.Clear();
                 break;
         }
@@ -244,17 +245,17 @@ public class Queen_Ani : PlayerAni
         //刀光1,2
         if (comboIndex == 1 || comboIndex == 2)
         {
-              player.AudioScript.PlayAppointAudio(comboAudio, 5);
+            player.AudioScript.PlayAppointAudio(comboAudio, 5);
         }
         //刀光3
         if (comboIndex == 3)
         {
-              player.AudioScript.PlayAppointAudio(comboAudio, 6);
+            player.AudioScript.PlayAppointAudio(comboAudio, 6);
         }
         //刀光4
         if (comboIndex == 4)
         {
-             player.AudioScript.PlayAppointAudio(comboAudio, 7);
+            player.AudioScript.PlayAppointAudio(comboAudio, 7);
         }
     }
 }

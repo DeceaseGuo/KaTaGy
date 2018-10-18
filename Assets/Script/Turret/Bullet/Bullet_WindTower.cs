@@ -15,15 +15,15 @@ public class Bullet_WindTower : BulletManager
     [SerializeField] float flyTime;
     [SerializeField] float fireCd = 0.08f;
     [SerializeField] float moveDis = 1.7f;
-    private List<GameObject> tmpNoDamage = new List<GameObject>();
+   // private List<GameObject> tmpNoDamage = new List<GameObject>();
+    //傷害間隔區
+    private LinkedList<Collider> alreadytakeDamage = new LinkedList<Collider>();
     Tweener myTweener;
 
     protected void OnEnable()
     {
         if (photonView.isMine)
-            StartCoroutine(DisappearThis());
-
-        //StartCoroutine("GetCollider");
+            MatchTimeManager.SetCountDown(DisappearThis, flyTime);
     }
    
     void Hit()
@@ -32,16 +32,16 @@ public class Bullet_WindTower : BulletManager
         //print("抓攻擊對象");
         for (int i = 0; i < colliders.Length; i++)
         {
-            targetDead = colliders[i].gameObject.GetComponent<isDead>();
+            if (alreadytakeDamage.Contains(colliders[i]))
+                continue;
+
+            targetDead = colliders[i].GetComponent<isDead>();
             if (targetDead == null || targetDead.checkDead)
                 continue;
 
-            if (!checkIf(colliders[i].gameObject))
-            {
-                GiveDamage();
-                tmpNoDamage.Add(targetDead.gameObject);
-                StartCoroutine(DelayDamage(targetDead.gameObject));
-            }
+            GiveDamage();
+            alreadytakeDamage.AddLast(colliders[i]);
+            Invoke("DelayDamage", fireCd);
 
             MoveTarget();
         }
@@ -60,7 +60,7 @@ public class Bullet_WindTower : BulletManager
     {       
         targetPos = dir.normalized * bullet_Speed * flyTime;
         targetPos.y = targetDead.transform.localPosition.y;
-        myTweener = transform.DOBlendableMoveBy(targetPos, flyTime + .5f).SetEase(/*Ease.InOutQuart*/ Ease.InOutCubic);
+        myTweener = transform.DOBlendableMoveBy(targetPos, flyTime + .5f).SetEase(Ease.InOutCubic);
         myTweener.OnUpdate(Reset_Rot);
         if (!photonView.isMine)
         {
@@ -84,37 +84,28 @@ public class Bullet_WindTower : BulletManager
     }
     #endregion
 
-    #region 檢查敵人是否在無傷害間隔區 
-    bool checkIf(GameObject _enemy)
-    {
-        if (tmpNoDamage.Contains(_enemy))
-            return true;
-        else
-            return false;
-    }
-    #endregion
-
     #region 離開無傷害間隔區
-    IEnumerator DelayDamage(GameObject _enemy)
+    void DelayDamage()
     {
-        yield return new WaitForSeconds(fireCd);
-        if (checkIf(_enemy))
-            tmpNoDamage.Remove(_enemy);
+        if (alreadytakeDamage.Count != 0)
+        {
+            alreadytakeDamage.RemoveFirst();
+        }
     }
     #endregion
 
     #region 過一段時間後消失
-    IEnumerator DisappearThis()
+    void DisappearThis()
     {
-        yield return new WaitForSeconds(flyTime);
-        tmpNoDamage.Clear();
+        alreadytakeDamage.Clear();
         returnBulletPool();
     }
     #endregion
 
-    void OnDrawGizmos()
+    //觀看用
+   /* void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(transform.position + offset, pushBox_Size);
-    }
+    }*/
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 using UnityEngine;
 namespace AtkTower
 {
@@ -23,11 +21,11 @@ namespace AtkTower
 
         //數據
         public GameManager.whichObject DataName;
-        protected TurretData.TowerDataBase turretData;
-        protected TurretData.TowerDataBase originalTurretData;
-        private CreatPoints MyCreatPoints;
+        public TurretData.TowerDataBase turretData;
+        public TurretData.TowerDataBase originalTurretData;
+        public CreatPoints MyCreatPoints;
         protected Transform myCachedTransform;
-        private bool firstGetData = true;
+        protected bool firstGetData = true;
         public int GridNumber;
         public Electricity power;
         //242 235 0
@@ -55,11 +53,12 @@ namespace AtkTower
 
         [Header("UI部分")]
         public Image Fad_energyBar;
+        public Image healthBar;
 
         protected isDead deadManager;
         protected PhotonView Net;
 
-        private void Update()
+        public virtual void NeedToUpdate()
         {
             //死亡
             if (deadManager.checkDead)
@@ -108,17 +107,17 @@ namespace AtkTower
             }
         }
 
-        protected void FormatData()
+        protected virtual void FormatData()
         {
             if (photonView.isMine)
             {
-                SceneManager.AddMy_TowerList(gameObject);
+                SceneManager.AddMy_TowerList(this);
                 if (originalTurretData.ATK_Level != TurretData.myTowerAtkLevel || originalTurretData.DEF_Level != TurretData.myTowerDefLevel)
                     originalTurretData = TurretData.instance.getTowerData(DataName);
             }
             else
             {
-                SceneManager.AddEnemy_TowerList(gameObject);
+                SceneManager.AddEnemy_TowerList(this);
                 if (originalTurretData.ATK_Level != TurretData.enemyTowerAtkLevel || originalTurretData.DEF_Level != TurretData.enemyTowerDefLevel)
                     originalTurretData = TurretData.instance.getEnemyTowerData(DataName);
             }
@@ -132,7 +131,7 @@ namespace AtkTower
             Fad_energyBar.fillAmount = 0.0f;
         }
 
-        public void GoFormatData()
+        public virtual void GoFormatData()
         {
             //myRender.material.SetFloat("Vector1_D655974D", 0);
 
@@ -280,8 +279,7 @@ namespace AtkTower
         }
         #endregion
 
-        #region 傷害
-        public Image healthBar;
+        #region 傷害        
         [PunRPC]
         public void takeDamage(float _damage)
         {
@@ -291,7 +289,7 @@ namespace AtkTower
             MyHelath(CalculatorDamage(_damage));
         }
 
-        private void MyHelath(float _damage)
+        protected void MyHelath(float _damage)
         {
             if (turretData.UI_Hp > 0)
             {
@@ -308,7 +306,7 @@ namespace AtkTower
         #endregion
 
         #region 傷害顯示
-        void openPopupObject(float _damage)
+        protected void openPopupObject(float _damage)
         {
             FloatTextCon.CreateFloatingText(_damage, myCachedTransform);
             healthBar.fillAmount = turretData.UI_Hp / turretData.UI_maxHp;
@@ -323,16 +321,16 @@ namespace AtkTower
         #endregion
 
         #region 死亡
-        protected void Death()
+        protected virtual void Death()
         {
             if (photonView.isMine)
             {
-                SceneManager.RemoveMy_TowerList(gameObject);
-                BuildManager.instance.obtaniElectricity(this);
+                SceneManager.RemoveMy_TowerList(this);
+                power.firstE.Use_Electricit(originalTurretData.cost_Electricity);
             }
             else
             {
-                SceneManager.RemoveEnemy_TowerList(gameObject);
+                SceneManager.RemoveEnemy_TowerList(this);
             }
 
             Invoke("Return_ObjPool", 1.5f);

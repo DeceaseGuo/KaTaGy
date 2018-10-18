@@ -24,10 +24,10 @@ public class HitChange : StateMachineBehaviour
         {
             animator.SetBool(ani.aniHashValue[8], false);
             animator.SetBool(ani.aniHashValue[1], false);
-            playerScript.buildManager.nowBuilding = false;
+            playerScript.BuildScript.nowBuilding = false;
             //
-            playerScript.buildManager.uiManager.CloseTowerMenu();
-            playerScript.buildManager.grid_snap.closGrid();
+            playerScript.BuildScript.uiManager.CloseTowerMenu();
+            playerScript.BuildScript.grid_snap.closGrid();
             //
             ani.WeaponChangePos(1);
             Debug.Log("中斷");

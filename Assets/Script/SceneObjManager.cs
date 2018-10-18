@@ -41,17 +41,16 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     public ButtonManager_Tower buttonTower;
     public ButtonManager_Solider buttonSoldier;
-
-    private BuildManager buildScript;
-    private BuildManager BuildScript { get { if (buildScript == null) buildScript = BuildManager.instance; return buildScript; } }
     #endregion
 
     [HideInInspector]
     public MinMapSyn minmap;
-    //塔
+    //電力塔
     public List<Electricity> myElectricityObjs = new List<Electricity>();
-    public List<GameObject> myTowerObjs = new List<GameObject>();
-    public List<GameObject> enemyTowerObjs = new List<GameObject>();
+
+    //攻擊塔
+    public List<Turret_Manager> myTowerObjs = new List<Turret_Manager>();
+    public List<Turret_Manager> enemyTowerObjs = new List<Turret_Manager>();
 
     //士兵
     public List<EnemyControl> mySoldierObjs = new List<EnemyControl>();
@@ -63,6 +62,7 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     //我方數量
     private int mySoldierAmount = 0;
+    private int myTowerAmount = 0;
     //敵方數量
     private int towerAmount = 0;
     private int soldierAmount = 0;
@@ -90,7 +90,6 @@ public class SceneObjManager : Photon.MonoBehaviour
             Destroy(this);
     }
 
-
     private void Update()
     {
         //玩家update
@@ -106,8 +105,16 @@ public class SceneObjManager : Photon.MonoBehaviour
             }
         }
 
+        //塔防update
+        if (myTowerAmount != 0)
+        {
+            for (int i = 0; i < myTowerAmount; i++)
+            {
+                myTowerObjs[i].NeedToUpdate();
+            }
+        }
+
         GameBotton();
-        BuildScript.NeedToUpdate();
         buttonSoldier.NeedToUpdate();
         buttonTower.NeedToUpdate();
     }
@@ -119,7 +126,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         //時間管理
         MatchTimeManager.NeedToLateUpdate();
 
-        //玩家Points的位子跟隨
+        //Clone玩家的Points的位子跟隨
         if (enemy_Player != null)
             enemy_Player.MyCreatPoints.NeedToLateUpdate();
 
@@ -148,14 +155,13 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
     }
 
-
-
     //加入敵人核心(待修改)
     /* public void SetCore(GameObject _core)
      {
          enemySoldierObjs.Add(_core);
      }*/
 
+    #region 塔防找目標
     public GameObject CalculationDis(Transform _me, float _maxdis,float _mindis)
     {
         tmpTowerTarget = null;
@@ -191,7 +197,7 @@ public class SceneObjManager : Photon.MonoBehaviour
                     if (compareDis < tmpDistance)
                     {
                         compareDis = tmpDistance;
-                        tmpTowerTarget = enemyTowerObjs[i];
+                        tmpTowerTarget = enemyTowerObjs[i].gameObject;
                     }
                 }
             }
@@ -211,7 +217,10 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
         return tmpTowerTarget;
     }
+    #endregion
 
+    #region 士兵找目標
+    //優先攻擊塔(除了反擊不會打玩家)
     public myCorrectTarget CalculationDis_Tower(EnemyControl _soldierScript)
     {
         tmpTargetStruct.myTarget = null;
@@ -226,31 +235,33 @@ public class SceneObjManager : Photon.MonoBehaviour
             {
                 if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
-                    tmpPointScript = enemyTowerObjs[i].GetComponent<CreatPoints>();
+                    tmpPointScript = enemyTowerObjs[i].MyCreatPoints;
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
                     {
                         tmpTransform = tmpPointScript.FindClosePoint(_soldierScript.enemyData.atk_Range, _soldierScript.transform, _soldierScript.enemyData.width);
                         if (tmpTransform != null)
                         {
+
                             if (tmpTargetStruct.myTarget != null)
                             {
                                 if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
-                                    tmpTargetStruct.myTarget = enemyTowerObjs[i];
+                                    tmpTargetStruct.myTarget = enemyTowerObjs[i].gameObject;
                                     tmpTargetStruct.goPos = tmpTransform;
                                 }
                             }
                             else
                             {
                                 tmpTargetStruct.nowPointScript = tmpPointScript;
-                                tmpTargetStruct.myTarget = enemyTowerObjs[i];
+                                tmpTargetStruct.myTarget = enemyTowerObjs[i].gameObject;
                                 tmpTargetStruct.goPos = tmpTransform;
                             }
                         }
                     }
                 }
-            }
+            }          
+
             if (tmpTargetStruct.myTarget != null)
                 return tmpTargetStruct;
         }
@@ -294,6 +305,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         return tmpTargetStruct;
     }
 
+    //優先攻擊士兵(可選擇打不打玩家)
     public myCorrectTarget CalculationDis_Soldier(EnemyControl _soldierScript, bool canAtkPlay)
     {
         tmpTargetStruct.myTarget = null;
@@ -367,7 +379,7 @@ public class SceneObjManager : Photon.MonoBehaviour
             {
                 if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < _soldierScript.viewRadius * _soldierScript.viewRadius)
                 {
-                    tmpPointScript = enemyTowerObjs[i].GetComponent<CreatPoints>();
+                    tmpPointScript = enemyTowerObjs[i].MyCreatPoints;
                     if (!tmpPointScript.CheckFull(_soldierScript.enemyData.atk_Range))
                     {
                         tmpTransform = tmpPointScript.FindClosePoint(_soldierScript.enemyData.atk_Range, _soldierScript.transform, _soldierScript.enemyData.width);
@@ -378,14 +390,14 @@ public class SceneObjManager : Photon.MonoBehaviour
                                 if (Vector3.SqrMagnitude(enemyTowerObjs[i].transform.position - _soldierScript.transform.position) < Vector3.SqrMagnitude(tmpTargetStruct.myTarget.transform.position - _soldierScript.transform.position))
                                 {
                                     tmpTargetStruct.nowPointScript = tmpPointScript;
-                                    tmpTargetStruct.myTarget = enemyTowerObjs[i];
+                                    tmpTargetStruct.myTarget = enemyTowerObjs[i].gameObject;
                                     tmpTargetStruct.goPos = tmpTransform;
                                 }
                             }
                             else
                             {
                                 tmpTargetStruct.nowPointScript = tmpPointScript;
-                                tmpTargetStruct.myTarget = enemyTowerObjs[i];
+                                tmpTargetStruct.myTarget = enemyTowerObjs[i].gameObject;
                                 tmpTargetStruct.goPos = tmpTransform;
                             }
                         }
@@ -398,6 +410,7 @@ public class SceneObjManager : Photon.MonoBehaviour
 
         return tmpTargetStruct;
     }
+    #endregion
 
     #region Icon
     //取出icon
@@ -444,16 +457,17 @@ public class SceneObjManager : Photon.MonoBehaviour
         mySoldierAmount = mySoldierObjs.Count;
     }
     //塔防
-    public void AddMy_TowerList(GameObject _obj)
+    public void AddMy_TowerList(Turret_Manager _obj)
     {
-        myTowerObjs.Add(_obj.gameObject);
+        myTowerObjs.Add(_obj);
+        myTowerAmount = myTowerObjs.Count;
         //   GetIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons);
     }
     //電力塔
     public void AddMy_Electricity(Electricity _obj)
     {
-        myTowerObjs.Add(_obj.gameObject);
-
+        myTowerObjs.Add(_obj);
+        myTowerAmount = myTowerObjs.Count;
         myElectricityObjs.Add(_obj);
         //   GetIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons);
     }
@@ -467,7 +481,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         //  GetIcon(GameManager.whichObject.SoldierIcon, minmap.enemySoliderIcons);
     }
     //塔防
-    public void AddEnemy_TowerList(GameObject _obj)
+    public void AddEnemy_TowerList(Turret_Manager _obj)
     {
         enemyTowerObjs.Add(_obj);
         towerAmount = enemyTowerObjs.Count;
@@ -475,7 +489,7 @@ public class SceneObjManager : Photon.MonoBehaviour
     //電力塔
     public void AddEnemy_Electricity(Electricity _obj)
     {
-        enemyTowerObjs.Add(_obj.gameObject);
+        enemyTowerObjs.Add(_obj);
         towerAmount = enemyTowerObjs.Count;
         // GetIcon(GameManager.whichObject.EIcon, minmap.enemyTowerIcons);
     }
@@ -492,22 +506,24 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
     }
     //塔防
-    public void RemoveMy_TowerList(GameObject _obj)
+    public void RemoveMy_TowerList(Turret_Manager _obj)
     {
         if (myTowerObjs.Contains(_obj))
         {
             //ReIcon(GameManager.whichObject.TowerIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
             myTowerObjs.Remove(_obj);
+            myTowerAmount = myTowerObjs.Count;
         }
     }
     //電力塔
     public void RemoveMy_Electricity(Electricity _obj)
     {
-        if (myTowerObjs.Contains(_obj.gameObject))
+        if (myTowerObjs.Contains(_obj))
         {
             //    ReIcon(GameManager.whichObject.EIcon, minmap.myTowerIcons, myTowerObjs.IndexOf(_obj));
             myElectricityObjs.Remove(_obj);
-            myTowerObjs.Remove(_obj.gameObject);
+            myTowerObjs.Remove(_obj);
+            myTowerAmount = myTowerObjs.Count;
         }
     }
 
@@ -523,7 +539,7 @@ public class SceneObjManager : Photon.MonoBehaviour
         }
     }
     //塔防
-    public void RemoveEnemy_TowerList(GameObject _obj)
+    public void RemoveEnemy_TowerList(Turret_Manager _obj)
     {
         if (enemyTowerObjs.Contains(_obj))
         {
@@ -535,10 +551,10 @@ public class SceneObjManager : Photon.MonoBehaviour
     //電力塔
     public void RemoveEnemy_Electricity(Electricity _obj)
     {
-        if (enemyTowerObjs.Contains(_obj.gameObject))
+        if (enemyTowerObjs.Contains(_obj))
         {
             // ReIcon(GameManager.whichObject.TowerIcon, minmap.enemyTowerIcons, enemyTowerObjs.IndexOf(_obj));
-            enemyTowerObjs.Remove(_obj.gameObject);
+            enemyTowerObjs.Remove(_obj);
             towerAmount = enemyTowerObjs.Count;
         }
     }
@@ -576,44 +592,48 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     void UpdateMySoldier_Atk(byte _level)
     {
+        UpdateDataBase.SoldierUpdateData tmpData;
         switch (_level)
         {            
             case (1):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.ATK_Level != _level)
                     {
                         mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage+= mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].originalData.atk_Damage+= mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk1;
+                        mySoldierObjs[i].originalData.atk_maxDamage+= tmpData.Add_atk1;
+                        mySoldierObjs[i].originalData.atk_Damage+= tmpData.Add_atk1;
+                        mySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk1;
+                        mySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk1;
                     }
                 }
                 break;
             case (2):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.ATK_Level != _level)
                     {
                         mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].originalData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk2;
+                        mySoldierObjs[i].originalData.atk_maxDamage += tmpData.Add_atk2;
+                        mySoldierObjs[i].originalData.atk_Damage += tmpData.Add_atk2;
+                        mySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk2;
+                        mySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk2;
                     }
                 }
                 break;
             case (3):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.ATK_Level != _level)
                     {
                         mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].originalData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk3;
+                        mySoldierObjs[i].originalData.atk_maxDamage += tmpData.Add_atk3;
+                        mySoldierObjs[i].originalData.atk_Damage += tmpData.Add_atk3;
+                        mySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk3;
+                        mySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk3;
                     }
                 }
                 break;
@@ -625,44 +645,48 @@ public class SceneObjManager : Photon.MonoBehaviour
     }
     void UpdateClientSoldier_Atk(byte _level)
     {
+        UpdateDataBase.SoldierUpdateData tmpData;
         switch (_level)
         {
             case (1):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.ATK_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.ATK_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].originalData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk1;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk1;
+                        enemySoldierObjs[i].originalData.ATK_Level = _level;
+                        enemySoldierObjs[i].originalData.atk_maxDamage += tmpData.Add_atk1;
+                        enemySoldierObjs[i].originalData.atk_Damage += tmpData.Add_atk1;
+                        enemySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk1;
+                        enemySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk1;
                     }
                 }
                 break;
             case (2):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.ATK_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.ATK_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].originalData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk2;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk2;
+                        enemySoldierObjs[i].originalData.ATK_Level = _level;
+                        enemySoldierObjs[i].originalData.atk_maxDamage += tmpData.Add_atk2;
+                        enemySoldierObjs[i].originalData.atk_Damage += tmpData.Add_atk2;
+                        enemySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk2;
+                        enemySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk2;
                     }
                 }
                 break;
             case (3):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.ATK_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.ATK_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.ATK_Level = _level;
-                        mySoldierObjs[i].originalData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].originalData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].enemyData.atk_maxDamage += mySoldierObjs[i].originalData.updateData.Add_atk3;
-                        mySoldierObjs[i].enemyData.atk_Damage += mySoldierObjs[i].originalData.updateData.Add_atk3;
+                        enemySoldierObjs[i].originalData.ATK_Level = _level;
+                        enemySoldierObjs[i].originalData.atk_maxDamage += tmpData.Add_atk3;
+                        enemySoldierObjs[i].originalData.atk_Damage += tmpData.Add_atk3;
+                        enemySoldierObjs[i].enemyData.atk_maxDamage += tmpData.Add_atk3;
+                        enemySoldierObjs[i].enemyData.atk_Damage += tmpData.Add_atk3;
                     }
                 }
                 break;
@@ -674,53 +698,57 @@ public class SceneObjManager : Photon.MonoBehaviour
 
     void UpdateMySoldier_Def(byte _level)
     {
+        UpdateDataBase.SoldierUpdateData tmpData;
         switch (_level)
         {
             case (1):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.DEF_Level != _level)
                     {
                         mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def1;
-                        mySoldierObjs[i].originalData.UI_HP+= mySoldierObjs[i].originalData.updateData.Add_hp1;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp1;
+                        mySoldierObjs[i].originalData.def_base += tmpData.Add_def1;
+                        mySoldierObjs[i].originalData.UI_HP+= tmpData.Add_hp1;
+                        mySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp1;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def1;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp1;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp1;
+                        mySoldierObjs[i].enemyData.def_base += tmpData.Add_def1;
+                        mySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp1;
+                        mySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp1;
                     }
                 }
                 break;
             case (2):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.DEF_Level != _level)
                     {
                         mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def2;
-                        mySoldierObjs[i].originalData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp2;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp2;
+                        mySoldierObjs[i].originalData.def_base += tmpData.Add_def2;
+                        mySoldierObjs[i].originalData.UI_HP += tmpData.Add_hp2;
+                        mySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp2;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def2;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp2;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp2;
+                        mySoldierObjs[i].enemyData.def_base += tmpData.Add_def2;
+                        mySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp2;
+                        mySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp2;
                     }
                 }
                 break;
             case (3):
-                for (int i = 0; i < mySoldierObjs.Count; i++)
+                for (int i = 0; i < mySoldierAmount; i++)
                 {
+                    tmpData = mySoldierObjs[i].originalData.updateData;
                     if (mySoldierObjs[i].originalData.DEF_Level != _level)
                     {
                         mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def3;
-                        mySoldierObjs[i].originalData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp3;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp3;
+                        mySoldierObjs[i].originalData.def_base += tmpData.Add_def3;
+                        mySoldierObjs[i].originalData.UI_HP += tmpData.Add_hp3;
+                        mySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp3;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def3;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp3;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp3;
+                        mySoldierObjs[i].enemyData.def_base += tmpData.Add_def3;
+                        mySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp3;
+                        mySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp3;
                     }
                 }
                 break;
@@ -732,53 +760,57 @@ public class SceneObjManager : Photon.MonoBehaviour
     }
     void UpdateClientSoldier_Def(byte _level)
     {
+        UpdateDataBase.SoldierUpdateData tmpData;
         switch (_level)
         {
             case (1):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.DEF_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.DEF_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def1;
-                        mySoldierObjs[i].originalData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp1;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp1;
+                        enemySoldierObjs[i].originalData.DEF_Level = _level;
+                        enemySoldierObjs[i].originalData.def_base += tmpData.Add_def1;
+                        enemySoldierObjs[i].originalData.UI_HP += tmpData.Add_hp1;
+                        enemySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp1;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def1;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp1;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp1;
+                        enemySoldierObjs[i].enemyData.def_base += tmpData.Add_def1;
+                        enemySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp1;
+                        enemySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp1;
                     }
                 }
                 break;
             case (2):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.DEF_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.DEF_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def2;
-                        mySoldierObjs[i].originalData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp2;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp2;
+                        enemySoldierObjs[i].originalData.DEF_Level = _level;
+                        enemySoldierObjs[i].originalData.def_base += tmpData.Add_def2;
+                        enemySoldierObjs[i].originalData.UI_HP += tmpData.Add_hp2;
+                        enemySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp2;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def2;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp2;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp2;
+                        enemySoldierObjs[i].enemyData.def_base += tmpData.Add_def2;
+                        enemySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp2;
+                        enemySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp2;
                     }
                 }
                 break;
             case (3):
                 for (int i = 0; i < soldierAmount; i++)
                 {
-                    if (mySoldierObjs[i].originalData.DEF_Level != _level)
+                    tmpData = enemySoldierObjs[i].originalData.updateData;
+                    if (enemySoldierObjs[i].originalData.DEF_Level != _level)
                     {
-                        mySoldierObjs[i].originalData.DEF_Level = _level;
-                        mySoldierObjs[i].originalData.def_base += mySoldierObjs[i].originalData.updateData.Add_def3;
-                        mySoldierObjs[i].originalData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp3;
-                        mySoldierObjs[i].originalData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp3;
+                        enemySoldierObjs[i].originalData.DEF_Level = _level;
+                        enemySoldierObjs[i].originalData.def_base += tmpData.Add_def3;
+                        enemySoldierObjs[i].originalData.UI_HP += tmpData.Add_hp3;
+                        enemySoldierObjs[i].originalData.UI_MaxHp += tmpData.Add_hp3;
 
-                        mySoldierObjs[i].enemyData.def_base += mySoldierObjs[i].originalData.updateData.Add_def3;
-                        mySoldierObjs[i].enemyData.UI_HP += mySoldierObjs[i].originalData.updateData.Add_hp3;
-                        mySoldierObjs[i].enemyData.UI_MaxHp += mySoldierObjs[i].originalData.updateData.Add_hp3;
+                        enemySoldierObjs[i].enemyData.def_base += tmpData.Add_def3;
+                        enemySoldierObjs[i].enemyData.UI_HP += tmpData.Add_hp3;
+                        enemySoldierObjs[i].enemyData.UI_MaxHp += tmpData.Add_hp3;
                     }
                 }
                 break;
@@ -790,29 +822,263 @@ public class SceneObjManager : Photon.MonoBehaviour
     #endregion
 
     #region 升級塔防
-    public void UpdataMyTower(int _level, int _whatAbility)
+    public void UpdataMyTower(byte _level, int _whatAbility)
     {
         switch (((UpdateManager.Myability)_whatAbility))
         {
             case (UpdateManager.Myability.Tower_ATK):
+                UpdateMyTower_Atk(_level);
                 break;
             case (UpdateManager.Myability.Tower_DEF):
+                UpdateMyTower_Def(_level);
                 break;
             default:
                 break;
         }
     }
-    public void UpdataClientTower(int _level, int _whatAbility)
+    public void UpdataClientTower(byte _level, int _whatAbility)
     {
         switch (((UpdateManager.Myability)_whatAbility))
         {
             case (UpdateManager.Myability.Tower_ATK):
+                UpdateClientTower_Atk(_level);
                 break;
             case (UpdateManager.Myability.Tower_DEF):
+                UpdateClientTower_Def(_level);
                 break;
             default:
                 break;
         }
+    }
+
+    void UpdateMyTower_Atk(byte _level)
+    {
+        UpdateDataBase.TowerUpdateData tmpData;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        myTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk1;
+                        myTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk1;
+                        myTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk1;
+                        myTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        myTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk2;
+                        myTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk2;
+                        myTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk2;
+                        myTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        myTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk3;
+                        myTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk3;
+                        myTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk3;
+                        myTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        TurretData.instance.ChangeMyAtkData(_level);
+    }
+    void UpdateClientTower_Atk(byte _level)
+    {
+        UpdateDataBase.TowerUpdateData tmpData;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk1;
+                        enemyTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk1;
+                        enemyTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk1;
+                        enemyTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk2;
+                        enemyTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk2;
+                        enemyTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk2;
+                        enemyTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.ATK_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.ATK_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.Atk_maxDamage += tmpData.Add_atk3;
+                        enemyTowerObjs[i].originalTurretData.Atk_Damage += tmpData.Add_atk3;
+                        enemyTowerObjs[i].turretData.Atk_maxDamage += tmpData.Add_atk3;
+                        enemyTowerObjs[i].turretData.Atk_Damage += tmpData.Add_atk3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        TurretData.instance.ChangeEnemyAtkData(_level);
+    }
+
+    void UpdateMyTower_Def(byte _level)
+    {
+        UpdateDataBase.TowerUpdateData tmpData;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        myTowerObjs[i].originalTurretData.def_base += tmpData.Add_def1;
+                        myTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp1;
+                        myTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp1;
+
+                        myTowerObjs[i].turretData.def_base += tmpData.Add_def1;
+                        myTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp1;
+                        myTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        myTowerObjs[i].originalTurretData.def_base += tmpData.Add_def2;
+                        myTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp2;
+                        myTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp2;
+
+                        myTowerObjs[i].turretData.def_base += tmpData.Add_def2;
+                        myTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp2;
+                        myTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < myTowerAmount; i++)
+                {
+                    tmpData = myTowerObjs[i].originalTurretData.updateData;
+                    if (myTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        myTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        myTowerObjs[i].originalTurretData.def_base += tmpData.Add_def3;
+                        myTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp3;
+                        myTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp3;
+
+                        myTowerObjs[i].turretData.def_base += tmpData.Add_def3;
+                        myTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp3;
+                        myTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        TurretData.instance.ChangeMyDefData(_level);
+    }
+    void UpdateClientTower_Def(byte _level)
+    {
+        UpdateDataBase.TowerUpdateData tmpData;
+        switch (_level)
+        {
+            case (1):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.def_base += tmpData.Add_def1;
+                        enemyTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp1;
+                        enemyTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp1;
+
+                        enemyTowerObjs[i].turretData.def_base += tmpData.Add_def1;
+                        enemyTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp1;
+                        enemyTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp1;
+                    }
+                }
+                break;
+            case (2):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.def_base += tmpData.Add_def2;
+                        enemyTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp2;
+                        enemyTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp2;
+
+                        enemyTowerObjs[i].turretData.def_base += tmpData.Add_def2;
+                        enemyTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp2;
+                        enemyTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp2;
+                    }
+                }
+                break;
+            case (3):
+                for (int i = 0; i < towerAmount; i++)
+                {
+                    tmpData = enemyTowerObjs[i].originalTurretData.updateData;
+                    if (enemyTowerObjs[i].originalTurretData.DEF_Level != _level)
+                    {
+                        enemyTowerObjs[i].originalTurretData.DEF_Level = _level;
+                        enemyTowerObjs[i].originalTurretData.def_base += tmpData.Add_def3;
+                        enemyTowerObjs[i].originalTurretData.UI_Hp += tmpData.Add_hp3;
+                        enemyTowerObjs[i].originalTurretData.UI_maxHp += tmpData.Add_hp3;
+
+                        enemyTowerObjs[i].turretData.def_base += tmpData.Add_def3;
+                        enemyTowerObjs[i].turretData.UI_Hp += tmpData.Add_hp3;
+                        enemyTowerObjs[i].turretData.UI_maxHp += tmpData.Add_hp3;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        TurretData.instance.ChangeEnemyDefData(_level);
     }
     #endregion
 }

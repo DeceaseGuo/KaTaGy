@@ -443,8 +443,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 3
-  noResetNoCC: 0
-  noCC: 0
+  noResetNoCC: 1
+  noCC: 1
   noDamage: 0
   notFeedBack: 0
 --- !u!114 &114380071654693808
@@ -565,6 +565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DataName: 5
+  MyCreatPoints: {fileID: 0}
   GridNumber: 1
   power: {fileID: 0}
   overHeatColor: {r: 1, g: 0.5568628, b: 0.31764707, a: 1}

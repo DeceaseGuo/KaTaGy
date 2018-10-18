@@ -269,7 +269,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 1b188800398293d44a1f8c9b5584039d, type: 3}
+  - {fileID: 2100000, guid: ed43f95497d239c45955db22da68b7c9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -304,7 +304,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 1b188800398293d44a1f8c9b5584039d, type: 3}
+  - {fileID: 2100000, guid: ed43f95497d239c45955db22da68b7c9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -404,6 +404,81 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DataName: 6
+  turretData:
+    objectName: 
+    TurretName: 0
+    headImage: {fileID: 0}
+    Atk_Damage: 0
+    Atk_maxDamage: 0
+    Atk_Gap: 0
+    Atk_Range: 0
+    Atk_MinRange: 0
+    ATK_Level: 0
+    def_base: 0
+    DEF_Level: 0
+    bullet_Name: 0
+    UI_maxHp: 0
+    UI_Hp: 0
+    Fad_oneEnergy: 0
+    Fad_decreaseRate: 0
+    Fad_thermalEnergy: 0
+    Fad_maxThermalEnergy: 0
+    Over_downSpd: 0
+    Fad_overHeat: 0
+    turret_buildDistance: 0
+    detectObjPrefab: {fileID: 0}
+    tspObject_Name: 0
+    turret_delayTime: 0
+    cost_Money: 0
+    cost_Electricity: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+  originalTurretData:
+    objectName: 
+    TurretName: 0
+    headImage: {fileID: 0}
+    Atk_Damage: 0
+    Atk_maxDamage: 0
+    Atk_Gap: 0
+    Atk_Range: 0
+    Atk_MinRange: 0
+    ATK_Level: 0
+    def_base: 0
+    DEF_Level: 0
+    bullet_Name: 0
+    UI_maxHp: 0
+    UI_Hp: 0
+    Fad_oneEnergy: 0
+    Fad_decreaseRate: 0
+    Fad_thermalEnergy: 0
+    Fad_maxThermalEnergy: 0
+    Over_downSpd: 0
+    Fad_overHeat: 0
+    turret_buildDistance: 0
+    detectObjPrefab: {fileID: 0}
+    tspObject_Name: 0
+    turret_delayTime: 0
+    cost_Money: 0
+    cost_Electricity: 0
+    updateData:
+      Add_hp1: 0
+      Add_hp2: 0
+      Add_hp3: 0
+      Add_atk1: 0
+      Add_atk2: 0
+      Add_atk3: 0
+      Add_def1: 0
+      Add_def2: 0
+      Add_def3: 0
+  MyCreatPoints: {fileID: 0}
   GridNumber: 4
   power: {fileID: 0}
   overHeatColor: {r: 1, g: 0.5568628, b: 0.31764707, a: 1}
@@ -539,8 +614,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myAttributes: 3
-  noResetNoCC: 0
-  noCC: 0
+  noResetNoCC: 1
+  noCC: 1
   noDamage: 0
   notFeedBack: 0
 --- !u!114 &114693919036695950

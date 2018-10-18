@@ -20,7 +20,7 @@ public class CreatPoints : MonoBehaviour
     public List<pointData> keysList = new List<pointData>();
     
     [SerializeField] float extraRange = 0;
-    public Dictionary<float, List<pointData>> atkPoints /*= new Dictionary<float, List<pointData>>()*/;
+    public Dictionary<float, List<pointData>> atkPoints;
     public List<Transform> willGoNext;
     public List<Transform> alreadyFull;
     private LayerMask obstacleMask;
@@ -121,6 +121,7 @@ public class CreatPoints : MonoBehaviour
     }
     #endregion
 
+    //比較距離
     public Transform GoComparing(float _range, Transform _soldierPos, Transform _firstPoint, float _width)
     {
 
@@ -222,6 +223,7 @@ public class CreatPoints : MonoBehaviour
         atkPoints.Add(_range, _tmpLlist);
     }
 
+    //檢查障礙物
     bool CheckObstacle(Transform _pos, float _width)
     {
         if (_width != lastWidth)

@@ -119,8 +119,6 @@ public class SiegeSoldier : EnemyControl
                         break;
                     case GameManager.NowTarget.Core:
                         break;
-                    case GameManager.NowTarget.NoChange:
-                        break;
                     default:
                         break;
                 }

@@ -23,7 +23,6 @@ TagManager:
   - 
   - 
   - NoGrid
-  - currenntDir
   - 
   - 
   - 
@@ -31,7 +30,8 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - AllCanAtk
+  - TouchSoldier
   - TouchTower
   - CanBuildGrid
   - Camera

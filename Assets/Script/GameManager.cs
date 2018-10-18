@@ -85,7 +85,7 @@ public class GameManager : Photon.MonoBehaviour
         Soldier,
         Tower,
         Core,
-        NoChange
+        Ore
     }
 
     public enum MyNowPlayer
@@ -107,8 +107,8 @@ public class GameManager : Photon.MonoBehaviour
     public MyNowPlayer getMyFirst() { return firstPlayer; }
 
     #region Mask
-    private LayerMask targetMask_Player1 = 1 << 29 | 1 << 31;
-    private LayerMask targetMask_Player2 = 1 << 28 | 1 << 30;
+    private LayerMask targetMask_Player1 = 1 << 29 | 1 << 31 | 1 << 22;
+    private LayerMask targetMask_Player2 = 1 << 28 | 1 << 30 | 1 << 22;
     public LayerMask getPlayer1_Mask { get { return targetMask_Player1; } }
     public LayerMask getPlayer2_Mask { get { return targetMask_Player2; } }
 

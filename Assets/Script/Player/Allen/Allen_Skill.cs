@@ -50,8 +50,6 @@ public class Allen_Skill : SkillBase
     [Tooltip("大絕傷害半徑")]
     [SerializeField] float skillR_radius;
 
-
-
     private void Start()
     {
         myCachedTransform = this.transform;
@@ -203,7 +201,7 @@ public class Allen_Skill : SkillBase
 
         if (catchObj == null && isForward)
         {            
-            tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(3.35f, 1.6f, 1.9f), Quaternion.identity, aniScript.canAtkMask);
+            tmpEnemy = Physics.OverlapBox(grab_MovePos.position, new Vector3(4f, 1.6f, 3f), Quaternion.identity, aniScript.canAtkMask);
 
             if (tmpEnemy.Length != 0)
             {
@@ -219,7 +217,10 @@ public class Allen_Skill : SkillBase
                             if (!photonView.isMine)
                             {
                                 Net.RPC("takeDamage", PhotonTargets.All, 5.5f, Vector3.zero, false);
-                                Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.5f);
+                                if (!who.noCC)
+                                    Net.RPC("GetDeBuff_Stun", PhotonTargets.All, 1.5f);
+                                else
+                                    catchObj = null;
                             }
                             break;
                         case GameManager.NowTarget.Soldier:
@@ -239,11 +240,7 @@ public class Allen_Skill : SkillBase
                             catchObj = null;
                             break;
                         case GameManager.NowTarget.Core:
-                            catchObj = null;
-                            break;
-                        case GameManager.NowTarget.NoChange:
-                            catchObj = null;
-                            playerScript.Net.RPC("HitNull", PhotonTargets.All);
+                            //catchObj = null;
                             break;
                         default:
                             break;
@@ -263,7 +260,7 @@ public class Allen_Skill : SkillBase
         else
         {
             //clone體執行
-            if (!photonView.isMine)
+            //if (!photonView.isMine)
                 if (catchObj != null)
                     catchObj.transform.position = new Vector3(grab_MovePos.transform.position.x, catchObj.transform.position.y, grab_MovePos.transform.position.z);
         }
@@ -288,6 +285,17 @@ public class Allen_Skill : SkillBase
         {
             ResetQ_GoCD();
         }
+    }
+    //伸手音效
+    public void PlayQ_Audio()
+    {
+        NowSkillAudio();
+    }
+    //結束時撞及音效
+    public void PlayQ_EndAudio()
+    {
+        skillAudio.Stop();
+        playerScript.AudioScript.PlayAppointAudio(skillAudio, 10);
     }
     #endregion
 
@@ -314,10 +322,12 @@ public class Allen_Skill : SkillBase
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
-                            if (!who.noCC)
-                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
                             Net.RPC("takeDamage", PhotonTargets.All, 5.5f, Vector3.zero, false);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All);
+                            if (!who.noCC)
+                            {
+                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
+                                Net.RPC("pushOtherTarget", PhotonTargets.All);
+                            }
                             break;
                         case GameManager.NowTarget.Soldier:
                             if (!who.noCC)
@@ -329,10 +339,6 @@ public class Allen_Skill : SkillBase
                             break;
                         case GameManager.NowTarget.Core:
                             break;
-                        case GameManager.NowTarget.NoChange:
-                            // playerScript.Net.RPC("HitNull", PhotonTargets.All);
-                            //ResetAllData_Grab();
-                            return;
                         default:
                             break;
                     }
@@ -471,10 +477,12 @@ public class Allen_Skill : SkillBase
                     switch (who.myAttributes)
                     {
                         case GameManager.NowTarget.Player:
-                            if (!who.noCC)
-                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
                             Net.RPC("takeDamage", PhotonTargets.All, 9f, Vector3.zero, false);
-                            Net.RPC("pushOtherTarget", PhotonTargets.All);
+                            if (!who.noCC)
+                            {
+                                tmpEnemy[i].transform.forward = dirToTarget.normalized;
+                                Net.RPC("pushOtherTarget", PhotonTargets.All);
+                            }
                             break;
                         case GameManager.NowTarget.Soldier:
                             if (!who.noCC)
@@ -486,10 +494,6 @@ public class Allen_Skill : SkillBase
                             break;
                         case GameManager.NowTarget.Core:
                             break;
-                        case GameManager.NowTarget.NoChange:
-                            // playerScript.Net.RPC("HitNull", PhotonTargets.All);
-                            //ResetAllData_Grab();
-                            return;
                         default:
                             break;
                     }
@@ -619,6 +623,7 @@ public class Allen_Skill : SkillBase
         switch (nowSkill)
         {
             case SkillAction.is_Q:
+                playerScript.AudioScript.PlayAppointAudio(skillAudio, 9);
                 break;
             case SkillAction.is_W:
                 playerScript.AudioScript.PlayAppointAudio(skillAudio, 4);

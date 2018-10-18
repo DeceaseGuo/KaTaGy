@@ -68,6 +68,7 @@ public class EnemyControl : Photon.MonoBehaviour
     protected int nowPoint;
     public int NowPoint { get { return nowPoint; } }
     protected bool nextPos;
+    protected bool nowGoAtkCore;
     //取得傷害
     protected bool firstAtk;
 
@@ -89,7 +90,7 @@ public class EnemyControl : Photon.MonoBehaviour
         AtkWait,
         Wait_Move,
         BeAtk,
-        Wait_TargetDie,
+        Wait_TargetDie
     }
     public states nowState = states.Null;
 
@@ -224,6 +225,7 @@ public class EnemyControl : Photon.MonoBehaviour
             if (nav != null)
                 nav.enabled = true;
             stopDetect = false;
+            nowGoAtkCore = false;
             InvokeRepeating("FindMyTarget", 0.3f, 0.6f);
         }
     }
@@ -268,6 +270,13 @@ public class EnemyControl : Photon.MonoBehaviour
                 getCurrentTarget();
             }
         }
+    }
+    #endregion
+
+    #region 取得敵方核心目標
+    void GetTargetCore()
+    {
+        Debug.Log("取得敵方核心目標");
     }
     #endregion
 
@@ -427,7 +436,7 @@ public class EnemyControl : Photon.MonoBehaviour
         {
             Net.RPC("changeLayer", PhotonTargets.All, 29);
             Net.RPC("changeMask_2", PhotonTargets.All);
-            nowPoint = 9;
+            nowPoint = 6;
             Find_PathPoint = nowPoint;          
         }
     }
@@ -502,6 +511,13 @@ public class EnemyControl : Photon.MonoBehaviour
     #region 士兵移動
     void SoldierMove()
     {
+        if (nowGoAtkCore)
+        {
+            GetTargetCore();
+            nowState = states.Null;
+            return;
+        }
+
         if (!nav.hasPath)
             getNextPoint();
 
@@ -812,9 +828,16 @@ public class EnemyControl : Photon.MonoBehaviour
     public void touchPoint(int _i)
     {
         nowPoint = _i;
-        if (nowPoint == 10 || nowPoint == -1)
+        if (nowPoint == 7 || nowPoint == -1)
         {
-            nowState = states.Null;
+            CancelInvoke("FindMyTarget");
+            if (nowState == states.Move)
+            {
+                GetTargetCore();
+                nowState = states.Null;
+            }
+            else
+                nowGoAtkCore = true;                
           //  Debug.Log("已到達終點");
             return;
         }
@@ -847,7 +870,7 @@ public class EnemyControl : Photon.MonoBehaviour
         {
             if (!firstAtk && !ifFirstAtkTarget())
             {
-                isDead _isdead = PhotonView.Find(_id).gameObject.GetComponent<isDead>();
+                isDead _isdead = PhotonView.Find(_id).GetComponent<isDead>();
 
                 if (_isdead.myAttributes != GameManager.NowTarget.Tower)
                 {
@@ -885,11 +908,11 @@ public class EnemyControl : Photon.MonoBehaviour
     protected virtual void MyHelath(float _damage)
     {
         //血量顯示與消失        
-        CloseHP();
 
         //扣血
         if (enemyData.UI_HP > 0)
         {
+            CloseHP();
             enemyData.UI_HP -= _damage;
             if (enemyData.UI_HP <= 0)
             {

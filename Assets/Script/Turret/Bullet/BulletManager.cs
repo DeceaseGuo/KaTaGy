@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public class BulletManager : Photon.MonoBehaviour {
+public class BulletManager : Photon.MonoBehaviour
+{
+    private MatchTimer matchTime;
+    protected MatchTimer MatchTimeManager { get { if (matchTime == null) matchTime = MatchTimer.Instance; return matchTime; } }
 
     public GameManager.whichObject bulletName;
     public float bullet_Speed;

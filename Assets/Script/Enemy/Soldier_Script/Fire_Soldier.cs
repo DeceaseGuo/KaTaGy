@@ -130,8 +130,6 @@ public class Fire_Soldier : EnemyControl
                         break;
                     case GameManager.NowTarget.Core:
                         break;
-                    case GameManager.NowTarget.NoChange:
-                        break;
                     default:
                         break;
                 }

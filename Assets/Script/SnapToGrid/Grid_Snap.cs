@@ -12,7 +12,6 @@ public class Grid_Snap : MonoBehaviour
     [SerializeField] GameObject meshGridPrefab;
     private GameObject showGridSoace;
 
-
     //初始位置 (網格原點)
     Vector2 gridOffset;
 
@@ -72,11 +71,11 @@ public class Grid_Snap : MonoBehaviour
         gridOffset.x = transform.localPosition.x;
         gridOffset.y = transform.localPosition.y;
         return gridOffset;
-    }/*
+    }*/
 
-   /* private void OnDrawGizmosSelected()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, new Vector3(gridSize.x, nodeRadius, gridSize.y));
-    }*/
+    }
 }

@@ -49,6 +49,7 @@ public class MyEnemyData : MonoBehaviour
     private List<GameManager.whichObject> soldierKey = new List<GameManager.whichObject>();
     private Enemies tmpUpdateData;
 
+    #region 初始化數據
     private void Awake()
     {
         if (instance == null)
@@ -70,6 +71,7 @@ public class MyEnemyData : MonoBehaviour
             enemyDataBase.Add(Soldiers[i]._soldierName, Soldiers[i]);
         }
     }
+    #endregion
 
     #region 改變士兵數據
     /*  單體

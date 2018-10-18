@@ -1,0 +1,314 @@
+fileFormatVersion: 2
+guid: 7504262168a48544a94956a1e9cf0f51
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: bridge holder1
+    100002: bridge holder2
+    100004: bridge holder3
+    100006: Cylinder004
+    100008: Cylinder005
+    100010: Cylinder347
+    100012: Cylinder348
+    100014: Cylinder349
+    100016: Cylinder350
+    100018: elf_ground2
+    100020: god tree
+    100022: human_ground
+    100024: human_ground2
+    100026: human_stair
+    100028: //RootNode
+    100030: middle plane
+    100032: Object133
+    100034: Object134
+    100036: Object135
+    100038: Object136
+    100040: Object137
+    100042: Object138
+    100044: Object139
+    100046: Object140
+    100048: Object141
+    100050: Object142
+    100052: Object143
+    100054: Object144
+    100056: Object145
+    100058: Object146
+    100060: Object147
+    100062: Plane001
+    100064: Plane008
+    100066: S_elf_ground003
+    100068: S_human_stair001
+    100070: S_Object151
+    100072: S_Object163
+    100074: S_Object167
+    100076: S_Object169
+    100078: S_Object171
+    100080: S_StraightStair003
+    100082: S_StraightStair004
+    100084: S_StraightStair005
+    100086: StraightStair001
+    400000: bridge holder1
+    400002: bridge holder2
+    400004: bridge holder3
+    400006: Cylinder004
+    400008: Cylinder005
+    400010: Cylinder347
+    400012: Cylinder348
+    400014: Cylinder349
+    400016: Cylinder350
+    400018: elf_ground2
+    400020: god tree
+    400022: human_ground
+    400024: human_ground2
+    400026: human_stair
+    400028: //RootNode
+    400030: middle plane
+    400032: Object133
+    400034: Object134
+    400036: Object135
+    400038: Object136
+    400040: Object137
+    400042: Object138
+    400044: Object139
+    400046: Object140
+    400048: Object141
+    400050: Object142
+    400052: Object143
+    400054: Object144
+    400056: Object145
+    400058: Object146
+    400060: Object147
+    400062: Plane001
+    400064: Plane008
+    400066: S_elf_ground003
+    400068: S_human_stair001
+    400070: S_Object151
+    400072: S_Object163
+    400074: S_Object167
+    400076: S_Object169
+    400078: S_Object171
+    400080: S_StraightStair003
+    400082: S_StraightStair004
+    400084: S_StraightStair005
+    400086: StraightStair001
+    2100000: for now
+    2100002: human_ground_high
+    2100004: elf_stair
+    2100006: 3
+    2100008: 2
+    2100010: 1
+    2100012: human_stair
+    2100014: human_stair2
+    2300000: bridge holder1
+    2300002: bridge holder2
+    2300004: bridge holder3
+    2300006: Cylinder004
+    2300008: Cylinder005
+    2300010: Cylinder347
+    2300012: Cylinder348
+    2300014: Cylinder349
+    2300016: Cylinder350
+    2300018: elf_ground2
+    2300020: god tree
+    2300022: human_ground
+    2300024: human_ground2
+    2300026: human_stair
+    2300028: middle plane
+    2300030: Object133
+    2300032: Object134
+    2300034: Object135
+    2300036: Object136
+    2300038: Object137
+    2300040: Object138
+    2300042: Object139
+    2300044: Object140
+    2300046: Object141
+    2300048: Object142
+    2300050: Object143
+    2300052: Object144
+    2300054: Object145
+    2300056: Object146
+    2300058: Object147
+    2300060: Plane001
+    2300062: Plane008
+    2300064: S_elf_ground003
+    2300066: S_human_stair001
+    2300068: S_Object151
+    2300070: S_Object163
+    2300072: S_Object167
+    2300074: S_Object169
+    2300076: S_Object171
+    2300078: S_StraightStair003
+    2300080: S_StraightStair004
+    2300082: S_StraightStair005
+    2300084: StraightStair001
+    3300000: bridge holder1
+    3300002: bridge holder2
+    3300004: bridge holder3
+    3300006: Cylinder004
+    3300008: Cylinder005
+    3300010: Cylinder347
+    3300012: Cylinder348
+    3300014: Cylinder349
+    3300016: Cylinder350
+    3300018: elf_ground2
+    3300020: god tree
+    3300022: human_ground
+    3300024: human_ground2
+    3300026: human_stair
+    3300028: middle plane
+    3300030: Object133
+    3300032: Object134
+    3300034: Object135
+    3300036: Object136
+    3300038: Object137
+    3300040: Object138
+    3300042: Object139
+    3300044: Object140
+    3300046: Object141
+    3300048: Object142
+    3300050: Object143
+    3300052: Object144
+    3300054: Object145
+    3300056: Object146
+    3300058: Object147
+    3300060: Plane001
+    3300062: Plane008
+    3300064: S_elf_ground003
+    3300066: S_human_stair001
+    3300068: S_Object151
+    3300070: S_Object163
+    3300072: S_Object167
+    3300074: S_Object169
+    3300076: S_Object171
+    3300078: S_StraightStair003
+    3300080: S_StraightStair004
+    3300082: S_StraightStair005
+    3300084: StraightStair001
+    4300000: bridge holder2
+    4300002: middle plane
+    4300004: god tree
+    4300006: bridge holder3
+    4300008: bridge holder1
+    4300010: Cylinder004
+    4300012: Cylinder005
+    4300014: Plane001
+    4300016: StraightStair001
+    4300018: human_ground
+    4300020: human_stair
+    4300022: human_ground2
+    4300024: Plane008
+    4300026: Object133
+    4300028: Object134
+    4300030: Object135
+    4300032: Object136
+    4300034: Object137
+    4300036: Object138
+    4300038: Object139
+    4300040: Object140
+    4300042: Object141
+    4300044: Object142
+    4300046: Object143
+    4300048: Object144
+    4300050: Object145
+    4300052: Object146
+    4300054: Object147
+    4300056: elf_ground2
+    4300058: Cylinder347
+    4300060: Cylinder348
+    4300062: Cylinder349
+    4300064: Cylinder350
+    4300066: S_elf_ground003
+    4300068: S_human_stair001
+    4300070: S_Object163
+    4300072: S_Object167
+    4300074: S_Object169
+    4300076: S_Object171
+    4300078: S_StraightStair004
+    4300080: S_StraightStair003
+    4300082: S_Object151
+    4300084: S_StraightStair005
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

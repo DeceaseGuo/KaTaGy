@@ -20,6 +20,12 @@ public class Player : Photon.MonoBehaviour
 
     private AudioManager audioScript;
     public AudioManager AudioScript { get { if (audioScript == null) audioScript = AudioManager.instance; return audioScript; } }
+
+    private BuildManager buildScript;
+    public BuildManager BuildScript { get { if (buildScript == null) buildScript = BuildManager.instance; return buildScript; } }
+
+    private PlayerObtain moneyScript;
+    private PlayerObtain MoneyScript { get { if (moneyScript == null) moneyScript = PlayerObtain.instance; return moneyScript; } }
     #endregion
 
     #region 數據
@@ -30,8 +36,9 @@ public class Player : Photon.MonoBehaviour
     #endregion
 
     #region 血量相關
-    [Header("左上螢幕血量UI")]
+    [Header("左上螢幕UI")]
     private Image leftTopHpBar;
+    private Image leftTopPowerBar;
     //角色頭上血量
     public Image UI_HpBar;
     private Animator ani;
@@ -40,11 +47,10 @@ public class Player : Photon.MonoBehaviour
     [SerializeField] Renderer myRender;
     #endregion
 
-    protected Transform myCachedTransform;
-
+    private Transform myCachedTransform;
+    //音效
+    public AudioSource myAudio;
     public PlayerAni AniControll;
-    [HideInInspector]
-    public BuildManager buildManager;
     [HideInInspector] public isDead deadManager;
     private Ray ray;
     private RaycastHit hit;
@@ -56,10 +62,6 @@ public class Player : Photon.MonoBehaviour
     [SerializeField] GameObject clickPointPos;
     [SerializeField] LayerMask canClickToMove_Layer;
 
-    [Header("左上能量UI")]
-    private Image leftTopPowerBar;
-    private Image headImage;
-
     //偵測目前跑步動畫
     private bool isRunning;
     public bool getIsRunning { get { return isRunning; } private set { isRunning = value; } }
@@ -70,11 +72,12 @@ public class Player : Photon.MonoBehaviour
     public CreatPoints MyCreatPoints;
     public PhotonView Net;
     //方向
-    private Vector3 mousePosition;
-    public Transform arrow;
-    private Vector3 tmpMousePos;
+    public Transform arrow; //滑鼠目標方向
+    private Vector3 tmpMousePos;//滑鼠方向用(暫存)
+    private Vector3 worldDir;//滑鼠方向用(暫存)
+    private Vector3 mousePosition;//滑鼠正確點位
+    private Vector3 tmpMousePoint;//找到滑鼠正確點位用(暫存)
     private Camera myMainCamera;
-    private Vector3 worldDir;
     [SerializeField] Projector arrowProjector;
 
     public UnityEvent skill_Q;
@@ -154,10 +157,6 @@ public class Player : Photon.MonoBehaviour
 
         if (photonView.isMine)
         {
-            if (headImage == null)
-                headImage = GameObject.Find("headImage_leftTop").GetComponent<Image>();
-
-            headImage.sprite = playerData.headImage;
             checkCurrentPlay();
             MyCreatPoints.enabled = false;
             SceneObjManager.Instance.myPlayer = this;
@@ -178,6 +177,7 @@ public class Player : Photon.MonoBehaviour
             Net.RPC("changeLayer", PhotonTargets.All, 30);
             arrowProjector.gameObject.layer = 0;
             Net.RPC("changeMask_1", PhotonTargets.All,(int)GameManager.instance.Meis);
+
         }
         else if (GameManager.instance.getMyPlayer() == GameManager.MyNowPlayer.player_2)
         {
@@ -205,16 +205,15 @@ public class Player : Photon.MonoBehaviour
     {
         firstGetData = false;
         //
-        map = GameObject.Find("smallMapContainer (1)").GetComponent<RectTransform>();
+        map = GameObject.Find("smallMapContainer").GetComponent<RectTransform>();
         //
         skillManager = GetComponent<SkillBase>();
         clickPointPos = GameObject.Find("clickPointPos");
-        buildManager = BuildManager.instance;
         nav = GetComponent<NavMeshAgent>();
         deadManager = GetComponent<isDead>();
         nav.updateRotation = false;
         MyCreatPoints = GetComponent<CreatPoints>();
-
+        myAudio = GetComponent<AudioSource>();
         ani = GetComponent<Animator>();
         AniControll = GetComponent<PlayerAni>();        
 
@@ -235,8 +234,8 @@ public class Player : Photon.MonoBehaviour
             playerData = originalData;
             if (photonView.isMine)
             {
-                if (buildManager != null && buildManager.nowBuilding)
-                    buildManager.BuildSwitch();
+                if (BuildScript.nowBuilding)
+                    BuildScript.BuildSwitch();
                 if (nav != null)
                     nav.speed = playerData.moveSpeed;
 
@@ -409,7 +408,7 @@ public class Player : Photon.MonoBehaviour
 
     #region 士兵
     [PunRPC]
-    public void UpdataSoldier(byte _level, int _whatAbility)
+    public void UpdateSoldier(byte _level, int _whatAbility)
     {
         if (photonView.isMine)
             SceneObjManager.Instance.UpdataMySoldier(_level, _whatAbility);
@@ -420,7 +419,7 @@ public class Player : Photon.MonoBehaviour
 
     #region 塔防
     [PunRPC]
-    public void UpdataTower(int _level, int _whatAbility)
+    public void UpdateTower(byte _level, int _whatAbility)
     {
         if (photonView.isMine)
             SceneObjManager.Instance.UpdataMyTower(_level, _whatAbility);
@@ -436,7 +435,7 @@ public class Player : Photon.MonoBehaviour
         {
             if (leftTopPowerBar.fillAmount != 1)
                 AddPower();
-
+            
             CorrectDirection();
 
             if (MyState != statesData.None)
@@ -445,7 +444,7 @@ public class Player : Photon.MonoBehaviour
                 ///
                 if (Input.GetKeyDown(KeyCode.LeftShift))
                 {
-                    myCachedTransform.position = GetNowMousePoint();
+                    myCachedTransform.position = GetNowMousePoint(clickPointPos.transform);
                 }
             }
         }
@@ -474,6 +473,7 @@ public class Player : Photon.MonoBehaviour
             case statesData.canMvoe_Build:
                 if (Input.GetMouseButtonDown(1))
                     ClickPoint();
+                BuildScript.NeedToUpdate();
                 CharacterRun();
                 ATK_Build_Btn();
                 break;
@@ -498,14 +498,14 @@ public class Player : Photon.MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (buildManager.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).fullPathHash == AniControll.aniHashValue[24] ||
+            if (BuildScript.nowSelect && !StopClick && (AniControll.anim.GetCurrentAnimatorStateInfo(0).fullPathHash == AniControll.aniHashValue[24] ||
              AniControll.anim.GetCurrentAnimatorStateInfo(0).fullPathHash == AniControll.aniHashValue[25] || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_Idle")
              || AniControll.anim.GetCurrentAnimatorStateInfo(0).IsName("build_run")))
             {
                 if (SkillState != SkillData.None)
                     CancelNowSkill();
 
-                buildManager.BuildSwitch();
+                BuildScript.BuildSwitch();
                 StopClick = true;
             }
         }
@@ -628,6 +628,7 @@ public class Player : Photon.MonoBehaviour
     #endregion
 
     #region 偵測點擊位置
+    public Transform test;
     void ClickPoint()
     {
         if (!IsMap())//我新加的
@@ -661,13 +662,51 @@ public class Player : Photon.MonoBehaviour
         arrow.LookAt(worldDir);
     }
 
-    public Vector3 GetNowMousePoint()
+    //取得滑鼠位置這此範圍內
+    public bool GetRangeAnyPoint(Transform _objPos, Transform _originalPos, float _maxRange)
     {
-        if (Physics.Raycast(myMainCamera.ScreenPointToRay(Input.mousePosition), out hit, 150, 1<<15))
+        if (_objPos != null)
         {
-            mousePosition = hit.point;
-            mousePosition.y = myCachedTransform.localPosition.y;
+            GetNowMousePoint(_objPos);
+            ray = myMainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Vector3.SqrMagnitude(mousePosition - _originalPos.position) <= _maxRange * _maxRange)
+            {
+                if (Physics.Raycast(ray, out hit, 155, canClickToMove_Layer))
+                {
+                    _objPos.position = hit.point;
+                    return true;
+                }
+                else
+                {
+                    _objPos.position = mousePosition;
+                    return false;
+                }
+            }
+            else
+            {
+                if (Physics.Raycast(ray, out hit, 170, canClickToMove_Layer))
+                {
+                    _objPos.position = _originalPos.position + ((hit.point - _originalPos.position).normalized * _maxRange);
+                    return true;
+                }
+                else
+                {
+                    _objPos.position = _originalPos.position + ((mousePosition - _originalPos.position).normalized * _maxRange);
+                    return false;
+                }               
+            }            
         }
+        return false;
+    }
+
+    //取得滑鼠位置
+    public Vector3 GetNowMousePoint(Transform _obj)
+    {
+        tmpMousePoint = Input.mousePosition;//鼠标在屏幕上的位置坐标
+        tmpMousePoint.z = myMainCamera.WorldToScreenPoint(_obj.transform.position).z;
+        mousePosition.x = myMainCamera.ScreenToWorldPoint(tmpMousePoint).x;
+        mousePosition.z = myMainCamera.ScreenToWorldPoint(tmpMousePoint).z;
+        mousePosition.y = _obj.transform.position.y;
         return mousePosition;
     }
     #endregion
@@ -693,9 +732,9 @@ public class Player : Photon.MonoBehaviour
         if (getIsRunning)
         {
             #region 尋找下一個位置方向
-            tmpNextPos = nav.steeringTarget - myCachedTransform.localPosition;
+            tmpNextPos = nav.steeringTarget;
             tmpNextPos.y = myCachedTransform.localPosition.y;
-            CharacterRot = Quaternion.LookRotation(tmpNextPos);
+            CharacterRot = Quaternion.LookRotation(tmpNextPos- myCachedTransform.localPosition);
             #endregion
 
             #region 判斷是否到最終目標點→否則執行移動
@@ -787,17 +826,16 @@ public class Player : Photon.MonoBehaviour
 
     //往上擊飛
     [PunRPC]
-    public void HitFlayUp()
+    public void HitFlayUp(float _damage,float _stunTime)
     {
         if (deadManager.noCC)
             return;
         stopAnything_Switch(true);
-        flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
-        flyUp.onComplete = delegate () { EndFlyUp(); };
         if (!NowCC)
-        {
-            GetDeBuff_Stun(1.2f);
-        }
+            GetDeBuff_Stun(_stunTime);
+        flyUp = myCachedTransform.DOMoveY(myCachedTransform.position.y + 6, 0.3f).SetAutoKill(false).SetEase(Ease.OutBack);
+        takeDamage(_damage, Vector3.zero, false);
+        flyUp.onComplete = delegate () { EndFlyUp(); };
     }
     #endregion
 
@@ -921,7 +959,7 @@ public class Player : Photon.MonoBehaviour
         }
         else
         {
-            if (!buildManager.nowBuilding)
+            if (!BuildScript.nowBuilding)
                 MyState = statesData.canMove_Atk;
             else
                 MyState = statesData.canMvoe_Build;           
@@ -954,6 +992,13 @@ public class Player : Photon.MonoBehaviour
     {
         if (photonView.isMine)
             Net.RPC("waitBuild", PhotonTargets.All, _t);
+    }
+
+    //獲得金錢
+    public void GetSomeMoney(int _money)
+    {
+        if (photonView.isMine)
+            MoneyScript.obtaniResource(_money);
     }
 
     //精靈王傳送用
@@ -1022,6 +1067,8 @@ public class Player : Photon.MonoBehaviour
         if (playerData.Hp_original > 0)
         {
             playerData.Hp_original -= tureDamage;
+            //打擊音效
+            //AudioScript.PlayAppointAudio(myAudio, 8);            
             BeHitChangeColor();
             ani.SetBool(AniControll.aniHashValue[8], true);
             openPopupObject(tureDamage);
@@ -1041,6 +1088,7 @@ public class Player : Photon.MonoBehaviour
     }
     #endregion
 
+    #region 顯示與計算傷害
     void openPopupObject(float _damage)
     {
         FloatTextCon.CreateFloatingText(_damage, myCachedTransform);
@@ -1048,8 +1096,7 @@ public class Player : Photon.MonoBehaviour
         if (photonView.isMine)
             leftTopHpBar.fillAmount = playerData.Hp_original / playerData.Hp_Max;
     }
-
-    #region 計算傷害
+    
     private float CalculatorDamage(float _damage)
     {
         return _damage;

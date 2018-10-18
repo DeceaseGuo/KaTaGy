@@ -29,7 +29,7 @@ public class PlayerAni : Photon.MonoBehaviour
     //攻擊判定用
     protected bool startDetect_1 = false;
     protected bool startDetect_2 = false;
-    public ParticleSystem[] swordLight = new ParticleSystem[3];
+    public ParticleSystem[] swordLight;
     public List<GameObject> alreadyDamage;
 
     protected Vector3 currentAtkDir;
@@ -219,6 +219,7 @@ public class PlayerAni : Photon.MonoBehaviour
     {
         CancleAllAni();
         player.deadManager.notFeedBack = true;
+        player.AudioScript.PlayAppointAudio(player.myAudio, 11);
 
         if (!anim.GetBool(aniHashValue[15]))
             anim.CrossFade(aniHashValue[17], 0.01f, 0);

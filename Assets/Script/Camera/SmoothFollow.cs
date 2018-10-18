@@ -6,6 +6,9 @@ public class SmoothFollow : MonoBehaviour
 {
     public static SmoothFollow instance;
     private MyCore coreManager;
+    public GameObject colliderCancel;
+
+    private Transform myCachedTransform;
 
     [Header("基本數據")]
     [SerializeField] Vector3 originalPos;
@@ -13,9 +16,7 @@ public class SmoothFollow : MonoBehaviour
     [SerializeField] Vector3 offsetRot;
     [SerializeField] float smoothSpeed = 2.2f;
     private Transform target;
-
-
- //   private Player playerScript;
+    public Material[] occMaterials;
 
     [Header("zoom需要")]
     [SerializeField] float minZoomZ = -48f;
@@ -25,8 +26,6 @@ public class SmoothFollow : MonoBehaviour
     [SerializeField] float scrollSpeed = 100f;
     private float scroll;
     private Vector3 tmpScrollPos;
-
-
     //private Camera followControll;
 
     [Header("不鎖視角需要")]
@@ -34,10 +33,10 @@ public class SmoothFollow : MonoBehaviour
     [SerializeField] float panSpeed = 160f;
     [SerializeField] float panBorder = 15f;
     private Vector3 nOLockPos;
-    [SerializeField] float maxZ_Border = 96f;
-    [SerializeField] float minZ_Border = -185f;
-    [SerializeField] float maxX_Border = 171f;
-    [SerializeField] float minX_Border = -181f;
+    [SerializeField] float maxZ_Border = /*96f;*/120;
+    [SerializeField] float minZ_Border =/* -185f;*/-220;
+    [SerializeField] float maxX_Border = /*171f;*/320;
+    [SerializeField] float minX_Border = /*-181f;*/-305;
 
     private void Awake()
     {
@@ -45,11 +44,12 @@ public class SmoothFollow : MonoBehaviour
         {
             instance = this;
         }
+        myCachedTransform = this.transform;
     }
 
     private void Start()
     {
-        transform.rotation = Quaternion.Euler(offsetRot);
+        myCachedTransform.rotation = Quaternion.Euler(offsetRot);
         target = Creatplayer.instance.Player_Script.transform;
        // playerScript = Creatplayer.instance.Player_Script;
         coreManager = MyCore.instance;
@@ -60,6 +60,8 @@ public class SmoothFollow : MonoBehaviour
 
     public void NeedToLateUpdate()
     {
+        ColliderCancel();
+
         if (!isLockCamera)
             camera_NOLock();
         else
@@ -69,6 +71,28 @@ public class SmoothFollow : MonoBehaviour
         {
             scroll = Input.GetAxis("Mouse ScrollWheel");
             camera_Zoom();
+        }
+
+        if (Input.GetKeyDown("c"))
+        {
+            myCachedTransform.rotation = Quaternion.Euler(offsetRot);
+            offsetPos = originalPos;
+        }
+    }
+
+    void ColliderCancel()
+    {
+        for (int i = 0; i < occMaterials.Length; i++)
+        {
+            occMaterials[i].SetVector("_PlayerPos", target.position);
+        }
+
+        if (target.localPosition.y < 10)
+        {
+            if (target.localPosition.x > -245 && target.localPosition.x < 280 && target.localPosition.z > -100 && target.localPosition.z < 100)
+                colliderCancel.layer = 2;
+            else
+                colliderCancel.layer = 9;
         }
     }
 
@@ -96,7 +120,7 @@ public class SmoothFollow : MonoBehaviour
         offsetPos = originalPos;
 
         if (isLockCamera)
-            transform.position = (target.position + target.up * 5f) + offsetPos;
+            myCachedTransform.position = (target.position + target.up * 5f) + offsetPos;
         else
             nOLockPos = (target.position + target.up * 5f) + offsetPos;
     }
@@ -105,7 +129,7 @@ public class SmoothFollow : MonoBehaviour
     #region camera自動跟隨
     private void camera_Move()
     {
-        transform.position = Vector3.Lerp(transform.position, ((target.position + target.up * 5f) + offsetPos), smoothSpeed * Time.deltaTime);
+        myCachedTransform.position = Vector3.Lerp(myCachedTransform.position, ((target.position + target.up * 5f) + offsetPos), smoothSpeed * Time.deltaTime);
     }
     #endregion
 
@@ -114,7 +138,7 @@ public class SmoothFollow : MonoBehaviour
     {
         if (scroll != 0 )
         {
-            tmpScrollPos = transform.forward * scroll * scrollSpeed * 20 * Time.deltaTime;
+            tmpScrollPos = myCachedTransform.forward * scroll * scrollSpeed * 20 * Time.deltaTime;
             if (isLockCamera)
             {
                 offsetPos += tmpScrollPos;
@@ -169,7 +193,7 @@ public class SmoothFollow : MonoBehaviour
                 nOLockPos.x = minX_Border;
         }
 
-        transform.position = Vector3.Lerp(transform.position, nOLockPos, smoothSpeed);
+        myCachedTransform.position = Vector3.Lerp(myCachedTransform.position, nOLockPos, smoothSpeed);
     }
     #endregion
 
@@ -184,7 +208,7 @@ public class SmoothFollow : MonoBehaviour
         {
             float x = Random.Range(-1f, 1f) * _power;
             float y = Random.Range(-1f, 1f) * _power;
-            transform.localPosition += new Vector3(x, y, 0);
+            myCachedTransform.localPosition += new Vector3(x, y, 0);
             nowTime += Time.deltaTime;
             yield return null;
         }

@@ -4,6 +4,7 @@
 public class Node : MonoBehaviour
 {
     public int Num;
+    private EnemyControl agent;
 
     //確認是哪個玩家
     private GameManager gameManager;
@@ -14,11 +15,10 @@ public class Node : MonoBehaviour
     }
 
     public virtual void OnTriggerEnter(Collider other)
-    {        
-        var agent = other.gameObject.GetComponent<EnemyControl>();
+    {
+        agent = other.GetComponent<EnemyControl>();
         if (agent != null && agent.NowPoint == Num)
-        {
-           // Debug.Log("撞到了");
+        {            
             if (gameManager.getMyPlayer() == GameManager.MyNowPlayer.player_1)
             {
                 agent.touchPoint(Num + 1);

@@ -63,8 +63,8 @@ MonoBehaviour:
   - TP_Data
   - TP_stopAni
   - UpdataData
-  - UpdataSoldier
-  - UpdataTower
+  - UpdateSoldier
+  - UpdateTower
   - waitBuild
   - weaponOC
   DisableAutoOpenWizard: 1
