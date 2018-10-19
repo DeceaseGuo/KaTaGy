@@ -25,9 +25,12 @@ public class BulletManager : Photon.MonoBehaviour
     protected Transform enemyCachedTransform;
     protected Transform myCachedTransform;
 
+    ObjectPooler pool;
+
     private void Awake()
     {
-        Net = GetComponent<PhotonView>();        
+        Net = GetComponent<PhotonView>();
+        pool = ObjectPooler.instance;
         distanceThisFrame = bullet_Speed * Time.deltaTime;
         myCachedTransform = this.transform;
 
@@ -71,9 +74,9 @@ public class BulletManager : Photon.MonoBehaviour
         targetNet = PhotonView.Find(_id);
         targetDead = targetNet.GetComponent<isDead>();
         enemyCachedTransform = targetDead.transform;
-        targetPos = enemyCachedTransform.position;
+        /*targetPos = enemyCachedTransform.position;
         targetPos.y += targetOffsetY;
-        dir = targetPos - myCachedTransform.position;
+        dir = targetPos - myCachedTransform.position;*/
     }
 
     #region 子彈移動
@@ -82,11 +85,10 @@ public class BulletManager : Photon.MonoBehaviour
         if (Isfllow)
         {
             targetPos = enemyCachedTransform.position;
-            targetPos.y = enemyCachedTransform.position.y + targetOffsetY;
-            dir = targetPos - myCachedTransform.position;
+            targetPos.y += targetOffsetY;
             myCachedTransform.LookAt(targetPos);
         }
-
+        dir = targetPos - myCachedTransform.position;
         myCachedTransform.Translate(dir.normalized * distanceThisFrame, Space.World);
     }
     #endregion
@@ -128,7 +130,7 @@ public class BulletManager : Photon.MonoBehaviour
     {
         if (photonView.isMine)
         {
-            ObjectPooler.instance.Repool(bulletName, this.gameObject);
+            pool.Repool(bulletName, this.gameObject);
         }
         else
         {

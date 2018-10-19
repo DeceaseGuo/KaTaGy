@@ -25,7 +25,7 @@ public class Bullet_Missile : BulletManager
             Isfllow = false;
         }
 
-        if (dir.magnitude <= distanceThisFrame)
+        if (Vector3.SqrMagnitude(dir) <= distanceThisFrame * distanceThisFrame)
         {
             hit = true;
             colliders = Physics.OverlapSphere(transform.position, DamageRange, atkMask);
@@ -53,7 +53,7 @@ public class Bullet_Missile : BulletManager
     }
 
     #region 位移
-    protected override void MoveTarget()
+    /*protected override void MoveTarget()
     {
         if (targetDead.myAttributes != GameManager.NowTarget.Tower && targetDead.myAttributes != GameManager.NowTarget.Core)
         {
@@ -67,7 +67,7 @@ public class Bullet_Missile : BulletManager
             }
             targetDead.transform.localPosition += dir.normalized * pushDis;
         }
-    }
+    }*/
     #endregion
 
     public void OnDrawGizmos()

@@ -456,14 +456,6 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.2453328
-        functionName: SwitchAtkRange
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
-          type: 3}
-        floatParameter: 0
-        intParameter: 4
-        messageOptions: 0
       - time: 0.25442973
         functionName: comboCheck
         data: 
@@ -471,6 +463,14 @@ ModelImporter:
           type: 3}
         floatParameter: 0
         intParameter: 3
+        messageOptions: 0
+      - time: 0.3904105
+        functionName: SwitchAtkRange
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 7a56cb80a6bf95f4ca61b81e486ad7a8,
+          type: 3}
+        floatParameter: 0
+        intParameter: 4
         messageOptions: 0
       - time: 0.39930284
         functionName: SwitchAtkRange

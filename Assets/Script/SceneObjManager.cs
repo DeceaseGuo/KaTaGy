@@ -64,7 +64,7 @@ public class SceneObjManager : Photon.MonoBehaviour
     private int mySoldierAmount = 0;
     private int myTowerAmount = 0;
     //敵方數量
-    private int towerAmount = 0;
+    [SerializeField] int towerAmount = 1;
     private int soldierAmount = 0;
 
     //怪物尋找所需
